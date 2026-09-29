@@ -1,0 +1,482 @@
+# LLM catalogue. IDs, gating and licences were checked against the Hugging Face API
+# (https://huggingface.co/api/models/<id>) on 2026-09-24; Groq IDs against https://console.groq.com/docs/models
+# on the same date. GPT-J-6B and GPT-OSS parameter counts are from the model cards (the API reports none). Gated models ("manual") need you to accept the licence on the model page and an HF_TOKEN.
+#
+# Fields:
+#   backend: hf | llamacpp | ollama | openai_compatible | mock
+#   hf_id / gguf_repo+gguf_file / ollama_tag / api_model + base_url + api_key_env
+#   family: used for chat-template quirks (mhrag/llm/templates.py); 'completion' = base LM with a plain-text prompt,
+#           'seq2seq' = encoder-decoder (arch: seq2seq)
+#   context: max context tokens we allow (prompt + generation)
+#   local_alternative: a GGUF build suggested in the UI when this model cannot run here
+#   v1_model: true for the models the original v1 project used (grouped separately in the UI)
+#   price_per_m_input / price_per_m_output: USD per 1M tokens for API models. Left null on purpose: prices
+#   change; fill them in from the provider's pricing page on the day you run the benchmark.
+
+models:
+  # ---------------------------------------------------------------- baseline from v1
+  mistral-7b-instruct-v0.3:
+    local_alternative: mistral-7b-gguf
+    v1_model: true            # used by the original (v1) project
+    label: Mistral-7B-Instruct-v0.3
+    backend: hf
+    hf_id: mistralai/Mistral-7B-Instruct-v0.3
+    family: mistral
+    params_b: 7.25
+    license: apache-2.0
+    gated: false
+    context: 8192
+  mistral-7b-gguf:
+    label: Mistral-7B-Instruct-v0.3 (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/Mistral-7B-Instruct-v0.3-GGUF
+    gguf_file: Mistral-7B-Instruct-v0.3-Q4_K_M.gguf
+    family: mistral
+    params_b: 7.25
+    license: apache-2.0
+    gated: false
+    context: 8192
+
+  # ---------------------------------------------------------------- Llama
+  llama-3.1-8b-instruct:
+    local_alternative: llama-3.1-8b-gguf
+    label: Llama-3.1-8B-Instruct
+    backend: hf
+    hf_id: meta-llama/Llama-3.1-8B-Instruct
+    family: llama3
+    params_b: 8.03
+    license: llama3.1 (Llama 3.1 Community License)
+    gated: manual
+    context: 8192
+  llama-3.2-3b-instruct:
+    local_alternative: llama-3.2-3b-gguf
+    label: Llama-3.2-3B-Instruct
+    backend: hf
+    hf_id: meta-llama/Llama-3.2-3B-Instruct
+    family: llama3
+    params_b: 3.21
+    license: llama3.2 (Llama 3.2 Community License)
+    gated: manual
+    context: 8192
+
+  # ---------------------------------------------------------------- Qwen
+  qwen2.5-7b-instruct:
+    label: Qwen2.5-7B-Instruct
+    backend: hf
+    hf_id: Qwen/Qwen2.5-7B-Instruct
+    family: qwen2
+    params_b: 7.62
+    license: apache-2.0
+    gated: false
+    context: 8192
+  qwen2.5-1.5b-instruct:
+    label: Qwen2.5-1.5B-Instruct
+    backend: hf
+    hf_id: Qwen/Qwen2.5-1.5B-Instruct
+    family: qwen2
+    params_b: 1.54
+    license: apache-2.0
+    gated: false
+    context: 8192
+  qwen2.5-1.5b-gguf:
+    label: Qwen2.5-1.5B-Instruct (GGUF Q4_K_M, CPU)
+    backend: llamacpp
+    gguf_repo: Qwen/Qwen2.5-1.5B-Instruct-GGUF
+    gguf_file: qwen2.5-1.5b-instruct-q4_k_m.gguf
+    family: qwen2
+    params_b: 1.54
+    license: apache-2.0
+    gated: false
+    context: 8192
+  qwen3-4b:
+    label: Qwen3-4B (non-thinking)
+    backend: hf
+    hf_id: Qwen/Qwen3-4B
+    family: qwen3
+    params_b: 4.02
+    license: apache-2.0
+    gated: false
+    context: 8192
+  qwen3-8b:
+    local_alternative: qwen3-4b-gguf
+    label: Qwen3-8B (non-thinking)
+    backend: hf
+    hf_id: Qwen/Qwen3-8B
+    family: qwen3
+    params_b: 8.19
+    license: apache-2.0
+    gated: false
+    context: 8192
+
+  # ---------------------------------------------------------------- Gemma
+  gemma-2-2b-it:
+    local_alternative: gemma-2-2b-gguf
+    label: Gemma-2-2B-it
+    backend: hf
+    hf_id: google/gemma-2-2b-it
+    family: gemma
+    params_b: 2.61
+    license: gemma (Gemma Terms of Use)
+    gated: manual
+    context: 8192
+  gemma-2-9b-it:
+    label: Gemma-2-9B-it
+    backend: hf
+    hf_id: google/gemma-2-9b-it
+    family: gemma
+    params_b: 9.24
+    license: gemma (Gemma Terms of Use)
+    gated: manual
+    context: 8192
+  gemma-3-4b-it:
+    label: Gemma-3-4B-it
+    backend: hf
+    hf_id: google/gemma-3-4b-it
+    family: gemma
+    params_b: 4.30
+    license: gemma (Gemma Terms of Use)
+    gated: manual
+    context: 8192
+  gemma-3-4b-it-fp32:
+    # Gemma-3 overflows in float16: on a T4 (no native bf16) the fp16 run produced only empty text. This entry runs
+    # the same model with 32-bit compute (4-bit weights on CUDA still apply); slower, but numerically safe.
+    label: Gemma-3-4B-it (32-bit compute)
+    backend: hf
+    hf_id: google/gemma-3-4b-it
+    family: gemma
+    params_b: 4.30
+    dtype: float32
+    license: gemma (Gemma Terms of Use)
+    gated: manual
+    context: 8192
+  gemma-3-12b-it:
+    label: Gemma-3-12B-it
+    backend: hf
+    hf_id: google/gemma-3-12b-it
+    family: gemma
+    params_b: 12.19
+    license: gemma (Gemma Terms of Use)
+    gated: manual
+    context: 8192
+
+  # ---------------------------------------------------------------- Phi
+  phi-3.5-mini-instruct:
+    local_alternative: phi-3.5-mini-gguf
+    label: Phi-3.5-mini-instruct
+    backend: hf
+    hf_id: microsoft/Phi-3.5-mini-instruct
+    family: phi
+    params_b: 3.82
+    license: mit
+    gated: false
+    context: 8192
+  phi-4-mini-instruct:
+    label: Phi-4-mini-instruct
+    backend: hf
+    hf_id: microsoft/Phi-4-mini-instruct
+    family: phi
+    params_b: 3.84
+    license: mit
+    gated: false
+    context: 8192
+
+  # ---------------------------------------------------------------- domain baseline
+  mentallama-chat-7b:
+    label: MentaLLaMA-chat-7B (domain baseline)
+    backend: hf
+    hf_id: klyang/MentaLLaMA-chat-7B
+    family: llama2        # fine-tuned from Llama-2-chat-7B; repo ships no chat_template -> Llama-2 [INST] format
+    params_b: 6.74
+    license: mit (model card); base weights derive from Llama 2 (Llama 2 Community License)
+    gated: false
+    context: 2048         # model_max_length in tokenizer_config.json
+
+  # ---------------------------------------------------------------- v1 (original project) models, kept as baselines
+  # These are NOT instruction-tuned chat models. They run through the same pipeline with a plain-text prompt
+  # ("completion" family) or as encoder-decoder models ("seq2seq"). Expect poor, unsafe or off-topic output:
+  # they are included to quantify how far the v2 models improve on the original choices.
+  gpt2:
+    v1_model: true            # used by the original (v1) project
+    label: GPT-2 (v1 baseline, base LM)
+    backend: hf
+    hf_id: openai-community/gpt2
+    family: completion
+    params_b: 0.137
+    license: mit
+    gated: false
+    context: 1024
+  gpt2-medium:
+    v1_model: true            # used by the original (v1) project
+    label: GPT-2 Medium (base LM)
+    backend: hf
+    hf_id: openai-community/gpt2-medium
+    family: completion
+    params_b: 0.380
+    license: mit
+    gated: false
+    context: 1024
+  gpt-j-6b:
+    v1_model: true            # used by the original (v1) project
+    label: GPT-J-6B (v1 "bart.py" model, base LM)
+    backend: hf
+    hf_id: EleutherAI/gpt-j-6b
+    family: completion
+    params_b: 6.05
+    license: apache-2.0
+    gated: false
+    context: 2048
+  bart-large-cnn:
+    v1_model: true            # used by the original (v1) project
+    label: BART-large-CNN (v1 summariser, seq2seq)
+    backend: hf
+    hf_id: facebook/bart-large-cnn
+    family: seq2seq
+    arch: seq2seq
+    params_b: 0.406
+    license: mit
+    gated: false
+    context: 1024
+  flan-t5-large:
+    label: FLAN-T5-large (instruction-tuned seq2seq)
+    backend: hf
+    hf_id: google/flan-t5-large
+    family: seq2seq
+    arch: seq2seq
+    params_b: 0.783
+    license: apache-2.0
+    gated: false
+    context: 512
+  ministral-8b-instruct-2410:
+    v1_model: true            # used by the original (v1) project
+    label: Ministral-8B-Instruct-2410 (v1 query_mistral.py model)
+    backend: hf
+    hf_id: mistralai/Ministral-8B-Instruct-2410
+    family: mistral
+    params_b: 8.02
+    license: Mistral Research License (non-commercial)
+    gated: false
+    context: 8192
+
+  # ---------------------------------------------------------------- small, free, ungated models (CPU-friendly)
+  qwen2.5-0.5b-instruct:
+    label: Qwen2.5-0.5B-Instruct
+    backend: hf
+    hf_id: Qwen/Qwen2.5-0.5B-Instruct
+    family: qwen2
+    params_b: 0.494
+    license: apache-2.0
+    gated: false
+    context: 8192
+  qwen2.5-3b-instruct:
+    label: Qwen2.5-3B-Instruct
+    backend: hf
+    hf_id: Qwen/Qwen2.5-3B-Instruct
+    family: qwen2
+    params_b: 3.09
+    license: Qwen Research License (non-commercial)
+    gated: false
+    context: 8192
+  smollm2-1.7b-instruct:
+    label: SmolLM2-1.7B-Instruct
+    backend: hf
+    hf_id: HuggingFaceTB/SmolLM2-1.7B-Instruct
+    family: generic
+    params_b: 1.71
+    license: apache-2.0
+    gated: false
+    context: 8192
+  smollm2-360m-instruct:
+    label: SmolLM2-360M-Instruct
+    backend: hf
+    hf_id: HuggingFaceTB/SmolLM2-360M-Instruct
+    family: generic
+    params_b: 0.362
+    license: apache-2.0
+    gated: false
+    context: 8192
+  tinyllama-1.1b-chat:
+    label: TinyLlama-1.1B-Chat-v1.0
+    backend: hf
+    hf_id: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+    family: generic
+    params_b: 1.10
+    license: apache-2.0
+    gated: false
+    context: 2048
+  granite-3.1-2b-instruct:
+    label: Granite-3.1-2B-Instruct
+    backend: hf
+    hf_id: ibm-granite/granite-3.1-2b-instruct
+    family: generic
+    params_b: 2.53
+    license: apache-2.0
+    gated: false
+    context: 8192
+  olmo-2-7b-instruct:
+    label: OLMo-2-7B-Instruct (fully open data)
+    backend: hf
+    hf_id: allenai/OLMo-2-1124-7B-Instruct
+    family: generic
+    params_b: 7.30
+    license: apache-2.0
+    gated: false
+    context: 4096
+
+  # ---------------------------------------------------------------- ungated GGUF builds (llama.cpp, CPU/Metal)
+  llama-3.2-1b-gguf:
+    label: Llama-3.2-1B-Instruct (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/Llama-3.2-1B-Instruct-GGUF
+    gguf_file: Llama-3.2-1B-Instruct-Q4_K_M.gguf
+    family: llama3
+    params_b: 1.24
+    license: llama3.2 (Llama 3.2 Community License)
+    gated: false
+    context: 8192
+  llama-3.2-3b-gguf:
+    label: Llama-3.2-3B-Instruct (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/Llama-3.2-3B-Instruct-GGUF
+    gguf_file: Llama-3.2-3B-Instruct-Q4_K_M.gguf
+    family: llama3
+    params_b: 3.21
+    license: llama3.2 (Llama 3.2 Community License)
+    gated: false
+    context: 8192
+  llama-3.1-8b-gguf:
+    label: Llama-3.1-8B-Instruct (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/Meta-Llama-3.1-8B-Instruct-GGUF
+    gguf_file: Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf
+    family: llama3
+    params_b: 8.03
+    license: llama3.1 (Llama 3.1 Community License)
+    gated: false
+    context: 8192
+  gemma-2-2b-gguf:
+    label: Gemma-2-2B-it (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/gemma-2-2b-it-GGUF
+    gguf_file: gemma-2-2b-it-Q4_K_M.gguf
+    family: gemma
+    params_b: 2.61
+    license: gemma (Gemma Terms of Use)
+    gated: false
+    context: 8192
+  phi-3.5-mini-gguf:
+    label: Phi-3.5-mini-instruct (GGUF Q4_K_M)
+    backend: llamacpp
+    gguf_repo: bartowski/Phi-3.5-mini-instruct-GGUF
+    gguf_file: Phi-3.5-mini-instruct-Q4_K_M.gguf
+    family: phi
+    params_b: 3.82
+    license: mit
+    gated: false
+    context: 8192
+  qwen3-4b-gguf:
+    label: Qwen3-4B (GGUF Q4_K_M, non-thinking)
+    backend: llamacpp
+    gguf_repo: unsloth/Qwen3-4B-GGUF
+    gguf_file: Qwen3-4B-Q4_K_M.gguf
+    family: qwen3
+    params_b: 4.02
+    license: apache-2.0
+    gated: false
+    context: 8192
+
+  # ---------------------------------------------------------------- API reference models
+  llama-3.3-70b-groq:
+    label: Llama-3.3-70B (Groq API)
+    backend: openai_compatible
+    base_url: https://api.groq.com/openai/v1
+    api_model: llama-3.3-70b-versatile
+    api_key_env: GROQ_API_KEY
+    family: llama3
+    params_b: 70.6
+    license: llama3.3 (Llama 3.3 Community License)
+    gated: false
+    context: 131072
+    price_per_m_input: null
+    price_per_m_output: null
+  llama-3.1-8b-groq:
+    label: Llama-3.1-8B (Groq API)
+    backend: openai_compatible
+    base_url: https://api.groq.com/openai/v1
+    api_model: llama-3.1-8b-instant
+    api_key_env: GROQ_API_KEY
+    family: llama3
+    params_b: 8.03
+    license: llama3.1 (Llama 3.1 Community License)
+    gated: false
+    context: 131072
+    price_per_m_input: null
+    price_per_m_output: null
+  gpt-oss-20b-groq:
+    label: gpt-oss-20b (Groq API, open weights)
+    backend: openai_compatible
+    base_url: https://api.groq.com/openai/v1
+    api_model: openai/gpt-oss-20b
+    api_key_env: GROQ_API_KEY
+    family: generic
+    params_b: 21
+    license: apache-2.0
+    gated: false
+    context: 131072
+    price_per_m_input: null
+    price_per_m_output: null
+  gpt-oss-120b-groq:
+    label: gpt-oss-120b (Groq API, open weights)
+    backend: openai_compatible
+    base_url: https://api.groq.com/openai/v1
+    api_model: openai/gpt-oss-120b
+    api_key_env: GROQ_API_KEY
+    # A reasoning model: Groq returns the reasoning separately (not in the answer). Low effort keeps latency and token
+    # use down (https://console.groq.com/docs/reasoning, checked 2026-09-25).
+    request_params: {reasoning_effort: low}
+    family: generic
+    params_b: 117
+    license: apache-2.0
+    gated: false
+    context: 131072
+    price_per_m_input: null
+    price_per_m_output: null
+  openrouter-custom:
+    label: OpenRouter (set MHRAG_OPENROUTER_MODEL)
+    backend: openai_compatible
+    base_url: https://openrouter.ai/api/v1
+    api_model_env: MHRAG_OPENROUTER_MODEL
+    api_key_env: OPENROUTER_API_KEY
+    family: generic
+    context: 32768
+  hf-router-custom:
+    label: HF Inference router (set MHRAG_HF_ROUTER_MODEL)
+    backend: openai_compatible
+    base_url: https://router.huggingface.co/v1
+    api_model_env: MHRAG_HF_ROUTER_MODEL
+    api_key_env: HF_TOKEN
+    family: generic
+    context: 32768
+  vllm-local:
+    label: Local vLLM server (MHRAG_VLLM_URL, MHRAG_VLLM_MODEL)
+    backend: openai_compatible
+    base_url_env: MHRAG_VLLM_URL
+    api_model_env: MHRAG_VLLM_MODEL
+    api_key_env: VLLM_API_KEY
+    api_key_optional: true
+    family: generic
+    context: 8192
+  ollama-qwen2.5-1.5b:
+    label: Qwen2.5-1.5B via Ollama
+    backend: ollama
+    ollama_tag: qwen2.5:1.5b
+    base_url_env: OLLAMA_HOST
+    base_url: http://localhost:11434
+    family: qwen2
+    context: 8192
+
+  # ---------------------------------------------------------------- tests / UI dev
+  mock:
+    label: Mock (offline test model)
+    backend: mock
+    family: generic
+    context: 8192

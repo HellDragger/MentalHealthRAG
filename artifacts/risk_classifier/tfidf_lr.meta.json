@@ -1,0 +1,9 @@
+{
+  "threshold": 0.3872327132437396,
+  "threshold_rule": "largest threshold with validation recall >= 0.95",
+  "threshold_high_precision": 0.6459582421941066,
+  "C": 8.0,
+  "trained_on": "mental_health.csv",
+  "normalizer": "mhrag.safety.normalize.normalize_like_training",
+  "seed": 42
+}

@@ -1,0 +1,38 @@
+2026-09-24 17:11:49,236 tfidf C=0.5 val AUROC=0.9732
+2026-09-24 17:11:55,225 tfidf C=1.0 val AUROC=0.9762
+2026-09-24 17:11:59,372 tfidf C=2.0 val AUROC=0.9781
+2026-09-24 17:12:02,569 tfidf C=4.0 val AUROC=0.9791
+2026-09-24 17:12:08,054 tfidf C=8.0 val AUROC=0.9794
+2026-09-24 17:12:11,616 tfidf C=16.0 val AUROC=0.9792
+2026-09-24 17:12:15,262 tfidf C=32.0 val AUROC=0.9789
+2026-09-24 17:12:19,952 tfidf_lr: test AUROC 0.9783 recall@tau 0.9371 precision@tau 0.9101
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8922.42it/s]
+2026-09-24 17:14:30,581 transformer: test AUROC 0.9923 recall@tau 0.9552 precision@tau 0.9692
+{
+ "tfidf_lr": {
+  "tfidf_lr": {
+   "n": 2797,
+   "positives": 1383,
+   "threshold": 0.3872327132437396,
+   "precision": 0.9101123595505618,
+   "recall": 0.9370932754880694,
+   "f1": 0.9234057712860705,
+   "flag_rate": 0.5091169109760457,
+   "auroc": 0.9783361509376844,
+   "auprc": 0.9765470797359134
+  }
+ },
+ "transformer": {
+  "transformer": {
+   "n": 2797,
+   "positives": 1383,
+   "threshold": 0.5792251229286194,
+   "precision": 0.9691856199559794,
+   "recall": 0.9551699204627621,
+   "f1": 0.9621267297887837,
+   "flag_rate": 0.4873078298176618,
+   "auroc": 0.9923477240813638,
+   "auprc": 0.9917408415134129
+  }
+ }
+}

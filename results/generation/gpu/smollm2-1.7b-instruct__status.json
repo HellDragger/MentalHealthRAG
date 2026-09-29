@@ -1,0 +1,1 @@
+{"model": "smollm2-1.7b-instruct", "status": "ok", "load_seconds": 26.226625727000282, "peak_rss_gb": 4.3731842041015625, "cuda_peak_allocated_gb": 5.050658226013184}

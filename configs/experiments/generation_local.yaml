@@ -1,0 +1,21 @@
+# Generation experiment that fits a 16 GB laptop (Apple M4, Metal). Everything else -> generation_gpu.yaml.
+kind: generation
+name: local
+models:
+  - qwen2.5-1.5b-gguf        # deployed CPU model
+  - gpt2                     # v1 baseline (base LM, no instruction tuning)
+  - bart-large-cnn           # v1 "QA" model (a summariser)
+profiles: [no_rag, naive, full]
+datasets: [faq_gen, oos_questions, counsel_gen]
+limits: {counsel_gen: 50}
+naive: {embedder: minilm, chunk_tokens: 48}   # v1: MiniLM, 200-character chunks (~45 tokens), top-2
+temperature: 0.0
+judge_model: gpt-oss-120b-groq    # needs GROQ_API_KEY; rubric left TODO(run) otherwise
+# Groq's free plan allows ~200k tokens/day for this model, so the judge scores a fixed sample of 20 questions per
+# dataset (the same for every model and setting) with the rubric only; faithfulness is measured by NLI for all answers.
+# The judge continues across runs from results/generation/local/judge_cache.jsonl until the sample is complete.
+judge_sample: 20
+judge_faithfulness: false
+nli_model: cross-encoder/nli-deberta-v3-base
+bertscore_model: roberta-large
+timeout_s: 300

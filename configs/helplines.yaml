@@ -1,0 +1,70 @@
+# Crisis helplines shown by the safety gate. Every number was checked on an official source on 2026-09-24;
+# the source and the quoted wording are recorded per entry. Re-verify before any deployment and at least
+# every 6 months (services change). `verified: false` means we could not load an official page from this
+# environment; confirm it manually before relying on it.
+
+default_order: [IN, US, UK, INTL]
+
+regions:
+  IN:
+    name: India
+    services:
+      - name: Tele-MANAS (national tele-mental-health helpline, 24x7, free, 20 languages)
+        phone: "14416"
+        alt_phone: "1800-89-14416"
+        # Source: DGHS, MoHFW - https://dghs.mohfw.gov.in/national-mental-health-programme.php
+        # "The public can access the Tele MANAS helpline by dialing toll-free helpline number 1800-89-14416
+        #  or short code 14416."
+        source: https://dghs.mohfw.gov.in/national-mental-health-programme.php
+        verified: true
+      - name: Emergency Response Support System (police, health, fire)
+        phone: "112"
+        # Source: Ministry of Home Affairs - https://www.mha.gov.in/en/commoncontent/emergency-response-support-system-erss
+        # (ERSS is "a nationwide, unified emergency response system with a single emergency number '112'")
+        source: https://www.mha.gov.in/en/commoncontent/emergency-response-support-system-erss
+        verified: true
+        emergency: true
+  US:
+    name: United States
+    services:
+      - name: 988 Suicide & Crisis Lifeline (call or text, 24/7, free)
+        phone: "988"
+        sms: "988"
+        url: https://chat.988lifeline.org
+        # Source: https://988lifeline.org/ - "The 988 Lifeline is available 24/7/365. Your conversations are
+        # free and confidential." Contact: Call 988, Text 988, chat at chat.988lifeline.org
+        source: https://988lifeline.org/
+        verified: true
+      - name: Emergency services
+        phone: "911"
+        # TODO(verify): official pages (911.gov, fcc.gov) returned HTTP 403 from this environment.
+        source: https://www.911.gov/
+        verified: false
+        emergency: true
+  UK:
+    name: United Kingdom
+    services:
+      - name: Samaritans (24/7, free from landlines and mobiles)
+        phone: "116 123"
+        # Source: https://www.samaritans.org/how-we-can-help/contact-samaritan/ - "Call 116 123", "any time,
+        # day or night", "free to call from both landlines and mobiles"
+        source: https://www.samaritans.org/how-we-can-help/contact-samaritan/
+        verified: true
+      - name: NHS 111 (select the mental health option)
+        phone: "111"
+        # Source: NHS - "call 111 and select the mental health option"
+        source: https://www.nhs.uk/nhs-services/mental-health-services/where-to-get-urgent-help-for-mental-health/
+        verified: true
+      - name: Emergency services (if a life is at risk)
+        phone: "999"
+        # Source: same NHS page - "Call: 999" when "someone's life is at risk"
+        source: https://www.nhs.uk/nhs-services/mental-health-services/where-to-get-urgent-help-for-mental-health/
+        verified: true
+        emergency: true
+  INTL:
+    name: Anywhere else
+    services:
+      - name: Contact your local emergency services or go to the nearest emergency department
+        phone: null
+        verified: true
+        emergency: true

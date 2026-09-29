@@ -1,0 +1,14 @@
+# Main retrieval comparison at the default chunk size.
+kind: retrieval
+name: main
+datasets: [heading_qa, paraphrase_qa, synth_qa]
+chunk_sizes: [256]
+embedders: [minilm, bge-small, bge-base, e5-base, gte-base]
+bm25_on: bge-small            # BM25 is embedder-independent; scored once on this index's chunks
+baseline: {system: dense, embedder: minilm}   # the v1 embedding model
+systems:
+  - {name: bm25, mode: bm25}
+  - {name: dense, mode: dense}
+  - {name: hybrid, mode: hybrid}
+  - {name: hybrid+ce, mode: hybrid_rerank, reranker: minilm-ce}
+  - {name: hybrid+bge-rr, mode: hybrid_rerank, reranker: bge-reranker-base}

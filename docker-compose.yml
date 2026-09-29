@@ -1,0 +1,26 @@
+# Local container run.
+#   docker compose up --build                      # app on http://localhost:8000
+#   docker compose --profile ollama up --build     # + an Ollama server (then pull a model, see DEPLOY.md)
+services:
+  app:
+    build: .
+    ports:
+      - "8000:7860"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama:

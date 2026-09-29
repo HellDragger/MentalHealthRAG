@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mental Health Info Assistant</title>
+  <meta name="description" content="A grounded, citation-backed mental-health information assistant. Not a substitute for professional care.">
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%233b7a6b'/%3E%3Cpath d='M10 17c2 3 10 3 12 0' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip" href="#msg">Skip to message box</a>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Mental Health Info Assistant</h1>
+        <p class="tagline">Answers from trusted sources, with citations</p>
+      </div>
+    </div>
+    <div class="controls">
+      <label class="field">
+        <span>Model</span>
+        <select id="model" aria-label="Language model"></select>
+      </label>
+      <label class="field">
+        <span>Helplines</span>
+        <select id="region" aria-label="Helpline region"></select>
+      </label>
+      <button id="new-chat" class="btn ghost" type="button" title="Start a new conversation">New chat</button>
+      <button id="theme" class="btn ghost icon" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="notice" role="note">
+    <strong>Not a substitute for professional care.</strong>
+    This is an automated information tool. It can be wrong, it cannot diagnose or treat, and it does not
+    replace a doctor, therapist or crisis service. If you are in danger, contact emergency services now.
+    <button id="show-helplines" class="linklike" type="button">Show helplines</button>
+  </div>
+
+  <section id="crisis" class="crisis" role="alert" hidden>
+    <div class="crisis-inner">
+      <h2 id="crisis-title">You don't have to face this alone</h2>
+      <p id="crisis-text">If you might act on thoughts of harming yourself, please contact emergency services or one of these free, confidential helplines now.</p>
+      <ul id="crisis-list"></ul>
+      <button id="crisis-close" class="btn ghost small" type="button">Hide</button>
+    </div>
+  </section>
+
+  <main id="chat" class="chat" role="log" aria-live="polite" aria-relevant="additions" aria-label="Conversation">
+    <div class="welcome" id="welcome">
+      <h2>How can I help today?</h2>
+      <p>Ask about mental health conditions, coping strategies, treatments or where to find support. Answers are based on
+        information from <a href="https://www.mind.org.uk/information-support/" target="_blank" rel="noopener noreferrer">Mind</a>
+        and other sources, and each answer lists the sources it used.</p>
+      <div class="suggestions" role="list">
+        <button type="button" class="chip" role="listitem">What is a panic attack?</button>
+        <button type="button" class="chip" role="listitem">How can I improve my sleep?</button>
+        <button type="button" class="chip" role="listitem">How do I support a friend with depression?</button>
+        <button type="button" class="chip" role="listitem">What are the side effects of antidepressants?</button>
+      </div>
+    </div>
+  </main>
+
+  <form id="composer" class="composer" autocomplete="off">
+    <label for="msg" class="sr-only">Your message</label>
+    <textarea id="msg" rows="1" maxlength="2000" placeholder="Type your question… (Enter to send, Shift+Enter for a new line)" required></textarea>
+    <button id="stop" class="btn ghost" type="button" hidden>Stop</button>
+    <button id="send" class="btn primary" type="submit" aria-label="Send message">Send</button>
+  </form>
+  <footer class="foot">
+    Sources include Mind (© Mind, used for non-commercial research) and a public FAQ dataset. Conversations stay in your
+    browser tab; the server does not store message content. <a href="/api/docs" target="_blank" rel="noopener">API</a>
+  </footer>
+
+  <script src="/static/vendor/marked.min.js"></script>
+  <script src="/static/vendor/purify.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

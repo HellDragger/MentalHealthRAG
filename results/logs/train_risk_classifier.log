@@ -1,0 +1,82 @@
+2026-09-24 16:47:02,422 tfidf C=0.5 val AUROC=0.9732
+2026-09-24 16:47:04,897 tfidf C=1.0 val AUROC=0.9762
+2026-09-24 16:47:07,515 tfidf C=2.0 val AUROC=0.9781
+2026-09-24 16:47:10,260 tfidf C=4.0 val AUROC=0.9791
+2026-09-24 16:47:13,337 tfidf C=8.0 val AUROC=0.9794
+2026-09-24 16:47:17,774 tfidf_lr: test AUROC 0.9783 recall@tau 0.9371 precision@tau 0.9101
+2026-09-24 16:47:21,213 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-09-24 16:47:21,214 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-09-24 16:47:21,239 HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilroberta-base/fb53ab8802853c8e4fbdbcd0529f21fc6f459b2b/config.json?%2Fdistilbert%2Fdistilroberta-base%2Fresolve%2Fmain%2Fconfig.json=&etag=%2254a642f6233f36fbad8fe9bec08a3de265a88874%22 "HTTP/1.1 200 OK"
+2026-09-24 16:47:21,288 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-09-24 16:47:21,332 HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilroberta-base/fb53ab8802853c8e4fbdbcd0529f21fc6f459b2b/tokenizer_config.json?%2Fdistilbert%2Fdistilroberta-base%2Fresolve%2Fmain%2Ftokenizer_config.json=&etag=%2234ddbd64a4cd3f2d9d8a9120d3662d0bf91baead%22 "HTTP/1.1 200 OK"
+2026-09-24 16:47:21,383 HTTP Request: GET https://huggingface.co/api/models/distilbert/distilroberta-base/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-09-24 16:47:21,423 HTTP Request: GET https://huggingface.co/api/models/distilbert/distilroberta-base/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-24 16:47:21,460 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-09-24 16:47:21,508 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/special_tokens_map.json "HTTP/1.1 404 Not Found"
+2026-09-24 16:47:21,572 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-09-24 16:47:21,720 HTTP Request: HEAD https://huggingface.co/distilbert/distilroberta-base/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-09-24 16:47:21,744 HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/distilbert/distilroberta-base/fb53ab8802853c8e4fbdbcd0529f21fc6f459b2b/config.json?%2Fdistilbert%2Fdistilroberta-base%2Fresolve%2Fmain%2Fconfig.json=&etag=%2254a642f6233f36fbad8fe9bec08a3de265a88874%22 "HTTP/1.1 200 OK"
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 10839.38it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilbert/distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+2026-09-24 16:48:48,007 epoch 0 step 100/1400 loss 0.2947 (85s)
+2026-09-24 16:50:08,310 epoch 0 step 200/1400 loss 0.1310 (166s)
+2026-09-24 16:51:30,447 epoch 0 step 300/1400 loss 0.1021 (248s)
+2026-09-24 16:52:52,354 epoch 0 step 400/1400 loss 0.1634 (330s)
+2026-09-24 16:54:11,324 epoch 0 step 500/1400 loss 0.1645 (409s)
+2026-09-24 16:55:41,645 epoch 0 step 600/1400 loss 0.1039 (499s)
+2026-09-24 16:57:04,970 epoch 0 step 700/1400 loss 0.2389 (582s)
+2026-09-24 16:58:25,128 epoch 1 step 800/1400 loss 0.4203 (663s)
+2026-09-24 16:59:45,853 epoch 1 step 900/1400 loss 0.0234 (743s)
+2026-09-24 17:01:06,538 epoch 1 step 1000/1400 loss 0.0449 (824s)
+2026-09-24 17:02:24,880 epoch 1 step 1100/1400 loss 0.0534 (902s)
+2026-09-24 17:03:55,885 epoch 1 step 1200/1400 loss 0.1616 (993s)
+2026-09-24 17:05:19,435 epoch 1 step 1300/1400 loss 0.4852 (1077s)
+2026-09-24 17:06:38,180 epoch 1 step 1400/1400 loss 0.3953 (1156s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.27it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.25it/s]
+2026-09-24 17:08:35,636 transformer: test AUROC 0.9923 recall@tau 0.9552 precision@tau 0.9692
+{
+ "tfidf_lr": {
+  "tfidf_lr": {
+   "n": 2797,
+   "positives": 1383,
+   "threshold": 0.3872327132437396,
+   "precision": 0.9101123595505618,
+   "recall": 0.9370932754880694,
+   "f1": 0.9234057712860705,
+   "flag_rate": 0.5091169109760457,
+   "auroc": 0.9783361509376844,
+   "auprc": 0.9765470797359134
+  }
+ },
+ "transformer": {
+  "transformer": {
+   "n": 2797,
+   "positives": 1383,
+   "threshold": 0.5792251229286194,
+   "precision": 0.9691856199559794,
+   "recall": 0.9551699204627621,
+   "f1": 0.9621267297887837,
+   "flag_rate": 0.4873078298176618,
+   "auroc": 0.9923477240813638,
+   "auprc": 0.9917408415134129
+  }
+ }
+}

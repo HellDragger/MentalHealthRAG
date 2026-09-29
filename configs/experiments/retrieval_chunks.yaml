@@ -1,0 +1,13 @@
+# Chunk-size ablation (128 / 256 / 512 tokens) for every embedder: BM25, dense, hybrid, hybrid + MiniLM CE.
+kind: retrieval
+name: chunks
+datasets: [heading_qa, paraphrase_qa, synth_qa]
+chunk_sizes: [128, 256, 512]
+embedders: [minilm, bge-small, bge-base, e5-base, gte-base]
+bm25_on: bge-small
+baseline: {system: dense, embedder: minilm}
+systems:
+  - {name: bm25, mode: bm25}
+  - {name: dense, mode: dense}
+  - {name: hybrid, mode: hybrid}
+  - {name: hybrid+ce, mode: hybrid_rerank, reranker: minilm-ce}

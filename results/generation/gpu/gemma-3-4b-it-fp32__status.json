@@ -1,0 +1,1 @@
+{"model": "gemma-3-4b-it-fp32", "status": "ok", "load_seconds": 88.57723484899998, "peak_rss_gb": 4.697299957275391, "cuda_peak_allocated_gb": 6.03524923324585}

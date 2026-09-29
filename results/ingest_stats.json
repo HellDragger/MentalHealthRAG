@@ -1,0 +1,161 @@
+{
+  "ingest": {
+    "pdf": {
+      "files": 134,
+      "parsed": 133,
+      "skipped_no_text_layer": [
+        "PDF_Files/tips-to-improve-your-wellbeing-2020-easy-read.pdf"
+      ],
+      "by_source_type": {
+        "web_article": 7,
+        "mind_web": 85,
+        "mind_booklet": 41
+      },
+      "pages": 1324,
+      "cross_doc_boilerplate_lines_removed": 896,
+      "sections": 2151,
+      "extract_seconds_pypdfium2": 1.62,
+      "web_articles": [
+        "PDF_Files/5 Best Mental Health Apps - VIMS.pdf",
+        "PDF_Files/Depression - Types, Causes, Symptoms, Diagnosis, Treatment.pdf",
+        "PDF_Files/Mental Health Issues of Indian Students Lawctopus.pdf",
+        "PDF_Files/Mental Health in India _ Voices of Youth.pdf",
+        "PDF_Files/Students and mental health.pdf",
+        "PDF_Files/THE NEGLECTED AND DISREGARDED ISSUE IN INDIA_ MENTAL HEALTH PROBLEM IN STUDENTS.pdf",
+        "PDF_Files/Why Mental Health Problems In Students Are On The Rise_.pdf"
+      ]
+    },
+    "faq": {
+      "questions": 98,
+      "faq_rows": 98,
+      "mentalhealth_csv_rows": 97,
+      "mentalhealth_csv_rows_in_faq": 97,
+      "identical_answers": 80,
+      "action": "mentalhealth.csv dropped (duplicate of Mental_Health_FAQ.csv)"
+    },
+    "kb": {
+      "kb_intents": 80,
+      "kb_fact_intents": 31,
+      "kb_fact_single_pattern": 23,
+      "kb_non_fact_intents_excluded": 49,
+      "dropped_intents": {
+        "fact-10": "answer duplicates fact-9 (prevalence) instead of answering 'what causes mental illness'"
+      },
+      "indexed_facts": 30
+    },
+    "documents": 261,
+    "documents_by_source_type": {
+      "web_article": 7,
+      "mind_web": 85,
+      "mind_booklet": 41,
+      "faq": 98,
+      "kb_fact": 30
+    },
+    "load_seconds": 1.73
+  },
+  "chunking": {
+    "chunk_tokens": 256,
+    "overlap_ratio": 0.15,
+    "chunks_before_dedup": 2450,
+    "exact_duplicates_removed": 19,
+    "near_duplicates_removed": 11,
+    "chunks": 2420,
+    "chunks_by_source_type": {
+      "web_article": 64,
+      "mind_web": 757,
+      "mind_booklet": 1386,
+      "faq": 200,
+      "kb_fact": 13
+    },
+    "tokens_per_chunk": {
+      "min": 20,
+      "median": 212,
+      "max": 240,
+      "mean": 192.0
+    },
+    "near_duplicate_examples": [
+      {
+        "dropped": "9d5c525d4b3d55ed",
+        "dropped_source": "PDF_Files/anxiety-and-panic-attacks-2021-pdf-version.pdf",
+        "kept": "eb7fe7baf9a2f020",
+        "kept_source": "PDF_Files/AnxietyAndPanicAttacks.pdf",
+        "jaccard": 1.0
+      },
+      {
+        "dropped": "d14c2b180378be79",
+        "dropped_source": "PDF_Files/anxiety-and-panic-attacks-2021-pdf-version.pdf",
+        "kept": "327464026cd46c44",
+        "kept_source": "PDF_Files/AnxietyAndPanicAttacks3.pdf",
+        "jaccard": 0.951
+      },
+      {
+        "dropped": "08027f168ea83a69",
+        "dropped_source": "PDF_Files/anxiety-and-panic-attacks-2021-pdf-version.pdf",
+        "kept": "0583cb218df23933",
+        "kept_source": "PDF_Files/AnxietyAndPanicAttacks3.pdf",
+        "jaccard": 0.963
+      },
+      {
+        "dropped": "67c63feb0037613a",
+        "dropped_source": "PDF_Files/anxiety-and-panic-attacks-2021-pdf-version.pdf",
+        "kept": "a21e242cb62bca0a",
+        "kept_source": "PDF_Files/AnxietyAndPanicAttacks5.pdf",
+        "jaccard": 0.912
+      },
+      {
+        "dropped": "86264ddce60f0346",
+        "dropped_source": "PDF_Files/anxiety-and-panic-attacks-2021-pdf-version.pdf",
+        "kept": "8ca7d62c836779b6",
+        "kept_source": "PDF_Files/AnxietyAndPanicAttacks5.pdf",
+        "jaccard": 0.865
+      },
+      {
+        "dropped": "59a450768cd51fb2",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "404fbcdada6f0a0d",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 1.0
+      },
+      {
+        "dropped": "c7a3aad0acbb483d",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "97b94bc3d57926d2",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 0.968
+      },
+      {
+        "dropped": "c2ccb69197772632",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "1fbe13e5e3f89b13",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 0.857
+      },
+      {
+        "dropped": "fc88acdb3c8d425f",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "ff1b9bbb48d9e4b5",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 0.961
+      },
+      {
+        "dropped": "abfb8446f13ee6bd",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "4fd998b92394b137",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 0.94
+      },
+      {
+        "dropped": "7b6384071a137fa0",
+        "dropped_source": "JSON Files/KB.json",
+        "kept": "8c20f824c136841d",
+        "kept_source": "CSV Files/Mental_Health_FAQ.csv",
+        "jaccard": 0.931
+      }
+    ]
+  },
+  "timing_seconds": {
+    "load_and_chunk": 2.6,
+    "embed": 14.43
+  },
+  "tokenizer_exact": true
+}

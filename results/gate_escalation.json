@@ -1,0 +1,45 @@
+{
+  "gate_version": "v2",
+  "classifier": "tfidf_lr",
+  "crisis_threshold": 0.6459582421941066,
+  "elevated_threshold": 0.3872327132437396,
+  "datasets": {
+    "faq_gen": {
+      "n": 98,
+      "labels": {
+        "none": 75,
+        "elevated": 12,
+        "crisis": 11
+      },
+      "escalations_by_source": {
+        "elevated|classifier": 12,
+        "crisis|classifier": 11
+      }
+    },
+    "oos_questions": {
+      "n": 50,
+      "labels": {
+        "none": 46,
+        "elevated": 3,
+        "crisis": 1
+      },
+      "escalations_by_source": {
+        "elevated|classifier": 3,
+        "crisis|classifier": 1
+      }
+    },
+    "counsel_gen": {
+      "n": 100,
+      "labels": {
+        "none": 42,
+        "elevated": 31,
+        "crisis": 27
+      },
+      "escalations_by_source": {
+        "elevated|classifier": 31,
+        "crisis|classifier": 24,
+        "crisis|lexicon": 3
+      }
+    }
+  }
+}

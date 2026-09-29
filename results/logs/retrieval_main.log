@@ -1,0 +1,110 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-09-24 17:48:12,592 WARNING Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 27783.99it/s]
+2026-09-24 17:48:27,266 DEBUG Building index from IDs objects
+2026-09-24 17:48:27,361 INFO Built /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/artifacts/index/minilm-c256: 2520 chunks in 14.5s (embed 8.0s)
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 15856.03it/s]
+2026-09-24 17:48:32,722 INFO dense          minilm     c256  heading_qa     R@1 0.627 R@10 0.948 MRR 0.744 nDCG 0.759
+2026-09-24 17:48:33,537 INFO dense          minilm     c256  paraphrase_qa  R@1 0.603 R@10 0.810 MRR 0.672 nDCG 0.675
+2026-09-24 17:48:35,169 INFO dense          minilm     c256  synth_qa       R@1 0.450 R@10 0.868 MRR 0.587 nDCG 0.637
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 13549.11it/s]
+2026-09-24 17:48:39,975 INFO hybrid         minilm     c256  heading_qa     R@1 0.692 R@10 0.982 MRR 0.804 nDCG 0.825
+2026-09-24 17:48:40,276 INFO hybrid         minilm     c256  paraphrase_qa  R@1 0.603 R@10 0.845 MRR 0.680 nDCG 0.690
+2026-09-24 17:48:41,877 INFO hybrid         minilm     c256  synth_qa       R@1 0.593 R@10 0.952 MRR 0.713 nDCG 0.745
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 18317.29it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 7871.77it/s]
+2026-09-24 17:49:50,837 INFO hybrid+ce      minilm     c256  heading_qa     R@1 0.906 R@10 1.000 MRR 0.945 nDCG 0.946
+2026-09-24 17:49:57,647 INFO hybrid+ce      minilm     c256  paraphrase_qa  R@1 0.828 R@10 0.897 MRR 0.850 nDCG 0.824
+2026-09-24 17:50:21,356 INFO hybrid+ce      minilm     c256  synth_qa       R@1 0.630 R@10 0.963 MRR 0.735 nDCG 0.761
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 13918.40it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 10342.20it/s]
+2026-09-24 17:56:56,551 INFO hybrid+bge-rr  minilm     c256  heading_qa     R@1 0.882 R@10 0.998 MRR 0.929 nDCG 0.935
+2026-09-24 17:57:35,937 INFO hybrid+bge-rr  minilm     c256  paraphrase_qa  R@1 0.741 R@10 0.879 MRR 0.801 nDCG 0.796
+2026-09-24 17:59:47,620 INFO hybrid+bge-rr  minilm     c256  synth_qa       R@1 0.656 R@10 0.984 MRR 0.775 nDCG 0.801
+2026-09-24 17:59:48,036 INFO Index /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8842.09it/s]
+2026-09-24 17:59:50,110 INFO bm25           -          c256  heading_qa     R@1 0.665 R@10 0.975 MRR 0.773 nDCG 0.797
+2026-09-24 17:59:50,132 INFO bm25           -          c256  paraphrase_qa  R@1 0.586 R@10 0.741 MRR 0.625 nDCG 0.631
+2026-09-24 17:59:50,734 INFO bm25           -          c256  synth_qa       R@1 0.577 R@10 0.921 MRR 0.696 nDCG 0.746
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 21772.39it/s]
+2026-09-24 17:59:56,607 INFO dense          bge-small  c256  heading_qa     R@1 0.777 R@10 0.968 MRR 0.852 nDCG 0.850
+2026-09-24 17:59:57,045 INFO dense          bge-small  c256  paraphrase_qa  R@1 0.707 R@10 0.879 MRR 0.771 nDCG 0.771
+2026-09-24 17:59:59,019 INFO dense          bge-small  c256  synth_qa       R@1 0.587 R@10 0.915 MRR 0.698 nDCG 0.747
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 15167.76it/s]
+2026-09-24 18:00:04,844 INFO hybrid         bge-small  c256  heading_qa     R@1 0.734 R@10 0.991 MRR 0.835 nDCG 0.850
+2026-09-24 18:00:05,285 INFO hybrid         bge-small  c256  paraphrase_qa  R@1 0.672 R@10 0.810 MRR 0.720 nDCG 0.716
+2026-09-24 18:00:07,273 INFO hybrid         bge-small  c256  synth_qa       R@1 0.603 R@10 1.000 MRR 0.741 nDCG 0.799
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 20806.84it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8331.32it/s]
+2026-09-24 18:01:15,934 INFO hybrid+ce      bge-small  c256  heading_qa     R@1 0.898 R@10 0.998 MRR 0.939 nDCG 0.940
+2026-09-24 18:01:22,819 INFO hybrid+ce      bge-small  c256  paraphrase_qa  R@1 0.845 R@10 0.914 MRR 0.868 nDCG 0.841
+2026-09-24 18:01:46,474 INFO hybrid+ce      bge-small  c256  synth_qa       R@1 0.614 R@10 0.984 MRR 0.737 nDCG 0.792
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 19730.67it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 8976.79it/s]
+2026-09-24 18:08:56,162 INFO hybrid+bge-rr  bge-small  c256  heading_qa     R@1 0.882 R@10 0.998 MRR 0.932 nDCG 0.935
+2026-09-24 18:09:38,361 INFO hybrid+bge-rr  bge-small  c256  paraphrase_qa  R@1 0.741 R@10 0.897 MRR 0.810 nDCG 0.804
+2026-09-24 18:12:00,027 INFO hybrid+bge-rr  bge-small  c256  synth_qa       R@1 0.661 R@10 0.984 MRR 0.780 nDCG 0.828
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8920.90it/s]
+2026-09-24 18:12:50,323 DEBUG Building index from IDs objects
+2026-09-24 18:12:50,548 INFO Built /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/artifacts/index/bge-base-c256: 2420 chunks in 50.1s (embed 45.5s)
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8898.55it/s]
+2026-09-24 18:12:59,576 INFO dense          bge-base   c256  heading_qa     R@1 0.815 R@10 0.982 MRR 0.874 nDCG 0.868
+2026-09-24 18:13:00,248 INFO dense          bge-base   c256  paraphrase_qa  R@1 0.759 R@10 0.897 MRR 0.815 nDCG 0.812
+2026-09-24 18:13:03,248 INFO dense          bge-base   c256  synth_qa       R@1 0.587 R@10 0.926 MRR 0.692 nDCG 0.744
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8434.72it/s]
+2026-09-24 18:13:11,563 INFO hybrid         bge-base   c256  heading_qa     R@1 0.738 R@10 0.993 MRR 0.840 nDCG 0.856
+2026-09-24 18:13:12,258 INFO hybrid         bge-base   c256  paraphrase_qa  R@1 0.638 R@10 0.845 MRR 0.701 nDCG 0.717
+2026-09-24 18:13:15,033 INFO hybrid         bge-base   c256  synth_qa       R@1 0.593 R@10 0.995 MRR 0.740 nDCG 0.798
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 17038.88it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 7307.39it/s]
+2026-09-24 18:14:28,828 INFO hybrid+ce      bge-base   c256  heading_qa     R@1 0.898 R@10 1.000 MRR 0.939 nDCG 0.941
+2026-09-24 18:14:35,913 INFO hybrid+ce      bge-base   c256  paraphrase_qa  R@1 0.862 R@10 0.897 MRR 0.879 nDCG 0.851
+2026-09-24 18:15:00,320 INFO hybrid+ce      bge-base   c256  synth_qa       R@1 0.614 R@10 0.979 MRR 0.737 nDCG 0.791
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8264.11it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 9144.16it/s]
+2026-09-24 18:22:18,033 INFO hybrid+bge-rr  bge-base   c256  heading_qa     R@1 0.882 R@10 0.998 MRR 0.931 nDCG 0.934
+2026-09-24 18:23:02,283 INFO hybrid+bge-rr  bge-base   c256  paraphrase_qa  R@1 0.741 R@10 0.897 MRR 0.813 nDCG 0.809
+2026-09-24 18:25:30,946 INFO hybrid+bge-rr  bge-base   c256  synth_qa       R@1 0.661 R@10 0.979 MRR 0.780 nDCG 0.827
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8563.23it/s]
+2026-09-24 18:26:23,757 DEBUG Building index from IDs objects
+2026-09-24 18:26:23,859 INFO Built /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/artifacts/index/e5-base-c256: 2420 chunks in 52.5s (embed 47.8s)
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8864.53it/s]
+2026-09-24 18:26:32,833 INFO dense          e5-base    c256  heading_qa     R@1 0.816 R@10 0.973 MRR 0.878 nDCG 0.872
+2026-09-24 18:26:33,720 INFO dense          e5-base    c256  paraphrase_qa  R@1 0.741 R@10 0.897 MRR 0.785 nDCG 0.795
+2026-09-24 18:26:36,513 INFO dense          e5-base    c256  synth_qa       R@1 0.508 R@10 0.910 MRR 0.645 nDCG 0.705
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8226.56it/s]
+2026-09-24 18:26:45,202 INFO hybrid         e5-base    c256  heading_qa     R@1 0.772 R@10 0.998 MRR 0.863 nDCG 0.874
+2026-09-24 18:26:45,907 INFO hybrid         e5-base    c256  paraphrase_qa  R@1 0.638 R@10 0.862 MRR 0.699 nDCG 0.719
+2026-09-24 18:26:48,716 INFO hybrid         e5-base    c256  synth_qa       R@1 0.608 R@10 0.968 MRR 0.743 nDCG 0.795
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 17993.16it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 7382.36it/s]
+2026-09-24 18:28:01,024 INFO hybrid+ce      e5-base    c256  heading_qa     R@1 0.900 R@10 0.998 MRR 0.940 nDCG 0.941
+2026-09-24 18:28:08,096 INFO hybrid+ce      e5-base    c256  paraphrase_qa  R@1 0.862 R@10 0.931 MRR 0.885 nDCG 0.858
+2026-09-24 18:28:32,360 INFO hybrid+ce      e5-base    c256  synth_qa       R@1 0.614 R@10 0.979 MRR 0.738 nDCG 0.793
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8510.84it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 8752.01it/s]
+2026-09-24 18:35:48,007 INFO hybrid+bge-rr  e5-base    c256  heading_qa     R@1 0.882 R@10 0.998 MRR 0.932 nDCG 0.935
+2026-09-24 18:36:32,158 INFO hybrid+bge-rr  e5-base    c256  paraphrase_qa  R@1 0.741 R@10 0.914 MRR 0.818 nDCG 0.818
+2026-09-24 18:38:59,792 INFO hybrid+bge-rr  e5-base    c256  synth_qa       R@1 0.661 R@10 0.989 MRR 0.781 nDCG 0.830
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 7979.76it/s]
+2026-09-24 18:39:40,945 DEBUG Building index from IDs objects
+2026-09-24 18:39:41,039 INFO Built /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/artifacts/index/gte-base-c256: 2420 chunks in 40.8s (embed 36.1s)
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 20349.78it/s]
+2026-09-24 18:39:49,230 INFO dense          gte-base   c256  heading_qa     R@1 0.759 R@10 0.977 MRR 0.837 nDCG 0.842
+2026-09-24 18:39:49,998 INFO dense          gte-base   c256  paraphrase_qa  R@1 0.724 R@10 0.879 MRR 0.792 nDCG 0.798
+2026-09-24 18:39:52,533 INFO dense          gte-base   c256  synth_qa       R@1 0.582 R@10 0.942 MRR 0.705 nDCG 0.759
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 12809.10it/s]
+2026-09-24 18:39:59,704 INFO hybrid         gte-base   c256  heading_qa     R@1 0.727 R@10 0.995 MRR 0.835 nDCG 0.850
+2026-09-24 18:40:00,218 INFO hybrid         gte-base   c256  paraphrase_qa  R@1 0.621 R@10 0.845 MRR 0.701 nDCG 0.723
+2026-09-24 18:40:02,669 INFO hybrid         gte-base   c256  synth_qa       R@1 0.614 R@10 0.979 MRR 0.751 nDCG 0.804
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 15216.42it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 7068.37it/s]
+2026-09-24 18:41:13,965 INFO hybrid+ce      gte-base   c256  heading_qa     R@1 0.900 R@10 1.000 MRR 0.940 nDCG 0.942
+2026-09-24 18:41:20,900 INFO hybrid+ce      gte-base   c256  paraphrase_qa  R@1 0.845 R@10 0.879 MRR 0.862 nDCG 0.834
+2026-09-24 18:41:44,802 INFO hybrid+ce      gte-base   c256  synth_qa       R@1 0.614 R@10 0.974 MRR 0.736 nDCG 0.789
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8317.64it/s]
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 9752.05it/s]
+2026-09-24 18:49:26,579 INFO hybrid+bge-rr  gte-base   c256  heading_qa     R@1 0.882 R@10 0.998 MRR 0.932 nDCG 0.935
+2026-09-24 18:50:13,589 INFO hybrid+bge-rr  gte-base   c256  paraphrase_qa  R@1 0.741 R@10 0.879 MRR 0.807 nDCG 0.801
+2026-09-24 18:52:53,602 INFO hybrid+bge-rr  gte-base   c256  synth_qa       R@1 0.661 R@10 0.984 MRR 0.781 nDCG 0.828
+wrote /Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/results/retrieval_main.json
