@@ -1,0 +1,58 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Environments / secrets ---
+.venv/
+venv/
+chatbotenv/
+.env
+.env.*
+!.env.example
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+.DS_Store
+
+# --- Data ---
+# The raw archive data/raw_data.zip is tracked; extracted copies are not.
+data/raw_data/
+data/processed_data/
+data/chroma*/
+# Model weights downloaded at runtime
+models/
+*.gguf
+# Classifier checkpoints (large); the small TF-IDF model in artifacts/ is tracked
+artifacts/risk_classifier/transformer/
+# Local scratch
+scratch/
+
+# --- Personal files from v1 (kept out of the repo) ---
+Literature Review
+data_preprocessing.py
+document_creation.py
+Monthly_Project_Report.pdf.pdf
+mental_health_chatbot_rag_uml.png
+New Text Document.txt
+Project Log/
+
+# Built indexes (rebuild with: python -m scripts.build_index)
+artifacts/index/
+
+# Local tool config
+.claude/
+
+# The manuscript and its related files (tables, numbers, references, journal notes) are kept private until
+# publication; the scripts still write tables/ and numbers.tex into paper/ locally.
+/paper
