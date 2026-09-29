@@ -1,0 +1,1 @@
+{"model": "flan-t5-large", "status": "ok", "load_seconds": 42.514496611998766, "peak_rss_gb": 4.1273651123046875, "cuda_peak_allocated_gb": 7.699981212615967}

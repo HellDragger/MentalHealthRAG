@@ -1,0 +1,100 @@
+# Default configuration. Every key can be overridden by an environment variable:
+#   MHRAG_<SECTION>__<KEY>=value      e.g. MHRAG_RETRIEVAL__TOP_K=8
+# or by pointing MHRAG_CONFIG at another YAML file.
+
+paths:
+  raw_data: data/raw_data.zip          # zip or an extracted directory with the same layout
+  artifacts: artifacts
+  results: results
+
+ingest:
+  include_pdfs: true
+  include_web_articles: true           # the 7 non-Mind web pages (ablation: set false for "Mind-only")
+  include_faq: true
+  include_kb_facts: true
+  include_counselling: false           # CounselChat pairs; off by default (ablation)
+  exclude_faq_from_index: false        # set true for the FAQ-Gen experiment
+  near_dup_threshold: 0.85             # Jaccard on 5-word shingles
+  boilerplate_min_docs: 3              # a line seen in >= this many docs is kept only once
+
+chunking:
+  chunk_tokens: 256
+  overlap_ratio: 0.15
+  min_chunk_tokens: 24
+
+index:
+  embedder: bge-small
+  embed_batch_size: 64
+  use_faiss: false
+
+embedders:
+  minilm:
+    model: sentence-transformers/all-MiniLM-L6-v2
+    query_prefix: ""
+    passage_prefix: ""
+    max_tokens: 256
+  bge-small:
+    model: BAAI/bge-small-en-v1.5
+    query_prefix: "Represent this sentence for searching relevant passages: "
+    passage_prefix: ""
+    max_tokens: 512
+  bge-base:
+    model: BAAI/bge-base-en-v1.5
+    query_prefix: "Represent this sentence for searching relevant passages: "
+    passage_prefix: ""
+    max_tokens: 512
+  e5-base:
+    model: intfloat/e5-base-v2
+    query_prefix: "query: "
+    passage_prefix: "passage: "
+    max_tokens: 512
+  gte-base:
+    model: thenlper/gte-base
+    query_prefix: ""
+    passage_prefix: ""
+    max_tokens: 512
+
+embedder_backend: auto                 # auto | sentence_transformers | fastembed | hashing (tests)
+
+retrieval:
+  mode: hybrid_rerank                  # bm25 | dense | hybrid | dense_rerank | hybrid_rerank
+  candidates: 30                       # per retriever, before fusion
+  rrf_k: 60
+  top_k: 5
+  reranker: minilm-ce
+  context_token_budget: 1800
+  query_rewrite: heuristic             # off | heuristic | llm
+
+rerankers:
+  minilm-ce:
+    model: cross-encoder/ms-marco-MiniLM-L6-v2   # canonical id (the old ...L-6-v2 id redirects here)
+    fastembed_model: Xenova/ms-marco-MiniLM-L-6-v2
+  bge-reranker-base:
+    model: BAAI/bge-reranker-base
+    fastembed_model: BAAI/bge-reranker-base
+
+llm:
+  model: qwen2.5-1.5b-gguf             # key in configs/models.yaml, or "auto" (first available below)
+  auto_preference: [gpt-oss-120b-groq, llama-3.3-70b-groq, qwen2.5-1.5b-gguf, mock]
+  served_models: ["*"]               # "*" = the whole catalogue (models that cannot run here are shown disabled)
+  max_new_tokens: 400
+  temperature: 0.2
+  top_p: 0.9
+  history_turns: 6
+  timeout_s: 120
+
+safety:
+  region: IN
+  classifier: tfidf_lr                 # tfidf_lr | transformer | none
+  crisis_threshold: null               # null = classifier's high-precision threshold (val precision >= 0.95)
+  elevated_threshold: null             # null = classifier's recall threshold (val recall >= 0.95)
+  output_checks: true
+
+server:
+  host: 0.0.0.0
+  port: 8000
+  rate_limit: 20/minute
+  max_message_chars: 2000
+  max_concurrent_generations: 2
+  log_content: false                   # privacy: user messages are never logged unless true
+  warmup: true

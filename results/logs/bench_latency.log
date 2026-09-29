@@ -1,0 +1,182 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 8947.87it/s]
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:02<14:28,  2.58s/it]Loading weights:  51%|█████     | 171/338 [00:02<00:01, 86.81it/s]Loading weights:  69%|██████▉   | 233/338 [00:03<00:01, 79.90it/s]Loading weights:  80%|███████▉  | 270/338 [00:04<00:00, 77.68it/s]Loading weights:  88%|████████▊ | 296/338 [00:04<00:00, 75.44it/s]Loading weights:  93%|█████████▎| 315/338 [00:04<00:00, 76.60it/s]Loading weights:  98%|█████████▊| 331/338 [00:05<00:00, 75.40it/s]Loading weights: 100%|██████████| 338/338 [00:05<00:00, 67.53it/s]
+{
+  "n": 5,
+  "ttft_ms": {
+    "mean": 126916.95585818961,
+    "p50": 79350.2892079996,
+    "p95": 315005.8419663925
+  },
+  "e2e_ms": {
+    "mean": 126916.95585818961,
+    "p50": 79350.2892079996,
+    "p95": 315005.8419663925
+  },
+  "tokens_per_s": {
+    "mean": 4.459586709685352,
+    "p50": 3.398090080560529,
+    "p95": 7.745425007629496
+  },
+  "output_tokens": {
+    "mean": 291.8,
+    "p50": 267.0,
+    "p95": 375.8
+  },
+  "retrieval_ms": {
+    "mean": 1301.6658748034388,
+    "p50": 1492.547250003554,
+    "p95": 1722.9653249727562
+  }
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 10207.24it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8758.64it/s]
+/Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/.venv/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py:206: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 5684.614742999353,
+    "p50": 5645.534562529065,
+    "p95": 6654.110207856866
+  },
+  "e2e_ms": {
+    "mean": 11556.416801991872,
+    "p50": 11569.342063041404,
+    "p95": 15089.979826583292
+  },
+  "tokens_per_s": {
+    "mean": 23.12786862577187,
+    "p50": 24.63197184093384,
+    "p95": 29.593681658809363
+  },
+  "output_tokens": {
+    "mean": 275.5,
+    "p50": 285.0,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 145.7354758361665,
+    "p50": 144.91072902455926,
+    "p95": 155.47389636631124
+  }
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 9698.43it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8639.91it/s]
+/Users/aryan/Documents/Projects/MentalHealthRAG-Chatbot/.claude/worktrees/v2-research-bf33f4/.venv/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py:206: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 1420.662496656102,
+    "p50": 1417.078957951162,
+    "p95": 1656.9106291746718
+  },
+  "e2e_ms": {
+    "mean": 7002.922288404079,
+    "p50": 7536.2303130095825,
+    "p95": 9085.379904438742
+  },
+  "tokens_per_s": {
+    "mean": 42.372298796974576,
+    "p50": 43.75781657370142,
+    "p95": 46.97264277205479
+  },
+  "output_tokens": {
+    "mean": 296.9166666666667,
+    "p50": 324.0,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 147.36226390232332,
+    "p50": 143.01970845554024,
+    "p95": 167.6356332784053
+  }
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 21164.02it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 20747.25it/s]
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]Loading weights:   0%|          | 1/338 [00:01<07:18,  1.30s/it]Loading weights:  51%|█████     | 171/338 [00:01<00:00, 167.83it/s]Loading weights:  79%|███████▊  | 266/338 [00:01<00:00, 166.84it/s]Loading weights:  96%|█████████▌| 325/338 [00:02<00:00, 156.91it/s]Loading weights: 100%|██████████| 338/338 [00:02<00:00, 136.68it/s]
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 1499.6103158434078,
+    "p50": 1505.7160829892382,
+    "p95": 1652.529899822548
+  },
+  "e2e_ms": {
+    "mean": 16190.37215600838,
+    "p50": 15772.370624472387,
+    "p95": 22619.990783033427
+  },
+  "tokens_per_s": {
+    "mean": 17.214123854369642,
+    "p50": 17.539712289551584,
+    "p95": 17.96674851316331
+  },
+  "output_tokens": {
+    "mean": 279.5833333333333,
+    "p50": 278.0,
+    "p95": 397.15
+  },
+  "retrieval_ms": {
+    "mean": 125.95287493119638,
+    "p50": 122.23891646135598,
+    "p95": 144.2951581790112
+  }
+}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 9950.48it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 6579.35it/s]
+{
+  "bm25": {
+    "cold_ms": {
+      "p50": 0.09520852472633123,
+      "p95": 0.1800229656510054
+    },
+    "cached_ms": {
+      "p50": 0.0026455381885170937,
+      "p95": 0.00449841609224677
+    }
+  },
+  "dense": {
+    "cold_ms": {
+      "p50": 7.174521044362336,
+      "p95": 8.463484793901443
+    },
+    "cached_ms": {
+      "p50": 0.004124536644667387,
+      "p95": 0.006700173253193496
+    }
+  },
+  "hybrid": {
+    "cold_ms": {
+      "p50": 7.060353993438184,
+      "p95": 7.783100177766755
+    },
+    "cached_ms": {
+      "p50": 0.0035205157473683357,
+      "p95": 0.004018470644950867
+    }
+  },
+  "hybrid_rerank": {
+    "cold_ms": {
+      "p50": 118.68345853872597,
+      "p95": 130.6845975050237
+    },
+    "cached_ms": {
+      "p50": 0.009624462109059095,
+      "p95": 0.02085379092022776
+    }
+  }
+}
+== v1_hf_fp32_cpu
+== v2_llamacpp_cpu
+== v2_llamacpp_metal
+== v2_hf_mps
+skip v2_hf_cuda: needs cuda
+skip v2_hf_cuda_4bit: needs cuda
+skip v2_api: needs GROQ_API_KEY
+== retrieval

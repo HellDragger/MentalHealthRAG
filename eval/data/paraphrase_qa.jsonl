@@ -1,0 +1,58 @@
+{"id": "pq000", "query": "What is mental health?", "gold": {"doc_ids": ["faq:7728364", "kb:fact-1"]}, "source": "KB.json:fact-1"}
+{"id": "pq001", "query": "Define Mental Health", "gold": {"doc_ids": ["faq:7728364", "kb:fact-1"]}, "source": "KB.json:fact-1"}
+{"id": "pq002", "query": "Why is mental health important?", "gold": {"doc_ids": ["kb:fact-2"]}, "source": "KB.json:fact-2"}
+{"id": "pq003", "query": "What is the importance of mental health?", "gold": {"doc_ids": ["kb:fact-2"]}, "source": "KB.json:fact-2"}
+{"id": "pq004", "query": "What is Depression?", "gold": {"doc_ids": ["kb:fact-3"]}, "source": "KB.json:fact-3"}
+{"id": "pq005", "query": "Define Depression", "gold": {"doc_ids": ["kb:fact-3"]}, "source": "KB.json:fact-3"}
+{"id": "pq006", "query": "How do i know if i have Depression?", "gold": {"doc_ids": ["kb:fact-5"]}, "source": "KB.json:fact-5"}
+{"id": "pq007", "query": "Am i depressed?", "gold": {"doc_ids": ["kb:fact-5"]}, "source": "KB.json:fact-5"}
+{"id": "pq008", "query": "Am i suffering from depression?", "gold": {"doc_ids": ["kb:fact-5"]}, "source": "KB.json:fact-5"}
+{"id": "pq009", "query": "Am i mentally ill?", "gold": {"doc_ids": ["kb:fact-5"]}, "source": "KB.json:fact-5"}
+{"id": "pq010", "query": "What is a therapist?", "gold": {"doc_ids": ["kb:fact-6"]}, "source": "KB.json:fact-6"}
+{"id": "pq011", "query": "What does a therapist do?", "gold": {"doc_ids": ["kb:fact-6"]}, "source": "KB.json:fact-6"}
+{"id": "pq012", "query": "What is therapy?", "gold": {"doc_ids": ["kb:fact-7"]}, "source": "KB.json:fact-7"}
+{"id": "pq013", "query": "Do i need therapy?", "gold": {"doc_ids": ["kb:fact-7"]}, "source": "KB.json:fact-7"}
+{"id": "pq014", "query": "Who is therapy for?", "gold": {"doc_ids": ["kb:fact-7"]}, "source": "KB.json:fact-7"}
+{"id": "pq015", "query": "What does it mean to have a mental illness?", "gold": {"doc_ids": ["faq:1590140", "kb:fact-8"]}, "source": "KB.json:fact-8"}
+{"id": "pq016", "query": "Who does mental illness affect?", "gold": {"doc_ids": ["faq:2110618", "faq:6361820", "kb:fact-9"]}, "source": "KB.json:fact-9"}
+{"id": "pq017", "query": "What causes mental illness?", "gold": {"doc_ids": ["faq:2110618", "faq:6361820", "faq:9434130"]}, "source": "KB.json:fact-10"}
+{"id": "pq018", "query": "What are some of the warning signs of mental illness?", "gold": {"doc_ids": ["faq:9434130", "kb:fact-11"]}, "source": "KB.json:fact-11"}
+{"id": "pq019", "query": "Can people with mental illness recover?", "gold": {"doc_ids": ["faq:7657263", "kb:fact-12"]}, "source": "KB.json:fact-12"}
+{"id": "pq020", "query": "What should I do if I know someone who appears to have the symptoms of a mental disorder?", "gold": {"doc_ids": ["faq:1619387", "kb:fact-13"]}, "source": "KB.json:fact-13"}
+{"id": "pq021", "query": "How can I find a mental health professional for myself or my child?", "gold": {"doc_ids": ["faq:1030153", "faq:2553795", "kb:fact-14"]}, "source": "KB.json:fact-14"}
+{"id": "pq022", "query": "What treatment options are available?", "gold": {"doc_ids": ["faq:8022026", "kb:fact-15"]}, "source": "KB.json:fact-15"}
+{"id": "pq023", "query": "If I become involved in treatment, what do I need to know?", "gold": {"doc_ids": ["faq:1155199", "faq:1259439", "kb:fact-16"]}, "source": "KB.json:fact-16"}
+{"id": "pq024", "query": "What is the difference between mental health professionals?", "gold": {"doc_ids": ["faq:7760466", "kb:fact-17"]}, "source": "KB.json:fact-17"}
+{"id": "pq025", "query": "How can I find a mental health professional right for my child or myself?", "gold": {"doc_ids": ["faq:1030153", "faq:2553795", "kb:fact-18"]}, "source": "KB.json:fact-18"}
+{"id": "pq026", "query": "Where else can I get help?", "gold": {"doc_ids": ["faq:4197817", "faq:9539480", "kb:fact-19"]}, "source": "KB.json:fact-19"}
+{"id": "pq027", "query": "What should I know before starting a new medication?", "gold": {"doc_ids": ["faq:3388962", "kb:fact-20"]}, "source": "KB.json:fact-20"}
+{"id": "pq028", "query": "Where can I go to find therapy?", "gold": {"doc_ids": ["faq:9541219", "kb:fact-21"]}, "source": "KB.json:fact-21"}
+{"id": "pq029", "query": "Where can I learn about types of mental health treatment?", "gold": {"doc_ids": ["faq:3268009", "kb:fact-22"]}, "source": "KB.json:fact-22"}
+{"id": "pq030", "query": "What are the different types of mental health professionals?", "gold": {"doc_ids": ["faq:3340726", "kb:fact-23"]}, "source": "KB.json:fact-23"}
+{"id": "pq031", "query": "Where can I go to find a support group?", "gold": {"doc_ids": ["faq:4197817", "faq:9539480", "kb:fact-24"]}, "source": "KB.json:fact-24"}
+{"id": "pq032", "query": "Can you prevent mental health problems?", "gold": {"doc_ids": ["faq:1667863", "kb:fact-25"]}, "source": "KB.json:fact-25"}
+{"id": "pq033", "query": "Are there cures for mental health problems?", "gold": {"doc_ids": ["faq:8904276", "kb:fact-26"]}, "source": "KB.json:fact-26"}
+{"id": "pq034", "query": "is there any cure for mental health problems?", "gold": {"doc_ids": ["faq:8904276", "kb:fact-26"]}, "source": "KB.json:fact-26"}
+{"id": "pq035", "query": "What causes mental health problems?", "gold": {"doc_ids": ["faq:4283807", "kb:fact-27"]}, "source": "KB.json:fact-27"}
+{"id": "pq036", "query": "What do I do if I'm worried about my mental health?", "gold": {"doc_ids": ["faq:8690253", "kb:fact-28"]}, "source": "KB.json:fact-28"}
+{"id": "pq037", "query": "How do I know if I'm unwell?", "gold": {"doc_ids": ["faq:2973656", "kb:fact-29"]}, "source": "KB.json:fact-29"}
+{"id": "pq038", "query": "How can I maintain social connections? What if I feel lonely?", "gold": {"doc_ids": ["faq:9100298", "kb:fact-30"]}, "source": "KB.json:fact-30"}
+{"id": "pq039", "query": "What's the difference between anxiety and stress?", "gold": {"doc_ids": ["faq:8612349", "kb:fact-31"]}, "source": "KB.json:fact-31"}
+{"id": "pq040", "query": "What's the difference between sadness and depression?", "gold": {"doc_ids": ["faq:6062232", "kb:fact-32"]}, "source": "KB.json:fact-32"}
+{"id": "pq041", "query": "difference between sadness and depression", "gold": {"doc_ids": ["faq:6062232", "kb:fact-32"]}, "source": "KB.json:fact-32"}
+{"id": "pq042", "query": "What is mental health illness", "gold": {"doc_ids": ["faq:1590140"]}, "source": "mentalhealth.json:definition"}
+{"id": "pq043", "query": "Describe mental health illness", "gold": {"doc_ids": ["faq:1590140"]}, "source": "mentalhealth.json:definition"}
+{"id": "pq044", "query": "Who is affected by mentall illness", "gold": {"doc_ids": ["faq:2110618", "faq:6361820"]}, "source": "mentalhealth.json:affects_whom"}
+{"id": "pq045", "query": "What leads to mental illness?", "gold": {"doc_ids": ["faq:6361820", "faq:9434130"]}, "source": "mentalhealth.json:what_causes"}
+{"id": "pq046", "query": "how does one get mentally ill?", "gold": {"doc_ids": ["faq:6361820", "faq:9434130"]}, "source": "mentalhealth.json:what_causes"}
+{"id": "pq047", "query": "Is it possible to recover from mental illness", "gold": {"doc_ids": ["faq:7657263"]}, "source": "mentalhealth.json:recover"}
+{"id": "pq048", "query": "I know someone who appears to have such symptoms?", "gold": {"doc_ids": ["faq:1619387"]}, "source": "mentalhealth.json:steps"}
+{"id": "pq049", "query": "What are the steps to be followed incase of symptoms", "gold": {"doc_ids": ["faq:1619387"]}, "source": "mentalhealth.json:steps"}
+{"id": "pq050", "query": "How to find mental health professional for myself", "gold": {"doc_ids": ["faq:1030153", "faq:2553795"]}, "source": "mentalhealth.json:find_help"}
+{"id": "pq051", "query": "How to find mental health professional?", "gold": {"doc_ids": ["faq:1030153", "faq:2553795"]}, "source": "mentalhealth.json:find_help"}
+{"id": "pq052", "query": "How can one recover?", "gold": {"doc_ids": ["faq:8022026"]}, "source": "mentalhealth.json:treatement_options"}
+{"id": "pq053", "query": "How to become involved in treatment?", "gold": {"doc_ids": ["faq:1155199", "faq:1259439"]}, "source": "mentalhealth.json:treatment_tips"}
+{"id": "pq054", "query": "What should I keep in mind if I begin treatment?", "gold": {"doc_ids": ["faq:1155199", "faq:1259439"]}, "source": "mentalhealth.json:treatment_tips"}
+{"id": "pq055", "query": "What are the different types of mental health professionals present?", "gold": {"doc_ids": ["faq:7760466"]}, "source": "mentalhealth.json:professional_types"}
+{"id": "pq056", "query": "How can I find a mental health professional right myself?", "gold": {"doc_ids": ["faq:1030153", "faq:2553795"]}, "source": "mentalhealth.json:right_professional"}
+{"id": "pq057", "query": "How to find the right mental health professional?", "gold": {"doc_ids": ["faq:1030153", "faq:2553795"]}, "source": "mentalhealth.json:right_professional"}

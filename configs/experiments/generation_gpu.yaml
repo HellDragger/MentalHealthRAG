@@ -1,0 +1,42 @@
+# Full multi-LLM benchmark. Run on a free Colab/Kaggle T4 (16 GB) with 4-bit for 7-12B models:
+#   MHRAG_LOAD_IN_4BIT=1 python -m scripts.run_eval --config configs/experiments/generation_gpu.yaml
+# Answers are checkpointed per (model, profile, dataset) and the run resumes where it stopped.
+# Gated models (Llama, Gemma) need HF_TOKEN and an accepted licence; unavailable models are recorded as TODO(run).
+kind: generation
+name: gpu
+models:
+  - mistral-7b-instruct-v0.3     # v1 baseline model
+  - ministral-8b-instruct-2410   # v1 query_mistral.py model
+  - llama-3.1-8b-instruct
+  - llama-3.2-3b-instruct
+  - qwen2.5-7b-instruct
+  - qwen2.5-1.5b-instruct
+  - qwen3-4b
+  - qwen3-8b
+  - gemma-2-2b-it
+  - gemma-3-4b-it-fp32           # rerun of gemma-3-4b-it with 32-bit compute (see excluded_runs)
+  - phi-3.5-mini-instruct
+  - phi-4-mini-instruct
+  - smollm2-1.7b-instruct
+  - flan-t5-large
+  - gpt2                         # v1 baselines
+  - gpt-j-6b
+  - bart-large-cnn
+profiles: [no_rag, naive, full]
+datasets: [faq_gen, oos_questions, counsel_gen]
+limits: {counsel_gen: 100}
+naive: {embedder: minilm, chunk_tokens: 48}
+temperature: 0.0
+# No API models and no LLM judge here: on Groq's free plan they would take months of daily quota. The 19 open models
+# are compared with NLI faithfulness, relevance, ROUGE-L, BERTScore, citations and abstention (plus the human
+# evaluation); the LLM judge is run on a sample in generation_local.yaml.
+judge_model: null
+# Runs that produced degenerate output: kept in results/generation/gpu/, left out of the tables and the paper text,
+# and listed with the reason. (The paper reports these reasons.)
+excluded_runs:
+  gemma-3-4b-it: "empty output, because Gemma-3 overflows in float16, the only fast half precision on a T4; rerun with 32-bit compute as gemma-3-4b-it-fp32"
+  gemma-3-12b-it: "empty output from the same float16 overflow; a 32-bit rerun of the 12B model did not fit the GPU budget"
+  mentallama-chat-7b: "a single repeated token in every setting; the cause is unconfirmed, possibly also a float16 overflow of its 32-bit fine-tuned weights"
+nli_model: cross-encoder/nli-deberta-v3-base
+bertscore_model: roberta-large
+timeout_s: 600

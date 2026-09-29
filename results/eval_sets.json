@@ -1,0 +1,73 @@
+{
+  "heading_qa": {
+    "n": 561,
+    "by_topic_top10": [
+      [
+        "Seeking help for a mental health problem",
+        38
+      ],
+      [
+        "Antipsychotics",
+        36
+      ],
+      [
+        "Anxiety and panic attacks",
+        21
+      ],
+      [
+        "Talking therapy and counselling",
+        20
+      ],
+      [
+        "Personality disorders",
+        18
+      ],
+      [
+        "How to be mentally healthy at work",
+        17
+      ],
+      [
+        "Obsessive compulsive disorder ocd",
+        17
+      ],
+      [
+        "Sleeping pills and minor tranquillisers",
+        16
+      ],
+      [
+        "Understanding mental health problems",
+        16
+      ],
+      [
+        "Depression",
+        15
+      ]
+    ]
+  },
+  "paraphrase_qa": {
+    "n": 58,
+    "by_source_file": {
+      "KB.json": 42,
+      "mentalhealth.json": 16
+    }
+  },
+  "faq_gen": {
+    "n": 98
+  },
+  "counsel_gen": {
+    "n": 100,
+    "test_split_contexts": 159,
+    "references_per_query_mean": 2.15
+  },
+  "oos": {
+    "n": 50
+  },
+  "synth_qa": {
+    "sampled": 200,
+    "kept_after_roundtrip": 189,
+    "dropped": 11,
+    "generator": "qwen2.5-1.5b-gguf",
+    "roundtrip": "hybrid (BM25+dense RRF) top-10 on the default index",
+    "human_verified_subset": "TODO(human): fill eval/data/synth_qa_verify.csv"
+  }
+}

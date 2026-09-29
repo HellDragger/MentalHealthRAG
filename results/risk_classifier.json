@@ -1,0 +1,392 @@
+{
+  "split": {
+    "source": "CSV Files/mental_health.csv",
+    "seed": 42,
+    "dedup": {
+      "rows": 27975,
+      "conflicting_label_texts_dropped": 0,
+      "after_dedup": 27970
+    },
+    "sizes": {
+      "train": {
+        "n": 22376,
+        "positives": 11070
+      },
+      "val": {
+        "n": 2797,
+        "positives": 1384
+      },
+      "test": {
+        "n": 2797,
+        "positives": 1383
+      }
+    },
+    "test_ids_sha1": "f8ce522bf435dbde64646819190d14d8a5ed65d3"
+  },
+  "external_sets": {
+    "reddit_depression": {
+      "rows": 7731,
+      "conflicting_label_texts_dropped": 0,
+      "after_dedup": 7650
+    },
+    "dreaddit_stress": {
+      "rows": 3553,
+      "conflicting_label_texts_dropped": 6,
+      "after_dedup": 3526
+    },
+    "twitter_depression": {
+      "rows": 20000,
+      "conflicting_label_texts_dropped": 0,
+      "after_dedup": 19488
+    },
+    "kb_suicide_intent_patterns": {
+      "n": 97
+    },
+    "kb_distress_intent_patterns": {
+      "n": 2257,
+      "intents": [
+        "sad",
+        "stressed",
+        "worthless",
+        "depressed",
+        "anxious",
+        "sleep",
+        "scared",
+        "death"
+      ]
+    }
+  },
+  "models": {
+    "tfidf_lr": {
+      "C": 8.0,
+      "val_auroc": 0.9794312924168231,
+      "C_grid": [
+        0.5,
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "threshold": 0.3872327132437396,
+      "threshold_rule": "largest threshold with validation recall >= 0.95",
+      "threshold_high_precision": 0.6459582421941066,
+      "threshold_high_precision_rule": "max(tau, smallest threshold with validation precision >= 0.95)",
+      "val": {
+        "n": 2797,
+        "positives": 1384,
+        "threshold": 0.3872327132437396,
+        "precision": 0.9087767795438839,
+        "recall": 0.9501445086705202,
+        "f1": 0.9290003532320734,
+        "flag_rate": 0.5173400071505184,
+        "auroc": 0.9794312924168231,
+        "auprc": 0.9778985225248056
+      },
+      "test_at_high_precision": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.6459582421941066,
+        "precision": 0.950910530482977,
+        "recall": 0.8684020245842372,
+        "f1": 0.907785336356765,
+        "flag_rate": 0.4515552377547372,
+        "auroc": 0.9783361509376844,
+        "auprc": 0.9765470797359134
+      },
+      "test_at_0.5": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.5,
+        "precision": 0.9299410029498525,
+        "recall": 0.9117859725234997,
+        "f1": 0.9207740051113545,
+        "flag_rate": 0.48480514837325706,
+        "auroc": 0.9783361509376844,
+        "auprc": 0.9765470797359134
+      },
+      "test_at_tau": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.3872327132437396,
+        "precision": 0.9101123595505618,
+        "recall": 0.9370932754880694,
+        "f1": 0.9234057712860705,
+        "flag_rate": 0.5091169109760457,
+        "auroc": 0.9783361509376844,
+        "auprc": 0.9765470797359134
+      },
+      "test_at_recall_targets": {
+        "0.90": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.5953836343733941,
+          "precision": 0.9431643625192012,
+          "recall": 0.8879248011569053,
+          "f1": 0.9147113594040969,
+          "flag_rate": 0.4654987486592778,
+          "auroc": 0.9783361509376844,
+          "auprc": 0.9765470797359134
+        },
+        "0.95": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.3872327132437396,
+          "precision": 0.9101123595505618,
+          "recall": 0.9370932754880694,
+          "f1": 0.9234057712860705,
+          "flag_rate": 0.5091169109760457,
+          "auroc": 0.9783361509376844,
+          "auprc": 0.9765470797359134
+        },
+        "0.99": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.12857759332051028,
+          "precision": 0.7968476357267951,
+          "recall": 0.9869848156182213,
+          "f1": 0.8817829457364341,
+          "flag_rate": 0.6124419020378977,
+          "auroc": 0.9783361509376844,
+          "auprc": 0.9765470797359134
+        }
+      },
+      "test_ci95": {
+        "auroc": [
+          0.9783361509376844,
+          0.9741638584638447,
+          0.9828678154475294
+        ],
+        "recall": [
+          0.9370932754880694,
+          0.9233494542723215,
+          0.9494894011199301
+        ],
+        "precision": [
+          0.9101123595505618,
+          0.8958284935668335,
+          0.9245494549842243
+        ],
+        "f1": [
+          0.9234057712860705,
+          0.9131852082953316,
+          0.9337637319900738
+        ]
+      },
+      "external": {
+        "reddit_depression": {
+          "n": 7650,
+          "positives": 3761,
+          "threshold": 0.3872327132437396,
+          "precision": 0.8285792649478881,
+          "recall": 0.8032438181334751,
+          "f1": 0.8157148643175375,
+          "flag_rate": 0.47660130718954247,
+          "auroc": 0.8993159279279452,
+          "auprc": 0.9075024013712971
+        },
+        "dreaddit_stress": {
+          "n": 3526,
+          "positives": 1848,
+          "threshold": 0.3872327132437396,
+          "precision": 0.6143114311431143,
+          "recall": 0.7386363636363636,
+          "f1": 0.6707616707616708,
+          "flag_rate": 0.6301758366420873,
+          "auroc": 0.6674986713723304,
+          "auprc": 0.6831601277992737
+        },
+        "twitter_depression": {
+          "n": 19488,
+          "positives": 9918,
+          "threshold": 0.3872327132437396,
+          "precision": 0.7163814180929096,
+          "recall": 0.17725347852389595,
+          "f1": 0.28419010669253153,
+          "flag_rate": 0.12592364532019704,
+          "auroc": 0.5890406189689624,
+          "auprc": 0.6159842713058205
+        },
+        "kb_suicide_intent_patterns": {
+          "n": 97,
+          "positives": 97,
+          "threshold": 0.3872327132437396,
+          "precision": 1.0,
+          "recall": 0.845360824742268,
+          "f1": 0.9162011173184358,
+          "flag_rate": 0.845360824742268
+        },
+        "kb_distress_intent_patterns": {
+          "n": 2257,
+          "flag_rate_at_tau": 0.6708019494904741,
+          "threshold": 0.3872327132437396
+        }
+      }
+    },
+    "transformer": {
+      "model": "distilbert/distilroberta-base",
+      "epochs": 2,
+      "max_len": 128,
+      "batch_size": 32,
+      "lr": 3e-05,
+      "device": "mps",
+      "train_seconds": 1156.0542516708374,
+      "reused_checkpoint": true,
+      "threshold": 0.5792251229286194,
+      "threshold_rule": "largest threshold with validation recall >= 0.95",
+      "threshold_high_precision": 0.5792251229286194,
+      "threshold_high_precision_rule": "max(tau, smallest threshold with validation precision >= 0.95)",
+      "val": {
+        "n": 2797,
+        "positives": 1384,
+        "threshold": 0.5792251229286194,
+        "precision": 0.9719142645971914,
+        "recall": 0.9501445086705202,
+        "f1": 0.9609061015710632,
+        "flag_rate": 0.4837325706113693,
+        "auroc": 0.993558983673486,
+        "auprc": 0.9941300213681725
+      },
+      "test_at_high_precision": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.5792251229286194,
+        "precision": 0.9691856199559794,
+        "recall": 0.9551699204627621,
+        "f1": 0.9621267297887837,
+        "flag_rate": 0.4873078298176618,
+        "auroc": 0.9923477240813638,
+        "auprc": 0.9917408415134129
+      },
+      "test_at_0.5": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.5,
+        "precision": 0.9685212298682284,
+        "recall": 0.9566160520607375,
+        "f1": 0.962531829756275,
+        "flag_rate": 0.48838040757954954,
+        "auroc": 0.9923477240813638,
+        "auprc": 0.9917408415134129
+      },
+      "test_at_tau": {
+        "n": 2797,
+        "positives": 1383,
+        "threshold": 0.5792251229286194,
+        "precision": 0.9691856199559794,
+        "recall": 0.9551699204627621,
+        "f1": 0.9621267297887837,
+        "flag_rate": 0.4873078298176618,
+        "auroc": 0.9923477240813638,
+        "auprc": 0.9917408415134129
+      },
+      "test_at_recall_targets": {
+        "0.90": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.971912145614624,
+          "precision": 0.9919743178170144,
+          "recall": 0.8937093275488069,
+          "f1": 0.9402814758463294,
+          "flag_rate": 0.44547729710404005,
+          "auroc": 0.9923477240813638,
+          "auprc": 0.9917408415134129
+        },
+        "0.95": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.5792251229286194,
+          "precision": 0.9691856199559794,
+          "recall": 0.9551699204627621,
+          "f1": 0.9621267297887837,
+          "flag_rate": 0.4873078298176618,
+          "auroc": 0.9923477240813638,
+          "auprc": 0.9917408415134129
+        },
+        "0.99": {
+          "n": 2797,
+          "positives": 1383,
+          "threshold": 0.011634403839707375,
+          "precision": 0.8605527638190955,
+          "recall": 0.9906001446131598,
+          "f1": 0.9210084033613445,
+          "flag_rate": 0.5691812656417591,
+          "auroc": 0.9923477240813638,
+          "auprc": 0.9917408415134129
+        }
+      },
+      "test_ci95": {
+        "auroc": [
+          0.9923477240813638,
+          0.9895912945622367,
+          0.9945834085987489
+        ],
+        "recall": [
+          0.9551699204627621,
+          0.944206008583691,
+          0.9655689725747032
+        ],
+        "precision": [
+          0.9691856199559794,
+          0.9598179734906922,
+          0.978039270523739
+        ],
+        "f1": [
+          0.9621267297887837,
+          0.9549883930677658,
+          0.9689453030959604
+        ]
+      },
+      "external": {
+        "reddit_depression": {
+          "n": 7650,
+          "positives": 3761,
+          "threshold": 0.5792251229286194,
+          "precision": 0.9069599711503786,
+          "recall": 0.6687051316139324,
+          "f1": 0.7698194061830426,
+          "flag_rate": 0.362483660130719,
+          "auroc": 0.9096134838279132,
+          "auprc": 0.901143391541118
+        },
+        "dreaddit_stress": {
+          "n": 3526,
+          "positives": 1848,
+          "threshold": 0.5792251229286194,
+          "precision": 0.6033357505438723,
+          "recall": 0.45021645021645024,
+          "f1": 0.5156492097923768,
+          "flag_rate": 0.3910947249007374,
+          "auroc": 0.6002225451346428,
+          "auprc": 0.5956697375656963
+        },
+        "twitter_depression": {
+          "n": 19488,
+          "positives": 9918,
+          "threshold": 0.5792251229286194,
+          "precision": 0.7094288304623754,
+          "recall": 0.15779391006251262,
+          "f1": 0.2581656219069614,
+          "flag_rate": 0.11319786535303776,
+          "auroc": 0.5973793465876825,
+          "auprc": 0.6118941817877768
+        },
+        "kb_suicide_intent_patterns": {
+          "n": 97,
+          "positives": 97,
+          "threshold": 0.5792251229286194,
+          "precision": 1.0,
+          "recall": 0.24742268041237114,
+          "f1": 0.39669421487603307,
+          "flag_rate": 0.24742268041237114
+        },
+        "kb_distress_intent_patterns": {
+          "n": 2257,
+          "flag_rate_at_tau": 0.021710234824988923,
+          "threshold": 0.5792251229286194
+        }
+      }
+    }
+  }
+}

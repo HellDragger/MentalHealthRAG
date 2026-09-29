@@ -1,0 +1,21 @@
+# Slim CPU server (what the Docker image / HF Space installs). No torch: embeddings and reranking run on
+# ONNX via fastembed, generation via llama.cpp (GGUF) or an OpenAI-compatible API.
+# Versions are the ones the project was tested with (2026-09-24).
+numpy==2.4.6
+pandas==3.0.6
+PyYAML==6.0.3
+pydantic==2.13.5
+pydantic-settings==2.15.0
+pypdfium2==5.13.0
+bm25s==0.3.11
+PyStemmer==3.1.0
+tokenizers==0.23.2
+huggingface_hub==1.33.0
+httpx==0.28.1
+scikit-learn==1.9.1
+joblib==1.6.0
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+slowapi==0.1.10
+fastembed==0.8.1
+llama-cpp-python==0.3.35

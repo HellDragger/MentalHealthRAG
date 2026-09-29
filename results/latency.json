@@ -1,0 +1,1223 @@
+{
+  "v1_hf_fp32_cpu": {
+    "load_s": 5.968560333945788,
+    "startup_s_v1_debug_reloader": 11.937120667891577,
+    "startup_note": "v1 ran app.run(debug=True): the reloader imports rag.py in two processes, so the model is loaded twice; startup_s_v1_debug_reloader = 2 x measured load_s.",
+    "peak_rss_gb": 6.0210418701171875,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 79350.2892079996,
+        "e2e_ms": 79350.2892079996,
+        "output_tokens": 267,
+        "tokens_per_s": 3.398090080560529,
+        "retrieval_ms": 776.7394579714164
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 131032.24049997516,
+        "e2e_ms": 131032.24049997516,
+        "output_tokens": 351,
+        "tokens_per_s": 2.710362322384553,
+        "retrieval_ms": 1529.2596250073984
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 360999.2423329968,
+        "e2e_ms": 360999.2423329968,
+        "output_tokens": 382,
+        "tokens_per_s": 1.0633919374013114,
+        "retrieval_ms": 1771.3917499640957
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 30855.66524998285,
+        "e2e_ms": 30855.66524998285,
+        "output_tokens": 231,
+        "tokens_per_s": 7.867011943355705,
+        "retrieval_ms": 1492.547250003554
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 32347.34199999366,
+        "e2e_ms": 32347.34199999366,
+        "output_tokens": 228,
+        "tokens_per_s": 7.259077264724662,
+        "retrieval_ms": 938.3912910707295
+      }
+    ],
+    "streaming": false,
+    "dtype": "float32",
+    "device": "cpu",
+    "hf_id": "Qwen/Qwen2.5-1.5B-Instruct",
+    "summary": {
+      "n": 5,
+      "ttft_ms": {
+        "mean": 126916.95585818961,
+        "p50": 79350.2892079996,
+        "p95": 315005.8419663925
+      },
+      "e2e_ms": {
+        "mean": 126916.95585818961,
+        "p50": 79350.2892079996,
+        "p95": 315005.8419663925
+      },
+      "tokens_per_s": {
+        "mean": 4.459586709685352,
+        "p50": 3.398090080560529,
+        "p95": 7.745425007629496
+      },
+      "output_tokens": {
+        "mean": 291.8,
+        "p50": 267.0,
+        "p95": 375.8
+      },
+      "retrieval_ms": {
+        "mean": 1301.6658748034388,
+        "p50": 1492.547250003554,
+        "p95": 1722.9653249727562
+      }
+    },
+    "config": "v1_hf_fp32_cpu",
+    "model": "qwen2.5-1.5b-instruct",
+    "env_overrides": {},
+    "queries_n": 5,
+    "ran_at": "2026-09-24T17:17:34",
+    "environment": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "python": "3.11.15",
+      "machine": "arm64",
+      "cpu": "Apple M4",
+      "ram_gb": 16.0,
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "llama_cpp": "0.3.35"
+    }
+  },
+  "v2_llamacpp_cpu": {
+    "startup_s_including_warmup": 15.643059958005324,
+    "peak_rss_gb": 2.7664642333984375,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 6405.507332994603,
+        "e2e_ms": 9976.100708008744,
+        "output_tokens": 178,
+        "tokens_per_s": 18.112481972606187,
+        "retrieval_ms": 143.36162502877414,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 178
+        }
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 5907.6196670066565,
+        "e2e_ms": 11747.587208985351,
+        "output_tokens": 283,
+        "tokens_per_s": 24.385850678970176,
+        "retrieval_ms": 141.73504197970033,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 283
+        }
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 4921.683792024851,
+        "e2e_ms": 13113.162708003074,
+        "output_tokens": 400,
+        "tokens_per_s": 30.85329740121284,
+        "retrieval_ms": 147.60366699192673,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 400
+        }
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 5641.198500059545,
+        "e2e_ms": 11391.096917097457,
+        "output_tokens": 287,
+        "tokens_per_s": 25.524571163399752,
+        "retrieval_ms": 146.31595800165087,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 287
+        }
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 4858.281875029206,
+        "e2e_ms": 7269.046374945901,
+        "output_tokens": 121,
+        "tokens_per_s": 16.991294993039173,
+        "retrieval_ms": 146.84237504843622,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 121
+        }
+      },
+      {
+        "query": "How can I support a friend with bipolar disorder?",
+        "ttft_ms": 5649.870624998584,
+        "e2e_ms": 9394.240457913838,
+        "output_tokens": 185,
+        "tokens_per_s": 19.990886407844297,
+        "retrieval_ms": 136.90279191359878,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 185
+        }
+      },
+      {
+        "query": "What treatments are available for OCD?",
+        "ttft_ms": 6049.9504579929635,
+        "e2e_ms": 14030.28679091949,
+        "output_tokens": 385,
+        "tokens_per_s": 27.72570639465227,
+        "retrieval_ms": 143.50550004746765,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 385
+        }
+      },
+      {
+        "query": "What is dissociation?",
+        "ttft_ms": 4989.241083967499,
+        "e2e_ms": 7002.153209061362,
+        "output_tokens": 98,
+        "tokens_per_s": 14.322374396811332,
+        "retrieval_ms": 158.70079200249165,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 98
+        }
+      },
+      {
+        "query": "How can I cope with loneliness?",
+        "ttft_ms": 5952.90416595526,
+        "e2e_ms": 10427.791540976614,
+        "output_tokens": 200,
+        "tokens_per_s": 19.438626401000867,
+        "retrieval_ms": 138.32704105880111,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 200
+        }
+      },
+      {
+        "query": "What should I know before starting a new medication?",
+        "ttft_ms": 5534.056915901601,
+        "e2e_ms": 14155.606707907282,
+        "output_tokens": 400,
+        "tokens_per_s": 28.563086960479247,
+        "retrieval_ms": 150.76204191427678,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 400
+        }
+      },
+      {
+        "query": "What are the symptoms of PTSD?",
+        "ttft_ms": 5347.104334039614,
+        "e2e_ms": 13937.937584007159,
+        "output_tokens": 369,
+        "tokens_per_s": 26.748153736348794,
+        "retrieval_ms": 141.93516701925546,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 369
+        }
+      },
+      {
+        "query": "How do I find a therapist?",
+        "ttft_ms": 6957.958166021854,
+        "e2e_ms": 16231.991416076198,
+        "output_tokens": 400,
+        "tokens_per_s": 24.878093002897504,
+        "retrieval_ms": 152.83370902761817,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 400
+        }
+      }
+    ],
+    "streaming": true,
+    "retrieval_mode": "hybrid_rerank",
+    "index": "bge-small-c256",
+    "max_new_tokens": 400,
+    "mps_driver_allocated_gb": 1.0475616455078125,
+    "summary": {
+      "n": 12,
+      "ttft_ms": {
+        "mean": 5684.614742999353,
+        "p50": 5645.534562529065,
+        "p95": 6654.110207856866
+      },
+      "e2e_ms": {
+        "mean": 11556.416801991872,
+        "p50": 11569.342063041404,
+        "p95": 15089.979826583292
+      },
+      "tokens_per_s": {
+        "mean": 23.12786862577187,
+        "p50": 24.63197184093384,
+        "p95": 29.593681658809363
+      },
+      "output_tokens": {
+        "mean": 275.5,
+        "p50": 285.0,
+        "p95": 400.0
+      },
+      "retrieval_ms": {
+        "mean": 145.7354758361665,
+        "p50": 144.91072902455926,
+        "p95": 155.47389636631124
+      }
+    },
+    "config": "v2_llamacpp_cpu",
+    "model": "qwen2.5-1.5b-gguf",
+    "env_overrides": {
+      "MHRAG_LLAMACPP_GPU_LAYERS": "0"
+    },
+    "queries_n": 12,
+    "ran_at": "2026-09-24T17:28:23",
+    "environment": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "python": "3.11.15",
+      "machine": "arm64",
+      "cpu": "Apple M4",
+      "ram_gb": 16.0,
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "llama_cpp": "0.3.35"
+    }
+  },
+  "v2_llamacpp_metal": {
+    "startup_s_including_warmup": 7.294541832990944,
+    "peak_rss_gb": 1.940673828125,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 1789.818082936108,
+        "e2e_ms": 5237.326874979772,
+        "output_tokens": 182,
+        "tokens_per_s": 35.71220408349595,
+        "retrieval_ms": 138.0313750123605,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 182
+        }
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 1461.9759999914095,
+        "e2e_ms": 6479.407291044481,
+        "output_tokens": 265,
+        "tokens_per_s": 41.93461440010313,
+        "retrieval_ms": 158.8920409558341,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 265
+        }
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 1274.7161670122296,
+        "e2e_ms": 9039.460666943341,
+        "output_tokens": 400,
+        "tokens_per_s": 44.976107849407626,
+        "retrieval_ms": 144.4032919825986,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 400
+        }
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 1398.1299159349874,
+        "e2e_ms": 8704.740624991246,
+        "output_tokens": 383,
+        "tokens_per_s": 44.689695623619464,
+        "retrieval_ms": 133.55933397542685,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 383
+        }
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 1220.160249969922,
+        "e2e_ms": 3455.1932499744,
+        "output_tokens": 121,
+        "tokens_per_s": 36.46041077446292,
+        "retrieval_ms": 135.83687494974583,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 121
+        }
+      },
+      {
+        "query": "How can I support a friend with bipolar disorder?",
+        "ttft_ms": 1494.5335420779884,
+        "e2e_ms": 9014.503541984595,
+        "output_tokens": 400,
+        "tokens_per_s": 45.10594611267286,
+        "retrieval_ms": 141.63612492848188,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 400
+        }
+      },
+      {
+        "query": "What treatments are available for OCD?",
+        "ttft_ms": 1548.1681670062244,
+        "e2e_ms": 9141.50341693312,
+        "output_tokens": 385,
+        "tokens_per_s": 42.82593752378337,
+        "retrieval_ms": 150.77362500596792,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 385
+        }
+      },
+      {
+        "query": "What is dissociation?",
+        "ttft_ms": 1338.6223340639845,
+        "e2e_ms": 3877.6580000994727,
+        "output_tokens": 135,
+        "tokens_per_s": 36.34385037916817,
+        "retrieval_ms": 161.86895791906863,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 135
+        }
+      },
+      {
+        "query": "How can I cope with loneliness?",
+        "ttft_ms": 1526.4071669662371,
+        "e2e_ms": 6581.322917016223,
+        "output_tokens": 262,
+        "tokens_per_s": 40.90451434340683,
+        "retrieval_ms": 174.68379205092788,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 262
+        }
+      },
+      {
+        "query": "What should I know before starting a new medication?",
+        "ttft_ms": 1436.0279999673367,
+        "e2e_ms": 8809.369958937168,
+        "output_tokens": 400,
+        "tokens_per_s": 46.258588944628556,
+        "retrieval_ms": 160.834375070408,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 400
+        }
+      },
+      {
+        "query": "What are the symptoms of PTSD?",
+        "ttft_ms": 1174.3096669670194,
+        "e2e_ms": 5203.44320894219,
+        "output_tokens": 230,
+        "tokens_per_s": 45.410340301148096,
+        "retrieval_ms": 137.66845792997628,
+        "gate": "none",
+        "usage": {
+          "completion_tokens": 230
+        }
+      },
+      {
+        "query": "How do I find a therapist?",
+        "ttft_ms": 1385.0806669797748,
+        "e2e_ms": 8491.137709002942,
+        "output_tokens": 400,
+        "tokens_per_s": 47.845375227797966,
+        "retrieval_ms": 130.15891704708338,
+        "gate": "elevated",
+        "usage": {
+          "completion_tokens": 400
+        }
+      }
+    ],
+    "streaming": true,
+    "retrieval_mode": "hybrid_rerank",
+    "index": "bge-small-c256",
+    "max_new_tokens": 400,
+    "mps_driver_allocated_gb": 2.484710693359375,
+    "summary": {
+      "n": 12,
+      "ttft_ms": {
+        "mean": 1420.662496656102,
+        "p50": 1417.078957951162,
+        "p95": 1656.9106291746718
+      },
+      "e2e_ms": {
+        "mean": 7002.922288404079,
+        "p50": 7536.2303130095825,
+        "p95": 9085.379904438742
+      },
+      "tokens_per_s": {
+        "mean": 42.372298796974576,
+        "p50": 43.75781657370142,
+        "p95": 46.97264277205479
+      },
+      "output_tokens": {
+        "mean": 296.9166666666667,
+        "p50": 324.0,
+        "p95": 400.0
+      },
+      "retrieval_ms": {
+        "mean": 147.36226390232332,
+        "p50": 143.01970845554024,
+        "p95": 167.6356332784053
+      }
+    },
+    "config": "v2_llamacpp_metal",
+    "model": "qwen2.5-1.5b-gguf",
+    "env_overrides": {
+      "MHRAG_LLAMACPP_GPU_LAYERS": "-1"
+    },
+    "queries_n": 12,
+    "ran_at": "2026-09-24T17:30:59",
+    "environment": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "python": "3.11.15",
+      "machine": "arm64",
+      "cpu": "Apple M4",
+      "ram_gb": 16.0,
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "llama_cpp": "0.3.35"
+    }
+  },
+  "v2_hf_mps": {
+    "startup_s_including_warmup": 11.693961333949119,
+    "peak_rss_gb": 3.6741180419921875,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 1622.8646249510348,
+        "e2e_ms": 13536.421624943614,
+        "output_tokens": 221,
+        "tokens_per_s": 16.507548198649225,
+        "retrieval_ms": 137.28183298371732,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1340,
+          "completion_tokens": 221
+        }
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 1688.787457998842,
+        "e2e_ms": 23038.139833020978,
+        "output_tokens": 394,
+        "tokens_per_s": 17.19619865373887,
+        "retrieval_ms": 123.6969999736175,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1416,
+          "completion_tokens": 394
+        }
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 1386.1736659891903,
+        "e2e_ms": 13795.7538330229,
+        "output_tokens": 236,
+        "tokens_per_s": 17.271988361424892,
+        "retrieval_ms": 130.7788749691099,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1265,
+          "completion_tokens": 236
+        }
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 1435.7035000575706,
+        "e2e_ms": 20670.19141698256,
+        "output_tokens": 364,
+        "tokens_per_s": 17.710292265804554,
+        "retrieval_ms": 116.3726249942556,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1359,
+          "completion_tokens": 364
+        }
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 1490.6465829117224,
+        "e2e_ms": 11984.428291907534,
+        "output_tokens": 199,
+        "tokens_per_s": 16.775164386430305,
+        "retrieval_ms": 120.78083294909447,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1235,
+          "completion_tokens": 199
+        }
+      },
+      {
+        "query": "How can I support a friend with bipolar disorder?",
+        "ttft_ms": 1522.602542070672,
+        "e2e_ms": 19449.37683304306,
+        "output_tokens": 337,
+        "tokens_per_s": 17.468363094341132,
+        "retrieval_ms": 152.86700008437037,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1406,
+          "completion_tokens": 337
+        }
+      },
+      {
+        "query": "What treatments are available for OCD?",
+        "ttft_ms": 1542.3613750608638,
+        "e2e_ms": 17286.227583070286,
+        "output_tokens": 303,
+        "tokens_per_s": 17.659843953968608,
+        "retrieval_ms": 127.31916608754545,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1465,
+          "completion_tokens": 303
+        }
+      },
+      {
+        "query": "What is dissociation?",
+        "ttft_ms": 1534.430375089869,
+        "e2e_ms": 5818.840583087876,
+        "output_tokens": 84,
+        "tokens_per_s": 14.739933718259916,
+        "retrieval_ms": 119.29462500847876,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1261,
+          "completion_tokens": 84
+        }
+      },
+      {
+        "query": "How can I cope with loneliness?",
+        "ttft_ms": 1467.8595419973135,
+        "e2e_ms": 16134.778833016753,
+        "output_tokens": 283,
+        "tokens_per_s": 17.67046645231896,
+        "retrieval_ms": 118.2743749814108,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1406,
+          "completion_tokens": 283
+        }
+      },
+      {
+        "query": "What should I know before starting a new medication?",
+        "ttft_ms": 1520.785583066754,
+        "e2e_ms": 22277.868833043613,
+        "output_tokens": 401,
+        "tokens_per_s": 18.104956123421598,
+        "retrieval_ms": 128.22037504520267,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1390,
+          "completion_tokens": 401
+        }
+      },
+      {
+        "query": "What are the symptoms of PTSD?",
+        "ttft_ms": 1320.871082949452,
+        "e2e_ms": 15409.962415928021,
+        "output_tokens": 273,
+        "tokens_per_s": 17.853669559315623,
+        "retrieval_ms": 118.2832500198856,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1217,
+          "completion_tokens": 273
+        }
+      },
+      {
+        "query": "How do I find a therapist?",
+        "ttft_ms": 1462.2374579776078,
+        "e2e_ms": 14882.475791033357,
+        "output_tokens": 260,
+        "tokens_per_s": 17.611061484762036,
+        "retrieval_ms": 118.26454207766801,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1398,
+          "completion_tokens": 260
+        }
+      }
+    ],
+    "streaming": true,
+    "retrieval_mode": "hybrid_rerank",
+    "index": "bge-small-c256",
+    "max_new_tokens": 400,
+    "mps_driver_allocated_gb": 4.197052001953125,
+    "summary": {
+      "n": 12,
+      "ttft_ms": {
+        "mean": 1499.6103158434078,
+        "p50": 1505.7160829892382,
+        "p95": 1652.529899822548
+      },
+      "e2e_ms": {
+        "mean": 16190.37215600838,
+        "p50": 15772.370624472387,
+        "p95": 22619.990783033427
+      },
+      "tokens_per_s": {
+        "mean": 17.214123854369642,
+        "p50": 17.539712289551584,
+        "p95": 17.96674851316331
+      },
+      "output_tokens": {
+        "mean": 279.5833333333333,
+        "p50": 278.0,
+        "p95": 397.15
+      },
+      "retrieval_ms": {
+        "mean": 125.95287493119638,
+        "p50": 122.23891646135598,
+        "p95": 144.2951581790112
+      }
+    },
+    "config": "v2_hf_mps",
+    "model": "qwen2.5-1.5b-instruct",
+    "env_overrides": {
+      "MHRAG_DEVICE": "mps"
+    },
+    "queries_n": 12,
+    "ran_at": "2026-09-24T17:32:32",
+    "environment": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "python": "3.11.15",
+      "machine": "arm64",
+      "cpu": "Apple M4",
+      "ram_gb": 16.0,
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "llama_cpp": "0.3.35"
+    }
+  },
+  "v2_hf_cuda": {
+    "startup_s_including_warmup": 47.83439927799998,
+    "peak_rss_gb": 7.157108306884766,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 607.510542,
+        "e2e_ms": 9715.79300000002,
+        "output_tokens": 221,
+        "tokens_per_s": 23.212416149227213,
+        "retrieval_ms": 183.6420370000269,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1340,
+          "completion_tokens": 221
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 601.0583599999677,
+        "e2e_ms": 16447.700784999994,
+        "output_tokens": 394,
+        "tokens_per_s": 24.153798614794376,
+        "retrieval_ms": 133.10752400002457,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1416,
+          "completion_tokens": 394
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 531.7517739999857,
+        "e2e_ms": 11318.762402999993,
+        "output_tokens": 275,
+        "tokens_per_s": 24.580041609541343,
+        "retrieval_ms": 128.46490300000823,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1265,
+          "completion_tokens": 275
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 586.0970850000058,
+        "e2e_ms": 14957.937296000011,
+        "output_tokens": 364,
+        "tokens_per_s": 24.522291416983016,
+        "retrieval_ms": 112.25312999999915,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1359,
+          "completion_tokens": 364
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 547.1862630000146,
+        "e2e_ms": 8618.783984999993,
+        "output_tokens": 199,
+        "tokens_per_s": 23.426651687083226,
+        "retrieval_ms": 121.84915000000274,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1235,
+          "completion_tokens": 199
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I support a friend with bipolar disorder?",
+        "ttft_ms": 680.2488229999994,
+        "e2e_ms": 14277.310032000003,
+        "output_tokens": 337,
+        "tokens_per_s": 23.856098054248783,
+        "retrieval_ms": 142.57465700001148,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1406,
+          "completion_tokens": 337
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What treatments are available for OCD?",
+        "ttft_ms": 733.8951269999825,
+        "e2e_ms": 12949.488803000007,
+        "output_tokens": 303,
+        "tokens_per_s": 23.64023973645757,
+        "retrieval_ms": 130.10089599998764,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1465,
+          "completion_tokens": 303
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What is dissociation?",
+        "ttft_ms": 596.8640209999876,
+        "e2e_ms": 3812.244435000025,
+        "output_tokens": 84,
+        "tokens_per_s": 22.816528034103424,
+        "retrieval_ms": 128.75042699999995,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1261,
+          "completion_tokens": 84
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I cope with loneliness?",
+        "ttft_ms": 655.9843889999684,
+        "e2e_ms": 11536.37760099997,
+        "output_tokens": 283,
+        "tokens_per_s": 24.818445518072075,
+        "retrieval_ms": 131.5290320000031,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1406,
+          "completion_tokens": 283
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What should I know before starting a new medication?",
+        "ttft_ms": 629.8147670000276,
+        "e2e_ms": 16486.664881000026,
+        "output_tokens": 401,
+        "tokens_per_s": 24.515781790653765,
+        "retrieval_ms": 127.3661680000373,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1390,
+          "completion_tokens": 401
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What are the symptoms of PTSD?",
+        "ttft_ms": 541.8388749999963,
+        "e2e_ms": 11580.800538999994,
+        "output_tokens": 274,
+        "tokens_per_s": 23.91227621520025,
+        "retrieval_ms": 120.12657799999715,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1217,
+          "completion_tokens": 274
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How do I find a therapist?",
+        "ttft_ms": 635.6953410000301,
+        "e2e_ms": 11111.193273000026,
+        "output_tokens": 260,
+        "tokens_per_s": 23.682748217049376,
+        "retrieval_ms": 130.57021200000918,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1398,
+          "completion_tokens": 260
+        },
+        "rate_limit_wait_s": 0.0
+      }
+    ],
+    "streaming": true,
+    "retrieval_mode": "hybrid_rerank",
+    "index": "bge-small-c256",
+    "max_new_tokens": 400,
+    "cuda_peak_allocated_gb": 3.4189748764038086,
+    "summary": {
+      "n": 12,
+      "ttft_ms": {
+        "mean": 612.3287805833305,
+        "p50": 604.2844509999838,
+        "p95": 704.3896597999918
+      },
+      "e2e_ms": {
+        "mean": 11901.088086083339,
+        "p50": 11558.589069999982,
+        "p95": 16465.234628200007
+      },
+      "tokens_per_s": {
+        "mean": 23.928109753617868,
+        "p50": 23.884187134724517,
+        "p95": 24.687323368380174
+      },
+      "output_tokens": {
+        "mean": 282.9166666666667,
+        "p50": 279.0,
+        "p95": 397.15
+      },
+      "retrieval_ms": {
+        "mean": 132.5278928333423,
+        "p50": 129.4256614999938,
+        "p95": 161.0549780000184
+      },
+      "throttled_queries": 0
+    },
+    "config": "v2_hf_cuda",
+    "model": "qwen2.5-1.5b-instruct",
+    "env_overrides": {},
+    "queries_n": 12,
+    "ran_at": "2026-09-27T16:18:29",
+    "environment": {
+      "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "machine": "x86_64",
+      "cpu": "x86_64",
+      "ram_gb": 31.34774398803711,
+      "torch": "2.10.0+cu128",
+      "transformers": "5.0.0",
+      "gpu": "Tesla T4"
+    }
+  },
+  "v2_hf_cuda_4bit": {
+    "startup_s_including_warmup": 122.04824411000004,
+    "peak_rss_gb": 16.38326644897461,
+    "rows": [
+      {
+        "query": "What is a panic attack and what does it feel like?",
+        "ttft_ms": 2320.518987000014,
+        "e2e_ms": 17229.831384000023,
+        "output_tokens": 198,
+        "tokens_per_s": 11.603538946653,
+        "retrieval_ms": 151.01688499999,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1488,
+          "completion_tokens": 198
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I manage my anger in the moment?",
+        "ttft_ms": 2505.4896729999427,
+        "e2e_ms": 21868.45447299993,
+        "output_tokens": 245,
+        "tokens_per_s": 11.272155837700966,
+        "retrieval_ms": 131.20862699997815,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1484,
+          "completion_tokens": 245
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What are the side effects of antidepressants?",
+        "ttft_ms": 2548.250891000066,
+        "e2e_ms": 29803.65065399997,
+        "output_tokens": 354,
+        "tokens_per_s": 11.932174372391211,
+        "retrieval_ms": 133.88380699996105,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1444,
+          "completion_tokens": 354
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I improve my sleep?",
+        "ttft_ms": 2277.238239999974,
+        "e2e_ms": 22685.58386299992,
+        "output_tokens": 273,
+        "tokens_per_s": 12.097989880174778,
+        "retrieval_ms": 118.06437200004893,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1456,
+          "completion_tokens": 273
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What is the difference between sadness and depression?",
+        "ttft_ms": 2223.735407999925,
+        "e2e_ms": 23418.483250999998,
+        "output_tokens": 285,
+        "tokens_per_s": 12.239841894267098,
+        "retrieval_ms": 131.72397499999988,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1360,
+          "completion_tokens": 285
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I support a friend with bipolar disorder?",
+        "ttft_ms": 2747.585091000019,
+        "e2e_ms": 24276.41315200003,
+        "output_tokens": 277,
+        "tokens_per_s": 11.474536011066858,
+        "retrieval_ms": 128.1141500001013,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1538,
+          "completion_tokens": 277
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What treatments are available for OCD?",
+        "ttft_ms": 2863.5440689999996,
+        "e2e_ms": 27960.767287000068,
+        "output_tokens": 315,
+        "tokens_per_s": 11.319114599039372,
+        "retrieval_ms": 129.52318999998624,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1623,
+          "completion_tokens": 315
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What is dissociation?",
+        "ttft_ms": 2378.654038000036,
+        "e2e_ms": 21603.70031700006,
+        "output_tokens": 256,
+        "tokens_per_s": 11.919496798455194,
+        "retrieval_ms": 124.41764400000466,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1407,
+          "completion_tokens": 256
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How can I cope with loneliness?",
+        "ttft_ms": 2496.442529000092,
+        "e2e_ms": 24651.972931000048,
+        "output_tokens": 287,
+        "tokens_per_s": 11.701926438100337,
+        "retrieval_ms": 123.95721100006085,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1525,
+          "completion_tokens": 287
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What should I know before starting a new medication?",
+        "ttft_ms": 2472.5600570000097,
+        "e2e_ms": 31458.41722399996,
+        "output_tokens": 371,
+        "tokens_per_s": 11.84209122030917,
+        "retrieval_ms": 127.4093609999909,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1514,
+          "completion_tokens": 371
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "What are the symptoms of PTSD?",
+        "ttft_ms": 2268.145431999983,
+        "e2e_ms": 23137.333026999953,
+        "output_tokens": 283,
+        "tokens_per_s": 12.297933668749746,
+        "retrieval_ms": 123.37281499992514,
+        "gate": "none",
+        "usage": {
+          "prompt_tokens": 1347,
+          "completion_tokens": 283
+        },
+        "rate_limit_wait_s": 0.0
+      },
+      {
+        "query": "How do I find a therapist?",
+        "ttft_ms": 2456.536648999986,
+        "e2e_ms": 19089.77560099993,
+        "output_tokens": 218,
+        "tokens_per_s": 11.495466778126357,
+        "retrieval_ms": 123.59775599998102,
+        "gate": "elevated",
+        "usage": {
+          "prompt_tokens": 1509,
+          "completion_tokens": 218
+        },
+        "rate_limit_wait_s": 0.0
+      }
+    ],
+    "streaming": true,
+    "retrieval_mode": "hybrid_rerank",
+    "index": "bge-small-c256",
+    "max_new_tokens": 400,
+    "cuda_peak_allocated_gb": 5.156149387359619,
+    "summary": {
+      "n": 12,
+      "ttft_ms": {
+        "mean": 2463.2250886666707,
+        "p50": 2464.548352999998,
+        "p95": 2799.7666311000103
+      },
+      "e2e_ms": {
+        "mean": 23932.031930333324,
+        "p50": 23277.908138999977,
+        "p95": 30548.295610499965
+      },
+      "tokens_per_s": {
+        "mean": 11.766355537086174,
+        "p50": 11.772008829204754,
+        "p95": 12.26598319278429
+      },
+      "output_tokens": {
+        "mean": 280.1666666666667,
+        "p50": 280.0,
+        "p95": 361.65
+      },
+      "retrieval_ms": {
+        "mean": 128.85748275000233,
+        "p50": 127.76175550004609,
+        "p95": 141.59369209997408
+      },
+      "throttled_queries": 0
+    },
+    "config": "v2_hf_cuda_4bit",
+    "model": "mistral-7b-instruct-v0.3",
+    "env_overrides": {
+      "MHRAG_LOAD_IN_4BIT": "1"
+    },
+    "queries_n": 12,
+    "ran_at": "2026-09-27T16:21:45",
+    "environment": {
+      "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "machine": "x86_64",
+      "cpu": "x86_64",
+      "ram_gb": 31.34774398803711,
+      "torch": "2.10.0+cu128",
+      "transformers": "5.0.0",
+      "gpu": "Tesla T4"
+    }
+  },
+  "v2_api": {
+    "config": "v2_api",
+    "status": "TODO(run): needs GROQ_API_KEY",
+    "command": "python -m scripts.bench_latency --config v2_api"
+  },
+  "retrieval": {
+    "modes": {
+      "bm25": {
+        "cold_ms": {
+          "p50": 0.09520852472633123,
+          "p95": 0.1800229656510054
+        },
+        "cached_ms": {
+          "p50": 0.0026455381885170937,
+          "p95": 0.00449841609224677
+        }
+      },
+      "dense": {
+        "cold_ms": {
+          "p50": 7.174521044362336,
+          "p95": 8.463484793901443
+        },
+        "cached_ms": {
+          "p50": 0.004124536644667387,
+          "p95": 0.006700173253193496
+        }
+      },
+      "hybrid": {
+        "cold_ms": {
+          "p50": 7.060353993438184,
+          "p95": 7.783100177766755
+        },
+        "cached_ms": {
+          "p50": 0.0035205157473683357,
+          "p95": 0.004018470644950867
+        }
+      },
+      "hybrid_rerank": {
+        "cold_ms": {
+          "p50": 118.68345853872597,
+          "p95": 130.6845975050237
+        },
+        "cached_ms": {
+          "p50": 0.009624462109059095,
+          "p95": 0.02085379092022776
+        }
+      }
+    },
+    "index": "bge-small-c256",
+    "n_chunks": 2421,
+    "config": "retrieval",
+    "model": null,
+    "env_overrides": {},
+    "queries_n": 12,
+    "ran_at": "2026-09-24T17:35:59",
+    "environment": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "python": "3.11.15",
+      "machine": "arm64",
+      "cpu": "Apple M4",
+      "ram_gb": 16.0,
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "llama_cpp": "0.3.35"
+    }
+  }
+}

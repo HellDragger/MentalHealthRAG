@@ -1,0 +1,1 @@
+{"model": "bart-large-cnn", "status": "ok", "load_seconds": 14.136383144999854, "peak_rss_gb": 3.9929351806640625, "cuda_peak_allocated_gb": 0.45446062088012695}
