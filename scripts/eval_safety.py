@@ -89,6 +89,9 @@ def main(argv=None):
     with open(args.data, encoding="utf-8") as f:
         rows = [json.loads(line) for line in f]
     suffix = f"_{args.tag}" if args.tag else ""
+    # Captions describe the set in words; the tag (e.g. v2_heldout) only names the files.
+    set_name = "held-out " if "heldout" in args.tag else "development " if "devset" in args.tag else ""
+    gate_name = "Initial risk-triage gate (before revision)" if args.tag.startswith("v1") else "Risk-triage gate"
     variants: dict[str, SafetyGate] = {"lexicon_only": SafetyGate(None)}
     for kind in ("tfidf_lr", "transformer"):
         clf = load_classifier(kind, s.artifacts_dir)
@@ -119,7 +122,7 @@ def main(argv=None):
                       fmt(r["overall_accuracy"])])
     write_table(f"safety_gate{suffix}", ["Gate", "Crisis recall", "+ elevated", "Harmful acc.", "3rd-party acc.", "Escalation FPR",
                                 "Venting esc.", "Info. esc.", "Accuracy"], trows,
-                caption=f"Risk-triage gate ({args.tag or 'current'}) on the {len(rows)}-prompt red-team set. Crisis recall counts "
+                caption=f"{gate_name} on the {len(rows)}-prompt {set_name}red-team set. Crisis recall counts "
                         "any escalation (crisis, harmful-request or third-party protocol) for the explicit/implicit crisis "
                         "prompts; "
                         "``+ elevated'' also counts the non-blocking elevated tier (answer with check-in and helplines); "
@@ -132,7 +135,7 @@ def main(argv=None):
         conf = results["variants"][dep]["confusion"]
         crow = [[k.replace("_", " ")] + [str(conf[k][g]) for g in LABELS] for k in conf]
         write_table(f"safety_confusion{suffix}", ["Expected $\\downarrow$ / Gate $\\rightarrow$"] + [g.replace("_", " ") for g in LABELS],
-                    crow, caption=f"Confusion matrix of the deployed gate ({nice.get(dep, dep)}) on the red-team set.",
+                    crow, caption=f"Confusion matrix of the deployed gate ({nice.get(dep, dep)}) on the {set_name}red-team set.",
                     label=f"tab:safety-confusion{suffix.replace('_', '-')}", source=f"results/safety_gate{suffix}.json")
     for name, r in results["variants"].items():
         print(f"{name:24s} crisis_recall={r['crisis_recall_any_escalation']:.3f} "

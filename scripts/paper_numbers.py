@@ -149,9 +149,12 @@ def main():
     env = next((v.get("environment") for v in lat.values() if isinstance(v, dict) and v.get("environment")), None)
     m.set("Hardware", f"{env.get('cpu', env.get('machine'))} ({env.get('ram_gb', 0):.0f} GB RAM)" if env else None, c_lat)
     rows = []
-    names = {"v1_hf_fp32_cpu": "v1 settings (fp32, CPU, no streaming)", "v2_llamacpp_cpu": "v2 llama.cpp Q4\\_K\\_M, CPU",
-             "v2_llamacpp_metal": "v2 llama.cpp Q4\\_K\\_M, Metal", "v2_hf_mps": "v2 transformers fp16, MPS",
-             "v2_hf_cuda": "v2 transformers 16-bit, CUDA", "v2_hf_cuda_4bit": "v2 transformers NF4, CUDA"}
+    # Row labels as the paper presents them: one system, with an unoptimised baseline (the result keys keep their
+    # historical v1_/v2_ prefixes).
+    names = {"v1_hf_fp32_cpu": "Unoptimised baseline (fp32, CPU, no streaming)",
+             "v2_llamacpp_cpu": "llama.cpp Q4\\_K\\_M, CPU", "v2_llamacpp_metal": "llama.cpp Q4\\_K\\_M, Metal",
+             "v2_hf_mps": "transformers fp16, MPS", "v2_hf_cuda": "transformers 16-bit, CUDA",
+             "v2_hf_cuda_4bit": "transformers NF4, CUDA"}
     # (no API row: the app serves local models only, and bench_latency's v2_api config is kept for manual runs)
     for k, label in names.items():
         v = lat.get(k)
@@ -168,15 +171,17 @@ def main():
                      f"{s['tokens_per_s']['p50']:.1f}", f"{mem:.1f}" if mem else "--"])
     if lat:
         write_table("latency", ["Configuration", "Model", "TTFT p50 (s)", "E2E p50 (s)", "E2E p95 (s)", "tok/s", "Peak RSS (GB)"],
-                    rows, caption="End-to-end latency for 12 fixed questions (v1: 5). TTFT = time to first streamed token "
-                                  "(v1 does not stream, so TTFT equals end-to-end time). v2 rows include the safety gate, hybrid "
-                                  "retrieval and reranking. Peak RSS excludes GPU/unified memory held by Metal.",
+                    rows, caption="End-to-end latency for 12 fixed questions (unoptimised baseline: 5). TTFT = time to first "
+                                  "streamed token (the baseline does not stream, so its TTFT equals the end-to-end time). All "
+                                  "other rows include the safety gate, hybrid retrieval and reranking. Peak RSS excludes "
+                                  "GPU/unified memory held by Metal.",
                     label="tab:latency", align="llrrrrr", source="results/latency.json")
     v1, cpu, metal = get(lat, "v1_hf_fp32_cpu", "summary"), get(lat, "v2_llamacpp_cpu", "summary"), get(lat, "v2_llamacpp_metal", "summary")
     if v1 and cpu:
-        txt = (f"With the same weights (Qwen2.5-1.5B-Instruct), the v1 generation settings needed a median "
-               f"{v1['e2e_ms']['p50'] / 1000:.0f}~s per answer before any text appeared ({v1['tokens_per_s']['p50']:.1f} tokens/s), "
-               f"whereas the v2 CPU configuration showed the first token after a median "
+        txt = (f"With the same weights (Qwen2.5-1.5B-Instruct), an unoptimised baseline (full precision on CPU, no "
+               f"streaming) needed a median {v1['e2e_ms']['p50'] / 1000:.0f}~s per answer before any text appeared "
+               f"({v1['tokens_per_s']['p50']:.1f} tokens/s), whereas quantised CPU inference with streaming showed the "
+               f"first token after a median "
                f"{cpu['ttft_ms']['p50'] / 1000:.1f}~s and generated {cpu['tokens_per_s']['p50']:.1f} tokens/s")
         if metal:
             txt += (f"; with Metal offload the median time to first token was {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
@@ -203,7 +208,7 @@ def main():
             s = (f"On {label}, the best configuration was {sysname(best)} (nDCG@10 {f3(best['summary']['nDCG@10']['mean'])}, "
                  f"95\\% CI {f3(best['summary']['nDCG@10']['lo'])}--{f3(best['summary']['nDCG@10']['hi'])})")
             if base:
-                s += f", against {f3(base['summary']['nDCG@10']['mean'])} for the v1 configuration (dense MiniLM)"
+                s += f", against {f3(base['summary']['nDCG@10']['mean'])} for the dense MiniLM baseline"
             if bm:
                 s += f" and {f3(bm['summary']['nDCG@10']['mean'])} for BM25"
             parts.append(s + ".")
@@ -284,7 +289,7 @@ def main():
     else:
         m.text("ChunkSummary", None, c_rc)
 
-    # ---------------------------------------------------------------- v1 vs v2 overview
+    # ---------------------------------------------------------------- baseline vs system overview
     st = get_settings()
     ge = load("gate_escalation.json")
     gl_first = None
@@ -331,28 +336,28 @@ def main():
                        cell(g("full", "faq_gen", "judge_helpfulness"), 2)])
     hv = get(load("safety_gate_v2_heldout.json"), "variants", dep)
     if hv:
-        ov.append(["Safety", "Crisis recall, held-out red-team set", "none", cell(hv["crisis_recall_any_escalation"])])
-        ov.append(["", "Escalation false-positive rate, held-out", "none", cell(hv["escalation"]["false_positive_rate"])])
+        ov.append(["Safety", "Crisis recall, held-out red-team set", "no gate", cell(hv["crisis_recall_any_escalation"])])
+        ov.append(["", "Escalation false-positive rate, held-out", "no gate", cell(hv["escalation"]["false_positive_rate"])])
     if ge and "faq_gen" in ge["datasets"]:
         fq = ge["datasets"]["faq_gen"]
-        ov.append(["", "FAQ-Gen questions sent to the crisis protocol", "none",
+        ov.append(["", "FAQ-Gen questions sent to the crisis protocol", "no gate",
                    f"{fq['labels'].get('crisis', 0)}/{fq['n']}"])
     for i in range(len(ov) - 1, 0, -1):  # name each aspect once
         if ov[i][0] and ov[i][0] == next((r[0] for r in reversed(ov[:i]) if r[0]), None):
             ov[i][0] = ""
     if ov:
         model = gl_first.replace("_", "\\_") if gl_first else "--"
-        write_table("v1_vs_v2", ["Aspect", "Measure", "v1 configuration", "v2 (deployed)"], ov,
-                    caption="The v2 system against the prototype's (v1) configuration, both run on the same knowledge base "
-                            "and questions. Retrieval: dense MiniLM (v1) versus the deployed "
+        write_table("baseline_vs_system", ["Aspect", "Measure", "Naive baseline", "This system"], ov,
+                    caption="The system against a naive baseline, both run on the same knowledge base and questions. "
+                            "Retrieval: dense MiniLM (baseline) versus the deployed "
                             f"{SYS.get('hybrid+ce' if st.retrieval.reranker == 'minilm-ce' else 'hybrid+bge-rr')} "
                             f"({EMB.get(st.index.embedder, st.index.embedder)} embeddings), "
                             f"{st.chunking.chunk_tokens}-token chunks; $^{{*}}$ significant (paired bootstrap, "
                             "Holm-corrected $p<0.05$). Latency: Qwen2.5-1.5B-Instruct on the laptop CPU (\\Hardware{}); "
-                            "the v1 settings do not stream, so the first text appears with the full answer. Generation: "
-                            f"{model}, v1-style naive RAG versus the full pipeline. The prototype had no safety handling, "
-                            "and its vector store was empty at run time (CHANGELOG B1).",
-                    label="tab:v1-vs-v2", align="llrr", source="results/*.json")
+                            "the baseline runs full-precision weights without streaming, so the first text appears with "
+                            "the full answer, and the system runs quantised weights with streaming. Generation: "
+                            f"{model}, naive RAG versus the full pipeline. The baseline has no safety gate.",
+                    label="tab:baseline-vs-system", align="llrr", source="results/*.json")
 
     # ---------------------------------------------------------------- multi-model benchmark (GPU)
     gg = load("generation_gpu.json")
@@ -454,10 +459,11 @@ def main():
             if p is not None and p < 0.05 and fam["delta"][rid] > 0:
                 wins.append(f"{DS[ds]}: +{fam['delta'][rid]:.3f} nDCG@10 with {sysname(best)}")
         if wins:
-            parts.append("Relative to the prototype's retrieval configuration, the best systems improved nDCG@10 "
+            parts.append("Relative to a dense-retrieval baseline, the best configurations improved nDCG@10 "
                          "significantly (" + "; ".join(wins) + ").")
     if v1 and cpu:
-        parts.append(f"Quantised CPU inference with streaming reduced the time to first token from "
+        parts.append(f"Compared with full-precision inference without streaming, quantised CPU inference with "
+                     f"streaming reduced the time to first token from "
                      f"{v1['e2e_ms']['p50'] / 1000:.0f}~s to {cpu['ttft_ms']['p50'] / 1000:.1f}~s.")
     if gl and gl_first:
         fn, fu = get(row.get(("naive", "faq_gen")), "faithfulness", "mean"), get(row.get(("full", "faq_gen")), "faithfulness", "mean")
