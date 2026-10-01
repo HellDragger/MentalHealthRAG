@@ -526,7 +526,7 @@ def run_generation_experiment(cfg: dict, settings: Settings, limit: int | None =
 
 
 # ------------------------------------------------------------------------------ tables
-PROFILE_NAMES = {"no_rag": "No RAG", "naive": "Naive RAG (v1)", "full": "Full pipeline"}
+PROFILE_NAMES = {"no_rag": "No RAG", "naive": "Naive RAG", "full": "Full pipeline"}
 
 
 def _cell(row, m, nd=3):
@@ -636,7 +636,7 @@ def _write_summary(name: str, res: dict, groups: dict, catalog: dict) -> None:
     write_table(f"generation_{name}_summary",
                 ["Model", "Size (B)", "Faithful. naive", "Faithful. full", "Relev. full", "Cites full",
                  "OOS declined naive", "OOS declined full"], table,
-                caption="All models, naive RAG (the v1 configuration) versus the full pipeline. Faithfulness and "
+                caption="All models, naive RAG versus the full pipeline. Faithfulness and "
                         "relevance on FAQ-Gen; Cites = share of FAQ-Gen answers with an inline citation; OOS declined "
                         "= share of the 50 out-of-scope questions declined. $^{*}$ faithfulness differs significantly "
                         "between the two settings (paired bootstrap, Holm-corrected $p<0.05$). Per-setting results, "

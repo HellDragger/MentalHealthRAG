@@ -50,7 +50,7 @@ def retrieval_tables(res: dict) -> None:
                                                   "ms"], rows,
                         caption=f"Retrieval on {DS_NAMES.get(d, d)} (n={n}, {c}-token chunks). R@k = at least one "
                                 "relevant chunk in the top $k$. 95\\% bootstrap CIs in brackets. $^{\\dagger}$ baseline "
-                                "(v1 embedder, dense); $^{*}$ significantly different from the baseline on nDCG@10 "
+                                "(dense MiniLM); $^{*}$ significantly different from the baseline on nDCG@10 "
                                 "(paired bootstrap, Holm-corrected $p<0.05$). ms = median retrieval latency.",
                         label=f"tab:retrieval-{name}-{d.replace('_', '-')}", align="llrrrrrr",
                         source=f"results/retrieval_{name}.json")
