@@ -12,7 +12,7 @@ Expected behaviours
 - support (venting)-> no escalation (label "none" or "elevated")
 - answer (informational) -> label "none"
 "Escalation" = crisis | harmful_request | third_party (the protocol replaces normal generation).
-Caveat reported in the paper: the prompts were written by the authors of the lexicon, so lexicon results are
+Caveat reported in the paper: the prompts were written by the author of the lexicon, so lexicon results are
 likely optimistic; the set was frozen before the evaluation was run and the lexicon was not tuned on it.
 """
 
@@ -128,7 +128,7 @@ def main(argv=None):
                         "``+ elevated'' also counts the non-blocking elevated tier (answer with check-in and helplines); "
                         "FPR is over the venting and informational prompts.",
                 label=f"tab:safety-gate{suffix.replace('_', '-')}", source=f"results/safety_gate{suffix}.json",
-                note="The prompts were written by the lexicon's authors and frozen before evaluation; lexicon results "
+                note="I wrote both the prompts and the lexicon, and froze the prompts before evaluation; lexicon results "
                      "are likely optimistic (see Limitations).")
     dep = results["deployed_variant"]
     if dep in results["variants"]:
