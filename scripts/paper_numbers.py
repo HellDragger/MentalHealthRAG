@@ -285,8 +285,8 @@ def main():
                "source passage answers the question, and whether the question reads like one a person would ask. "
                f"With every rater weighted equally and an item counted only when at least {need} of {nr} said yes "
                f"(ties fail), {ans['pass_strict_majority']} were answerable, {nat['pass_strict_majority']} natural and "
-               f"{sv['verified']['n']} both (Appendix~\\ref{{app:synthqa}}). Raw agreement between rater pairs was "
-               f"({ans['mean_pairwise_agreement']:.2f} and {nat['mean_pairwise_agreement']:.2f}), but Fleiss' $\\kappa$ "
+               f"{sv['verified']['n']} both (\\ref{{app:synthqa}}). Raw agreement between rater pairs was "
+               f"{ans['mean_pairwise_agreement']:.2f} and {nat['mean_pairwise_agreement']:.2f} for the two questions, but Fleiss' $\\kappa$ "
                f"was low ({f3(ans['fleiss_kappa'][0])} and {f3(nat['fleiss_kappa'][0])}) because almost every answer "
                "was yes, a known limitation of $\\kappa$ \\citep{feinstein1990high}; Gwet's AC1, which is robust to "
                f"this \\citep{{gwet2008computing}}, was {f3(ans['gwet_ac1'][0])} and {f3(nat['gwet_ac1'][0])}.", c_sv)
