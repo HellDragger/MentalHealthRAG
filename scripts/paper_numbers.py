@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 
-from eval.tables import write_table
+from eval.tables import fmt, fmt_ci, write_table
 from mhrag.config import PROJECT_ROOT, get_settings
 
 R = get_settings().results_dir
@@ -45,6 +45,7 @@ SYS = {"bm25": "BM25", "dense": "dense retrieval", "hybrid": "hybrid (RRF) retri
        "hybrid+ce": "hybrid retrieval with MiniLM cross-encoder reranking",
        "hybrid+bge-rr": "hybrid retrieval with BGE reranking"}
 EMB = {"minilm": "MiniLM-L6", "bge-small": "BGE-small", "bge-base": "BGE-base", "e5-base": "E5-base", "gte-base": "GTE-base"}
+WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
 DS = {"heading_qa": "HeadingQA", "synth_qa": "SynthQA", "paraphrase_qa": "ParaphraseQA"}
 
 
@@ -271,6 +272,77 @@ def main():
                f"All of these escalations were triggered by {who}.", c_ge)
     else:
         m.text("GateOnRealQuestions", None, c_ge)
+
+    # ---------------------------------------------------------------- SynthQA human verification
+    sv = load("synth_qa_verification.json")
+    c_sv = "python -m scripts.synth_qa_agreement"
+    if sv:
+        cr, nr, k = sv["criteria"], len(sv["raters"]), sv["items"]
+        need = nr // 2 + 1
+        ans, nat = cr["answerable"], cr["natural"]
+        m.text("SynthVerifySummary",
+               f"{WORDS.get(nr, str(nr))} raters, one of them an author, independently judged a random {k}-question subset: whether the "
+               "source passage answers the question, and whether the question reads like one a person would ask. "
+               f"With every rater weighted equally and an item counted only when at least {need} of {nr} said yes "
+               f"(ties fail), {ans['pass_strict_majority']} were answerable, {nat['pass_strict_majority']} natural and "
+               f"{sv['verified']['n']} both (Appendix~\\ref{{app:synthqa}}). Raw agreement between rater pairs was "
+               f"({ans['mean_pairwise_agreement']:.2f} and {nat['mean_pairwise_agreement']:.2f}), but Fleiss' $\\kappa$ "
+               f"was low ({f3(ans['fleiss_kappa'][0])} and {f3(nat['fleiss_kappa'][0])}) because almost every answer "
+               "was yes, a known limitation of $\\kappa$ \\citep{feinstein1990high}; Gwet's AC1, which is robust to "
+               f"this \\citep{{gwet2008computing}}, was {f3(ans['gwet_ac1'][0])} and {f3(nat['gwet_ac1'][0])}.", c_sv)
+        rows = []
+        for key, name in (("answerable", "Answerable from passage"), ("natural", "Natural question")):
+            a, wa = cr[key], sv["without_author"].get(key)
+            p = a["pass_rate"]
+            rows.append([name, f"{a['pass_strict_majority']}/{a['n_items']} {{\\scriptsize [{p[1]:.2f}, {p[2]:.2f}]}}",
+                         str(a["ties"]), f"{a['mean_pairwise_agreement']:.2f}", fmt_ci(*a["fleiss_kappa"]),
+                         fmt_ci(*a["gwet_ac1"]), fmt_ci(*wa["gwet_ac1"]) if wa else "--"])
+        v = sv["verified"]
+        rows.append(["Both (verified)", f"{v['n']}/{k} {{\\scriptsize [{v['rate'][1]:.2f}, {v['rate'][2]:.2f}]}}",
+                     "--", "--", "--", "--", "--"])
+        write_table("synth_qa_verification",
+                    ["Criterion", "Pass (95\\% CI)", "Ties", "Raw agr.", "Fleiss $\\kappa$", "Gwet AC1",
+                     "AC1 w/o author"], rows,
+                    f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} raters "
+                    "said yes (Wilson CI). Raw agreement is the mean over rater pairs; $\\kappa$ and AC1 have 95\\% "
+                    "bootstrap CIs over items. The last column drops the rater who is also an author.",
+                    "tab:synthqa-verification", source="results/synth_qa_verification.json")
+        rr = sv.get("retrieval_robustness")
+        if rr:
+            ra, vb = rr["rank_agreement"]["nDCG@10"], rr["vs_baseline_verified"]["nDCG@10"]
+            sig = [r for r, p in vb["p_bootstrap_holm"].items() if p < 0.05]
+            hyb = [r for r in vb["delta"] if r.startswith("hybrid")]
+            m.text("SynthVerifiedRobustness",
+                   f"On the {rr['n']['verified']} verified SynthQA questions, the ordering of the "
+                   f"{len(rr['runs'])} configurations by nDCG@10 was largely unchanged (Kendall $\\tau$ = "
+                   f"{ra['kendall_tau']:.2f}), and {sum(r in sig for r in hyb)} of {len(hyb)} hybrid configurations "
+                   "beat the dense MiniLM baseline on this subset after Holm correction (Table~\\ref{tab:synthqa-robustness}).",
+                   c_sv)
+            label = lambda r: sysname({"system": r.split("|")[0], "embedder": None if r.split("|")[1] == "-"  # noqa: E731
+                                       else r.split("|")[1]})
+            show = [rr["baseline"], "bm25|-|c256", "hybrid|minilm|c256", "hybrid+ce|minilm|c256",
+                    "hybrid+bge-rr|minilm|c256", ra["best_all"], ra["best_verified"]]
+            rows = []
+            for r in dict.fromkeys(s for s in show if s in rr["runs"]):
+                nd = rr["runs"][r]["nDCG@10"]
+                base = r == rr["baseline"]
+                rows.append([label(r) + ("$^{\\dagger}$" if base else ""), fmt(nd["all"]["mean"]),
+                             fmt_ci(nd["verified"]["mean"], nd["verified"]["lo"], nd["verified"]["hi"]),
+                             "--" if base else f"{vb['delta'][r]:+.3f}",
+                             "--" if base else f"{vb['p_bootstrap_holm'][r]:.3f}"])
+            write_table("synth_qa_robustness",
+                        ["System", f"All ({rr['n']['all']})", f"Verified ({rr['n']['verified']})",
+                         "$\\Delta$ vs $^{\\dagger}$", "$p_{\\mathrm{Holm}}$"], rows,
+                        "SynthQA nDCG@10 on all questions and on the human-verified subset (95\\% bootstrap CI). "
+                        "$\\Delta$ and $p$: paired bootstrap against the dense MiniLM baseline ($^{\\dagger}$) on the "
+                        f"verified subset, Holm-corrected over all {len(vb['delta'])} configurations. Rows: the baseline, "
+                        "BM25, the MiniLM pipelines and the best configuration on each question set.",
+                        "tab:synthqa-robustness", align="lrrrr", source="results/synth_qa_verification.json")
+        else:
+            m.text("SynthVerifiedRobustness", None, c_sv)
+    else:
+        m.text("SynthVerifySummary", None, c_sv)
+        m.text("SynthVerifiedRobustness", None, c_sv)
 
     # ---------------------------------------------------------------- chunk-size ablation
     rc = load("retrieval_chunks.json")

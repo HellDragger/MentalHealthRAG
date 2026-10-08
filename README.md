@@ -146,6 +146,12 @@ between the five embedders fall within the confidence intervals. On HeadingQA an
 beats the v1 configuration significantly (paired bootstrap, Holm-corrected). On ParaphraseQA (only 58 queries), the
 reranked systems do, but unreranked hybrid retrieval and BM25 do not.
 
+**SynthQA human check** (`results/synth_qa_verification.json`, `python -m scripts.synth_qa_agreement`): four raters
+(one an author) judged 100 random SynthQA questions. Counting an item when at least 3 of 4 said yes (ties fail, equal
+weights), 88 were answerable from their passage, 94 read naturally and 85 passed both. Fleiss' κ is low (0.127 / 0.139)
+because almost every answer was yes; Gwet's AC1 is 0.685 / 0.851. On the 85 verified questions the system ranking holds
+(Kendall τ 0.85 on nDCG@10) and 14 of 15 hybrid configurations still beat the dense MiniLM baseline (Holm-corrected).
+
 **Chunk size** (`results/retrieval_chunks.json`, Kaggle): 128-token chunks are clearly worse (best nDCG@10 on SynthQA
 0.604 vs 0.805 at 256 tokens). 256 and 512 tokens are close: HeadingQA 0.946 at both; ParaphraseQA 0.858 vs 0.900
 (n=58, overlapping CIs); SynthQA 0.805 vs 0.774. MiniLM is capped at its 256-token input, so its 512 column repeats 256.
