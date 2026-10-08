@@ -281,7 +281,7 @@ def main():
         need = nr // 2 + 1
         ans, nat = cr["answerable"], cr["natural"]
         m.text("SynthVerifySummary",
-               f"{WORDS.get(nr, str(nr))} raters, one of them an author, independently judged a random {k}-question subset: whether the "
+               f"{WORDS.get(nr, str(nr))} raters, including me, independently judged a random {k}-question subset: whether the "
                "source passage answers the question, and whether the question reads like one a person would ask. "
                f"With every rater weighted equally and an item counted only when at least {need} of {nr} said yes "
                f"(ties fail), {ans['pass_strict_majority']} were answerable, {nat['pass_strict_majority']} natural and "
@@ -305,7 +305,7 @@ def main():
                      "AC1 w/o author"], rows,
                     f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} raters "
                     "said yes (Wilson CI). Raw agreement is the mean over rater pairs; $\\kappa$ and AC1 have 95\\% "
-                    "bootstrap CIs over items. The last column drops the rater who is also an author.",
+                    "bootstrap CIs over items. The last column drops my own ratings, as I also built the system.",
                     "tab:synthqa-verification", source="results/synth_qa_verification.json")
         rr = sv.get("retrieval_robustness")
         if rr:
