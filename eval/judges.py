@@ -40,7 +40,8 @@ def strip_citations(text: str) -> str:
 
 
 def abstained(answer: str) -> bool:
-    return bool(ABSTAIN_PATTERNS.search(answer))
+    # typographic apostrophes (Gemma, many chat models: "don’t") must match the ASCII patterns too
+    return bool(ABSTAIN_PATTERNS.search(answer.replace("\u2019", "'").replace("\u2018", "'")))
 
 
 def citation_stats(answer: str, n_sources: int) -> dict:

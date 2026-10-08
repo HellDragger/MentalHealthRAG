@@ -32,6 +32,7 @@ def retrieval_tables(res: dict) -> None:
     name = res["name"]
     if len(chunks) == 1:
         c = chunks[0]
+        retrieval_summary(res, datasets, c)
         for d in datasets:
             rows = []
             best = max(r["summary"]["nDCG@10"]["mean"] for r in runs if r["dataset"] == d)
@@ -70,6 +71,56 @@ def retrieval_tables(res: dict) -> None:
                         caption=f"Chunk-size ablation on {DS_NAMES.get(d, d)} (n={n}): nDCG@10 for 128/256/512-token "
                                 "chunks (MiniLM is capped at its 256-token input limit).",
                         label=f"tab:retrieval-{name}-{d.replace('_', '-')}", source=f"results/retrieval_{name}.json")
+
+
+SYS_SHORT = {"bm25": "BM25", "dense": "Dense", "hybrid": "Hybrid", "hybrid+ce": "H+CE", "hybrid+bge-rr": "H+BGE"}
+EMB_SHORT = {"minilm": "MiniLM", "bge-small": "BGE-s", "bge-base": "BGE-b", "e5-base": "E5", "gte-base": "GTE"}
+
+
+def short_name(system: str, embedder: str | None) -> str:
+    return SYS_SHORT.get(system, system) + (f" ({EMB_SHORT.get(embedder, embedder)})" if embedder else "")
+
+
+def retrieval_summary(res: dict, datasets: list[str], c: int) -> None:
+    """Main-text table: the baseline, BM25, the MiniLM pipelines, the deployed configuration and the best one per
+    query set, with nDCG@10 on every set (the full tables go to the appendix)."""
+    from mhrag.config import get_settings
+
+    st = get_settings()
+    dep_sys = "hybrid+ce" if st.retrieval.reranker == "minilm-ce" else "hybrid+bge-rr"
+    runs = [r for r in res["runs"] if r["chunk_tokens"] == c]
+    keys = [("dense", "minilm"), ("bm25", None), ("hybrid", "minilm"), ("hybrid+ce", "minilm"),
+            ("hybrid+bge-rr", "minilm"), (dep_sys, st.index.embedder)]
+    for d in datasets:
+        best = max((r for r in runs if r["dataset"] == d), key=lambda r: r["summary"]["nDCG@10"]["mean"])
+        keys.append((best["system"], best["embedder"]))
+    keys = list(dict.fromkeys(keys))
+    by = {(r["system"], r["embedder"], r["dataset"]): r for r in runs}
+    best_val = {d: max(r["summary"]["nDCG@10"]["mean"] for r in runs if r["dataset"] == d) for d in datasets}
+    rows = []
+    for sysk, emb in keys:
+        label = short_name(sysk, emb) + (", deployed" if (sysk, emb) == (dep_sys, st.index.embedder) else "")
+        row = [esc(label)]
+        for d in datasets:
+            r = by.get((sysk, emb, d))
+            if not r:
+                row.append("--")
+                continue
+            nd = r["summary"]["nDCG@10"]
+            cell = fmt_ci(nd["mean"], nd["lo"], nd["hi"])
+            if abs(nd["mean"] - best_val[d]) < 1e-12:
+                cell = "\\textbf{" + f"{nd['mean']:.3f}" + "}" + cell[len(f"{nd['mean']:.3f}"):]
+            row.append(cell + _sig_mark(res, r))
+        rows.append(row)
+    n = {d: next(r["n_queries"] for r in runs if r["dataset"] == d) for d in datasets}
+    write_table(f"retrieval_{res['name']}_summary", ["Configuration"] + [f"{DS_NAMES.get(d, d)} ({n[d]})" for d in datasets],
+                rows, caption=f"Retrieval summary: nDCG@10 with 95\\% bootstrap CIs ({c}-token chunks). H = hybrid "
+                "(BM25 + dense, reciprocal-rank fusion); CE = MiniLM cross-encoder reranker; BGE = BGE reranker; the "
+                "embedder is in brackets (BGE-s/-b = BGE-small/base). Rows: the baseline, BM25, the MiniLM pipelines, "
+                "the deployed configuration and the best configuration on each set (bold). $^{\\dagger}$ baseline; "
+                "$^{*}$ significantly different from it (paired bootstrap, Holm-corrected $p<0.05$). All "
+                "configurations: \\ref{app:retrieval}.",
+                label="tab:retrieval-summary", align="l" + "r" * len(datasets), source=f"results/retrieval_{res['name']}.json")
 
 
 def generation_tables(res: dict) -> None:
