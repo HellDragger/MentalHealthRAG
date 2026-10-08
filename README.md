@@ -167,12 +167,20 @@ find therapy"). It fails safe, but replaces useful answers.
 
 **Multi-model benchmark** (`results/generation_gpu.json`, Kaggle T4s): 17 open models are reported. For all 13
 instruction-tuned models, the full pipeline gave higher NLI faithfulness than v1-style naive RAG (all significant after
-Holm correction), and the median share of out-of-scope questions declined rose from 0.18 to 0.60. Three runs produced
+Holm correction), and the median share of out-of-scope questions declined rose from 0.18 to 0.64 (after the
+apostrophe fix in the CHANGELOG, D43). Three runs produced
 degenerate output and are excluded with the reason (Gemma-3-4B and -12B overflow in float16 on a T4; MentaLLaMA-7B
 repeats one token); Gemma-3-4B was rerun with 32-bit compute and is reported. The LLM judge (gpt-oss-120b on Groq's free plan)
 scored a fixed sample of 20 questions per dataset in the local experiment. CUDA latency is measured on a single T4.
 
-**Still to run:** the human evaluation with clinician raters.
+**Re-analyses of saved answers** (`python -m scripts.generation_reanalysis`, `scripts.gate_tradeoff`): without the 11
+template answers, the full pipeline's relevance is 0.825 against 0.851 (naive RAG) and 0.844 (no retrieval), and judge
+helpfulness 3.00 against 3.61 without retrieval, so the lower helpfulness is not a gate artefact. Raising the gate's
+classifier crisis threshold removes FAQ over-escalation only at a large cost in recall (capping the classifier at the
+elevated tier: 0 of 98 FAQ questions to the crisis protocol, but 17 instead of 30 of 36 held-out crisis prompts).
+
+**Still to run:** the component ablation and the LLM-judge abstention check (Kaggle notebook steps
+`generation_ablation` and `abstention_check`), and the human evaluation with clinician raters.
 The Kaggle notebook is resumable across 12-hour sessions: attach its previous output as an input and run it
 again. Finished steps are skipped, and interrupted ones continue from their last saved answer.
 To bring results back, download `mhrag_results.zip` from the notebook's Output tab and run

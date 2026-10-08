@@ -47,6 +47,14 @@ SYS = {"bm25": "BM25", "dense": "dense retrieval", "hybrid": "hybrid (RRF) retri
 EMB = {"minilm": "MiniLM-L6", "bge-small": "BGE-small", "bge-base": "BGE-base", "e5-base": "E5-base", "gte-base": "GTE-base"}
 WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six"}
 DS = {"heading_qa": "HeadingQA", "synth_qa": "SynthQA", "paraphrase_qa": "ParaphraseQA"}
+# Short labels used in running text and tables (defined in the paper's experimental setup)
+SYS_SHORT = {"bm25": "BM25", "dense": "Dense", "hybrid": "Hybrid", "hybrid+ce": "H+CE", "hybrid+bge-rr": "H+BGE"}
+EMB_SHORT = {"minilm": "MiniLM", "bge-small": "BGE-s", "bge-base": "BGE-b", "e5-base": "E5", "gte-base": "GTE"}
+
+
+def short(r) -> str:
+    return SYS_SHORT.get(r["system"], r["system"]) + (f" ({EMB_SHORT.get(r['embedder'], r['embedder'])})"
+                                                      if r["embedder"] else "")
 
 
 def get_catalog_label(key: str) -> str:
@@ -137,6 +145,15 @@ def main():
         m.set(f"{pre}FPR", f3(v["escalation"]["false_positive_rate"]) if v else None, cmd)
         m.set(f"{pre}Acc", f3(v["overall_accuracy"]) if v else None, cmd)
         m.set(f"{pre}AnySafety", f3(v["crisis_recall_any_safety_response"]) if v else None, cmd)
+        if v:  # counts behind the rates (the sets are small)
+            pc = v["per_category"]
+            nc = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
+            m.set(f"{pre}RecallK", round(v["crisis_recall_any_escalation"] * nc), cmd)
+            m.set(f"{pre}CrisisN", nc, cmd)
+            m.set(f"{pre}FP", f"{v['escalation']['fp']}/{v['escalation']['fp'] + v['escalation']['tn']}", cmd)
+        else:
+            for k in ("RecallK", "CrisisN", "FP"):
+                m.set(f"{pre}{k}", None, cmd)
         if tag.startswith("v2"):
             lex = get(g, "variants", "lexicon_only")
             m.set("LexHeldRecallVTwo" if "held" in tag else "LexDevRecallVTwo",
@@ -178,16 +195,29 @@ def main():
                                   "GPU/unified memory held by Metal.",
                     label="tab:latency", align="llrrrrr", source="results/latency.json")
     v1, cpu, metal = get(lat, "v1_hf_fp32_cpu", "summary"), get(lat, "v2_llamacpp_cpu", "summary"), get(lat, "v2_llamacpp_metal", "summary")
+    same = None
     if v1 and cpu:
-        txt = (f"With the same weights (Qwen2.5-1.5B-Instruct), an unoptimised baseline (full precision on CPU, no "
-               f"streaming) needed a median {v1['e2e_ms']['p50'] / 1000:.0f}~s per answer before any text appeared "
-               f"({v1['tokens_per_s']['p50']:.1f} tokens/s), whereas quantised CPU inference with streaming showed the "
-               f"first token after a median "
-               f"{cpu['ttft_ms']['p50'] / 1000:.1f}~s and generated {cpu['tokens_per_s']['p50']:.1f} tokens/s")
+        import statistics
+
+        # the baseline answered 5 of the 12 benchmark questions; compare on exactly those
+        cpu_rows = {r["query"]: r for r in lat["v2_llamacpp_cpu"]["rows"]}
+        qs = [r["query"] for r in lat["v1_hf_fp32_cpu"]["rows"] if r["query"] in cpu_rows]
+        same = {"n": len(qs), "base_e2e": statistics.median(r["e2e_ms"] for r in lat["v1_hf_fp32_cpu"]["rows"]
+                                                              if r["query"] in qs) / 1000,
+                "e2e": statistics.median(cpu_rows[q]["e2e_ms"] for q in qs) / 1000,
+                "ttft": statistics.median(cpu_rows[q]["ttft_ms"] for q in qs) / 1000}
+        txt = (f"The two optimisations act on different quantities. On the {same['n']} questions both configurations "
+               f"answered, quantised weights in llama.cpp cut the median end-to-end time on the laptop CPU from "
+               f"{same['base_e2e']:.1f}~s (full-precision transformers) to {same['e2e']:.1f}~s "
+               f"({v1['tokens_per_s']['p50']:.1f} versus {cpu['tokens_per_s']['p50']:.1f} tokens/s over all questions). "
+               f"Streaming does not shorten the answer, but it shows the first words after a median {same['ttft']:.1f}~s "
+               "instead of only when the answer is complete")
         if metal:
-            txt += (f"; with Metal offload the median time to first token was {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
+            txt += (f"; with Metal offload the first token appeared after {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
                     f"{metal['tokens_per_s']['p50']:.1f} tokens/s")
-        txt += " (Table~\\ref{tab:latency})."
+        txt += (" (Table~\\ref{tab:latency}). These laptop figures are not comparable with the TTFT column of the "
+                "generation tables, which was measured on the Kaggle GPU (llama.cpp offloaded to the GPU for the GGUF "
+                "model).")
         m.text("LatencySummary", txt, c_lat)
     else:
         m.text("LatencySummary", None, c_lat)
@@ -206,14 +236,15 @@ def main():
             best = max(runs, key=lambda r: r["summary"]["nDCG@10"]["mean"])
             base = next((r for r in runs if r["system"] == "dense" and r["embedder"] == "minilm"), None)
             bm = next((r for r in runs if r["system"] == "bm25"), None)
-            s = (f"On {label}, the best configuration was {sysname(best)} (nDCG@10 {f3(best['summary']['nDCG@10']['mean'])}, "
-                 f"95\\% CI {f3(best['summary']['nDCG@10']['lo'])}--{f3(best['summary']['nDCG@10']['hi'])})")
+            b = best["summary"]["nDCG@10"]
+            s = f"{label}: {short(best)}, {f3(b['mean'])} [{f3(b['lo'])}, {f3(b['hi'])}]"
             if base:
-                s += f", against {f3(base['summary']['nDCG@10']['mean'])} for the dense MiniLM baseline"
-            if bm:
-                s += f" and {f3(bm['summary']['nDCG@10']['mean'])} for BM25"
-            parts.append(s + ".")
-        m.text("RetrievalSummary", " ".join(parts), c_rm)
+                s += f" (baseline {f3(base['summary']['nDCG@10']['mean'])}"
+                s += f", BM25 {f3(bm['summary']['nDCG@10']['mean'])})" if bm else ")"
+            parts.append(s)
+        m.text("RetrievalSummary", "Table~\\ref{tab:retrieval-summary} summarises retrieval; the full tables for every "
+               "configuration are in \\ref{app:retrieval}. The best configuration and its nDCG@10 on each set "
+               "were " + "; ".join(parts) + ".", c_rm)
     else:
         m.text("RetrievalSummary", None, c_rm)
 
@@ -225,23 +256,25 @@ def main():
         order = (gl.get("config") or {}).get("models") or []
         models = sorted(dict.fromkeys(r["model"] for r in gl["summary"]),
                         key=lambda k: order.index(k) if k in order else len(order))
-        for model in models:  # in config order, so the deployed model comes first
+        for model in models[:1]:  # the deployed model; the weak baselines are reported in the appendix tables
             row = {(r["profile"], r["dataset"]): r for r in gl["summary"] if r["model"] == model}
             full, naive, norag = row.get(("full", "faq_gen")), row.get(("naive", "faq_gen")), row.get(("no_rag", "faq_gen"))
             if full and naive and full.get("faithfulness") and naive.get("faithfulness"):
-                s = (f"For {model.replace('_', chr(92) + '_')} on FAQ-Gen, NLI faithfulness was "
-                     f"{f3(full['faithfulness']['mean'])} with the full pipeline versus {f3(naive['faithfulness']['mean'])} with naive RAG")
-                if full.get("rougeL") and norag and norag.get("rougeL"):
-                    s += (f"; ROUGE-L was {f3(full['rougeL']['mean'])} (full), {f3(naive['rougeL']['mean'])} (naive) "
-                          f"and {f3(norag['rougeL']['mean'])} (no retrieval)")
-                oos = row.get(("full", "oos_questions"))
-                if oos and oos.get("abstained"):
-                    s += f"; it declined or flagged missing information on {f3(oos['abstained']['mean'])} of out-of-scope questions"
-                parts.append(s + ".")
+                s = (f"With Qwen2.5-1.5B (GGUF), NLI faithfulness on FAQ-Gen was {f3(full['faithfulness']['mean'])} with "
+                     f"the full pipeline and {f3(naive['faithfulness']['mean'])} with naive RAG, while ROUGE-L barely moved "
+                     f"({f3(full['rougeL']['mean'])}, {f3(naive['rougeL']['mean'])} and {f3(norag['rougeL']['mean'])} "
+                     "without retrieval)" if full.get("rougeL") and norag and norag.get("rougeL") else
+                     f"With Qwen2.5-1.5B (GGUF), NLI faithfulness on FAQ-Gen was {f3(full['faithfulness']['mean'])} with "
+                     f"the full pipeline and {f3(naive['faithfulness']['mean'])} with naive RAG")
+                oos, oosn = row.get(("full", "oos_questions")), row.get(("naive", "oos_questions"))
+                if oos and oos.get("abstained") and oosn and oosn.get("abstained"):
+                    s += (f". It declined {oos['abstained']['mean']:.2f} of out-of-scope questions, against "
+                          f"{oosn['abstained']['mean']:.2f} with naive RAG")
+                parts.append(s + ". GPT-2 and BART-large-CNN, kept as weak baselines, are in \\ref{app:generation}.")
         if gl.get("judge_status") == "complete":
-            tail = " Full per-model results are in the tables below."
+            tail = ""
         else:
-            tail = (" Full per-model results are in the tables below; the LLM-judge column remains "
+            tail = (" The LLM-judge column remains "
                     "\\todorun{" + c_gl.replace("_", "\\_") + " (continues until the judge sample is complete)}.")
         m.text("GenerationSummary", " ".join(parts) + tail, c_gl)
     else:
@@ -387,8 +420,9 @@ def main():
             ov.append(["Retrieval", f"nDCG@10, {DS[ds]} (n={d['n_queries']})",
                        cell(b["summary"]["nDCG@10"]["mean"]), cell(d["summary"]["nDCG@10"]["mean"]) + mark])
     if v1 and cpu:
-        ov.append(["Latency", "Time to first text, CPU (s)", f"{v1['e2e_ms']['p50'] / 1000:.1f}",
-                   f"{cpu['ttft_ms']['p50'] / 1000:.1f}"])
+        ov.append(["Latency", f"End-to-end time, CPU, same {same['n']} questions (s)", f"{same['base_e2e']:.1f}",
+                   f"{same['e2e']:.1f}"])
+        ov.append(["", "Time to first text, CPU (s)", f"{same['base_e2e']:.1f}", f"{same['ttft']:.1f}"])
         ov.append(["", "Generation speed, CPU (tokens/s)", f"{v1['tokens_per_s']['p50']:.1f}",
                    f"{cpu['tokens_per_s']['p50']:.1f}"])
     if gl and gl_first:
@@ -463,9 +497,16 @@ def main():
                for p in ("naive", "full")}
         if faith_full and oos["naive"] and oos["full"]:
             best = max(faith_full, key=faith_full.get)
-            gpu_txt = (f"Across the {len(faith_full)} instruction-tuned models of the multi-model benchmark "
+            n = len(faith_full)
+            if sig_up == up == n:
+                won = f"for all {n}, each significantly (paired bootstrap, Holm-corrected)"
+            elif up == n:
+                won = f"for all {n} ({sig_up} significantly)"
+            else:
+                won = f"for {up} ({sig_up} significantly)"
+            gpu_txt = (f"Across the {n} instruction-tuned models of the multi-model benchmark "
                        f"(Table~\\ref{{tab:gen-gpu-summary}}), the full pipeline gave higher NLI faithfulness on "
-                       f"FAQ-Gen than naive RAG for {up} (significantly for {sig_up}), and the median share of "
+                       f"FAQ-Gen than naive RAG {won}, and the median share of "
                        f"out-of-scope questions declined was {statistics.median(oos['full']):.2f} with the full "
                        f"pipeline versus {statistics.median(oos['naive']):.2f} with naive RAG. The highest "
                        f"full-pipeline faithfulness was {faith_full[best]:.3f} ({best.replace('_', chr(92) + '_')}).")
@@ -510,13 +551,150 @@ def main():
             judge_txt += "."
     m.text("JudgeSummary", judge_txt, c_j)
 
+    # ---------------------------------------------------------------- re-analyses of saved answers
+    ra = load("generation_reanalysis.json")
+    c_ra = "python -m scripts.generation_reanalysis"
+    tf = get(ra, "experiments", "local", gl_first, "template_free", "faq_gen") if gl_first else None
+    if tf:
+        mm = tf["metrics"]
+
+        def sv(metric, prof):
+            return get(mm, metric, "settings", prof, "mean")
+
+        def pv(metric, prof):
+            return get(mm, metric, "vs_full", "p_bootstrap_holm", prof)
+        txt = (f"The risk gate answered {tf['templated']} of {tf['n']} FAQ-Gen questions with a safety template. On the "
+               f"{tf['template_free_n']} questions the model answered itself in every setting "
+               f"(Table~\\ref{{tab:gen-template-free}}), relevance was {f3(sv('answer_relevance', 'full'))} with the full "
+               f"pipeline against {f3(sv('answer_relevance', 'naive'))} with naive RAG and "
+               f"{f3(sv('answer_relevance', 'no_rag'))} without retrieval")
+        if sv("judge_helpfulness", "full") is not None:
+            p = pv("judge_helpfulness", "no_rag")
+            txt += (f", and judge helpfulness was {sv('judge_helpfulness', 'full'):.2f} against "
+                    f"{sv('judge_helpfulness', 'no_rag'):.2f} without retrieval"
+                    + (f" (Holm-corrected $p={p:.3f}$)" if p is not None else "")
+                    + ", so the lower helpfulness is not caused by the templates")
+        m.text("TemplateFreeSummary", txt + ".", c_ra)
+        aw = get(ra, "experiments", "local", gl_first, "abstention_wording", "full")
+        gpu_aw = get(ra, "experiments", "gpu") or {}
+        chat = [k for k in gpu_aw if k in ((load("generation_gpu.json") or {}).get("config") or {}).get("models", [])]
+        from eval.generation_eval import model_group as _mg
+        from mhrag.llm.registry import load_catalog as _lc
+
+        _cat = _lc()
+        chat = [k for k in chat if _mg(k, _cat) != "base"]
+        tot = sum(gpu_aw[k]["abstention_wording"]["full"]["abstained"] for k in chat)
+        ph = sum(gpu_aw[k]["abstention_wording"]["full"]["with_prompt_phrase"] for k in chat)
+        if aw and tot:
+            m.text("AbstentionWordingSummary",
+                   f"The full pipeline's system prompt suggests a sentence for missing information, and the phrase list "
+                   f"detects it. Of the {aw['abstained']} out-of-scope answers the deployed model declined, "
+                   f"{aw['with_prompt_phrase']} used that sentence; across the {len(chat)} instruction-tuned benchmark "
+                   f"models, {ph} of {tot} detected refusals did ({100 * ph / tot:.0f}\\%), and models such as Phi and "
+                   "Llama declined about as often in their own words. The phrase list also missed typographic "
+                   "apostrophes in an earlier version of this analysis; all results here use the corrected version.", c_ra)
+        else:
+            m.text("AbstentionWordingSummary", None, c_ra)
+        q = get(ra, "experiments", "gpu", "qwen2.5-1.5b-instruct", "diagnostics")
+        qg = get(ra, "experiments", "local", gl_first, "diagnostics")
+        qa = get(ra, "experiments", "gpu", "qwen2.5-1.5b-instruct", "abstention_wording")
+        qga = get(ra, "experiments", "local", gl_first, "abstention_wording")
+        ge4 = get(ra, "experiments", "gpu", "gemma-3-4b-it-fp32", "abstention_wording")
+        if q and qg and qa and qga:
+            txt = (f"Two results stand out. Qwen2.5-1.5B served through transformers had the highest faithfulness of the "
+                   f"benchmark ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
+                   f"{q['full']['faq_citation_rate']:.2f} of its FAQ-Gen answers and declined {qa['full']['abstained']} of "
+                   f"{qa['full']['generated']} out-of-scope questions with the full pipeline, no more than without "
+                   f"retrieval ({qa['no_rag']['abstained']} of {qa['no_rag']['generated']}); it often answered off-topic "
+                   "questions from its own knowledge, sometimes attaching a citation to an unrelated passage. The same "
+                   f"weights quantised and served by llama.cpp declined {qga['full']['abstained']} of "
+                   f"{qga['full']['generated']} under the same prompt and decoding parameters. I did not isolate whether "
+                   "quantisation or the runtime explains the difference.")
+            if ge4:
+                txt += (f" Gemma-3-4B declined {ge4['full']['abstained']} of {ge4['full']['generated']} out-of-scope "
+                        f"questions with the full pipeline against {ge4['naive']['abstained']} with naive RAG; an apparent "
+                        "drop in an earlier analysis came from the apostrophe error above.")
+            m.text("OutlierSummary", txt, c_ra)
+        else:
+            m.text("OutlierSummary", None, c_ra)
+    else:
+        for k in ("TemplateFreeSummary", "AbstentionWordingSummary", "OutlierSummary"):
+            m.text(k, None, c_ra)
+
+    # ---------------------------------------------------------------- gate threshold trade-off
+    gt = load("gate_tradeoff.json")
+    c_gt = "python -m scripts.gate_tradeoff"
+    if gt:
+        dep_pt = next(p for p in gt["points"] if p["deployed"])
+        cap = next(p for p in gt["points"] if p["cap_at_elevated"])
+        m.text("GateTradeoffSummary",
+               f"Raising the classifier's crisis threshold trades these escalations against crisis recall "
+               f"(Table~\\ref{{tab:gate-tradeoff}}). At the deployed threshold the gate sent "
+               f"{dep_pt['faq_gen']['crisis']} of {dep_pt['faq_gen']['n']} FAQ-Gen questions to the crisis protocol and "
+               f"escalated {dep_pt['heldout']['crisis_k']} of {dep_pt['heldout']['crisis_n']} held-out crisis prompts; "
+               f"capping the classifier at the elevated tier sent {cap['faq_gen']['crisis']} FAQ-Gen questions but "
+               f"escalated only {cap['heldout']['crisis_k']} crisis prompts. No threshold removes the over-escalation "
+               "without a large loss of recall, so a better fix needs a different signal (for example a rule for "
+               "help-seeking questions), evaluated on a new held-out set.", c_gt)
+    else:
+        m.text("GateTradeoffSummary", None, c_gt)
+
+    # ---------------------------------------------------------------- component ablation (Kaggle)
+    ab = load("generation_ablation.json")
+    c_ab = "notebooks/kaggle\\_experiments.ipynb step generation\\_ablation"
+    if ab:
+        rows_ab = {(r["profile"], r["dataset"]): r for r in ab["summary"]}
+        mdl = ab["config"]["models"][0]
+        sig = ab.get("significance", {}).get(f"{mdl}|faq_gen|faithfulness", {})
+
+        def fa(arm):
+            return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
+
+        def pp(a, b):
+            v = get(sig, "p_bootstrap_holm", f"{a}>{b}")
+            return f"$p={v:.3f}$" if v is not None else "$p$ n/a"
+        if None not in (fa("abl_naive_naive"), fa("abl_full_full"), fa("abl_full_naive"), fa("abl_naive_full"),
+                        fa("abl_full_full_matched")):
+            m.text("AblationSummary",
+                   "The component ablation (Tables~\\ref{tab:gen-ablation} and \\ref{tab:gen-ablation-contrasts}) separates "
+                   f"the sources of the faithfulness gain. With the naive prompt, full retrieval changed faithfulness from "
+                   f"{f3(fa('abl_naive_naive'))} to {f3(fa('abl_full_naive'))} ({pp('abl_full_naive', 'abl_naive_naive')}); "
+                   f"with naive retrieval, the full prompt changed it to {f3(fa('abl_naive_full'))} "
+                   f"({pp('abl_naive_full', 'abl_naive_naive')}). With both, it was {f3(fa('abl_full_full'))}, and full "
+                   f"retrieval cut to the naive context length gave {f3(fa('abl_full_full_matched'))} "
+                   f"(against naive retrieval with the full prompt: {pp('abl_full_full_matched', 'abl_naive_full')}).",
+                   c_ab)
+        else:
+            m.text("AblationSummary", None, c_ab)
+    else:
+        m.text("AblationSummary", None, c_ab)
+
+    # ---------------------------------------------------------------- abstention cross-check (LLM judge)
+    ac = load("abstention_check.json")
+    c_ac = "notebooks/kaggle\\_experiments.ipynb step abstention\\_check"
+    loc = next((v for k, v in (ac or {}).get("sets", {}).items() if k.startswith("local:")), None)
+    if ac and ac.get("complete") and loc and "full" in loc and "naive" in loc:
+        f_, n_ = loc["full"], loc["naive"]
+        m.text("AbstentionCheckSummary",
+               f"An LLM judge that does not see the system prompt labelled the deployed model as declining "
+               f"{f_['judge_rate']:.2f} of out-of-scope questions with the full pipeline and {n_['judge_rate']:.2f} with "
+               f"naive RAG, against {f_['regex_rate']:.2f} and {n_['regex_rate']:.2f} by the phrase list (Cohen's "
+               f"$\\kappa$ {f_['cohen_kappa']:.2f} and {n_['cohen_kappa']:.2f}; Table~\\ref{{tab:abstention-check}}).", c_ac)
+    else:
+        m.text("AbstentionCheckSummary", None, c_ac)
+
     # ---------------------------------------------------------------- abstract
     parts = []
     if get(load("safety_gate_v2_heldout.json"), "variants", dep):
         g = load("safety_gate_v2_heldout.json")["variants"][dep]
-        parts.append(f"On a held-out red-team set the gate detected {f3(g['crisis_recall_any_escalation'])} of crisis "
-                     f"messages with an escalation false-positive rate of {f3(g['escalation']['false_positive_rate'])}, "
-                     f"lower than on the development set, and the lexicon component generalised worst.")
+        pc, e = g["per_category"], g["escalation"]
+        nc = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
+        kc = round(g["crisis_recall_any_escalation"] * nc)
+        dev = get(load("safety_gate_v2_devset.json"), "variants", dep, "crisis_recall_any_escalation")
+        parts.append(f"On a held-out red-team set the gate escalated {kc} of {nc} crisis messages (recall "
+                     f"{f3(g['crisis_recall_any_escalation'])}" + (f", against {f3(dev)} on the development set" if dev else "")
+                     + f") and {e['fp']} of {e['fp'] + e['tn']} non-crisis messages; the lexicon component generalised "
+                     "worst.")
     if rm:
         # only claim an improvement that is significant (Holm-corrected paired bootstrap) on HeadingQA and SynthQA
         wins = []
@@ -529,14 +707,15 @@ def main():
             rid = f"{best['system']}|{best['embedder'] or '-'}|c{best['chunk_tokens']}"
             p = fam.get("p_bootstrap_holm", {}).get(rid)
             if p is not None and p < 0.05 and fam["delta"][rid] > 0:
-                wins.append(f"{DS[ds]}: +{fam['delta'][rid]:.3f} nDCG@10 with {sysname(best)}")
+                wins.append(f"{DS[ds]}: +{fam['delta'][rid]:.3f} nDCG@10 with "
+                            f"{SYS[best['system']].replace(' (RRF)', '')}")
         if wins:
             parts.append("Relative to a dense-retrieval baseline, the best configurations improved nDCG@10 "
                          "significantly (" + "; ".join(wins) + ").")
     if v1 and cpu:
-        parts.append(f"Compared with full-precision inference without streaming, quantised CPU inference with "
-                     f"streaming reduced the time to first token from "
-                     f"{v1['e2e_ms']['p50'] / 1000:.0f}~s to {cpu['ttft_ms']['p50'] / 1000:.1f}~s.")
+        parts.append(f"On a laptop CPU, quantised inference cut the median end-to-end answer time from "
+                     f"{same['base_e2e']:.0f}~s to {same['e2e']:.0f}~s, and streaming showed the first words after "
+                     f"{same['ttft']:.1f}~s.")
     if gl and gl_first:
         fn, fu = get(row.get(("naive", "faq_gen")), "faithfulness", "mean"), get(row.get(("full", "faq_gen")), "faithfulness", "mean")
         on, ou = (get(row.get(("naive", "oos_questions")), "abstained", "mean"),
