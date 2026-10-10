@@ -170,7 +170,6 @@ def main():
     # Row labels as the paper presents them: one system, with an unoptimised baseline (the result keys keep their
     # historical v1_/v2_ prefixes).
     names = {"v1_hf_fp32_cpu": "Unoptimised baseline (fp32, CPU, no streaming)",
-             "v2_hf_fp32_cpu": "transformers fp32, CPU, streaming", "v2_llamacpp_f16_cpu": "llama.cpp F16, CPU",
              "v2_llamacpp_cpu": "llama.cpp Q4\\_K\\_M, CPU", "v2_llamacpp_metal": "llama.cpp Q4\\_K\\_M, Metal",
              "v2_hf_mps": "transformers fp16, MPS", "v2_hf_cuda": "transformers 16-bit, CUDA",
              "v2_hf_cuda_4bit": "transformers NF4, CUDA"}
@@ -216,14 +215,29 @@ def main():
         if metal:
             txt += (f"; with Metal offload the first token appeared after {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
                     f"{metal['tokens_per_s']['p50']:.1f} tokens/s")
-        f16, hf32 = get(lat, "v2_llamacpp_f16_cpu", "summary"), get(lat, "v2_hf_fp32_cpu", "summary")
-        if f16 and hf32:
-            txt += (f". Separating the two effects on all {cpu['n']} questions: with full-precision weights, the full "
-                    f"pipeline took a median {hf32['e2e_ms']['p50'] / 1000:.1f}~s end to end in transformers and "
-                    f"{f16['e2e_ms']['p50'] / 1000:.1f}~s in llama.cpp (16-bit), and 4-bit weights in llama.cpp took "
-                    f"{cpu['e2e_ms']['p50'] / 1000:.1f}~s; streaming showed the first words after "
-                    f"{hf32['ttft_ms']['p50'] / 1000:.1f}~s, {f16['ttft_ms']['p50'] / 1000:.1f}~s and "
-                    f"{cpu['ttft_ms']['p50'] / 1000:.1f}~s")
+        lc = load("latency_cpu.json") or {}
+        k_ = {k: get(lc, k, "summary") for k in ("v1_hf_fp32_cpu", "v2_hf_fp32_cpu", "v2_llamacpp_f16_cpu", "v2_llamacpp_cpu")}
+        if all(k_.values()):
+            b_, h_, f_, q_ = (k_[k] for k in ("v1_hf_fp32_cpu", "v2_hf_fp32_cpu", "v2_llamacpp_f16_cpu", "v2_llamacpp_cpu"))
+            txt += (". To separate the effects, all four configurations were also run on one Kaggle CPU "
+                    "(Table~\\ref{tab:latency-cpu}): median end-to-end times were "
+                    f"{b_['e2e_ms']['p50'] / 1000:.1f}~s (transformers fp32, no streaming), "
+                    f"{h_['e2e_ms']['p50'] / 1000:.1f}~s (the same with streaming), "
+                    f"{f_['e2e_ms']['p50'] / 1000:.1f}~s (llama.cpp, 16-bit) and {q_['e2e_ms']['p50'] / 1000:.1f}~s "
+                    f"(llama.cpp, 4-bit), and the first words appeared after {b_['ttft_ms']['p50'] / 1000:.1f}, "
+                    f"{h_['ttft_ms']['p50'] / 1000:.1f}, {f_['ttft_ms']['p50'] / 1000:.1f} and "
+                    f"{q_['ttft_ms']['p50'] / 1000:.1f}~s")
+            names_c = {"v1_hf_fp32_cpu": "transformers fp32, no streaming (baseline)",
+                       "v2_hf_fp32_cpu": "transformers fp32, streaming", "v2_llamacpp_f16_cpu": "llama.cpp F16, streaming",
+                       "v2_llamacpp_cpu": "llama.cpp Q4\\_K\\_M, streaming"}
+            env_c = next((v.get("environment") for v in lc.values() if isinstance(v, dict) and v.get("environment")), {})
+            write_table("latency_cpu", ["Configuration", "n", "TTFT p50 (s)", "E2E p50 (s)", "tok/s"],
+                        [[names_c[k], str(v["n"]), f"{v['ttft_ms']['p50'] / 1000:.2f}", f"{v['e2e_ms']['p50'] / 1000:.1f}",
+                          f"{v['tokens_per_s']['p50']:.1f}"] for k, v in k_.items()],
+                        "Qwen2.5-1.5B-Instruct on one Kaggle CPU" + (f" ({env_c.get('cpu', '')})" if env_c else "")
+                        + ": precision, runtime and streaming varied one at a time. The baseline uses naive retrieval "
+                        "and its own question set (n); the other rows run the full pipeline.",
+                        "tab:latency-cpu", align="lrrrr", source="results/latency_cpu.json")
         txt += (" (Table~\\ref{tab:latency}). These laptop figures are not comparable with the TTFT column of the "
                 "generation tables, which was measured on the Kaggle GPU (llama.cpp offloaded to the GPU for the GGUF "
                 "model).")

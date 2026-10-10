@@ -37,6 +37,9 @@ STEP_OUTPUTS = {
     "safety_baselines": ["safety_baselines.json", "safety_baselines_cache.jsonl"],
     "generation_runtime": ["generation_runtime.json", "generation/runtime"],
     "generation_matched": ["generation_matched.json", "generation/matched"],
+    # the re-scored generation files come back with the generation_local / generation_gpu steps
+    "rescore": ["citation_precision.json"],
+    "latency_cpu": ["latency_cpu.json"],
 }
 EXPERIMENTS = ["retrieval_main", "retrieval_chunks", "generation_local", "generation_gpu", "generation_ablation",
                "generation_runtime", "generation_matched"]
