@@ -27,6 +27,27 @@ from mhrag.config import PROJECT_ROOT, get_settings
 log = logging.getLogger("run_eval")
 
 
+def aggregate_saved(cfg: dict, s) -> dict:
+    """Summary and significance tests from the scored answers on disk, with the same code as a full run."""
+    import gzip
+
+    from eval.generation_eval import aggregate
+
+    d = s.results_dir / "generation" / cfg["name"]
+    path = next((p for p in (d / "scored.jsonl", d / "scored.jsonl.gz") if p.exists()), None)
+    if path is None:
+        raise SystemExit(f"no scored.jsonl in {d}")
+    with (gzip.open if path.suffix == ".gz" else open)(path, "rt", encoding="utf-8") as f:
+        answers = [json.loads(line) for line in f]
+    model_info = [json.loads((d / f"{m}__status.json").read_text()) for m in cfg["models"]
+                  if (d / f"{m}__status.json").exists()]
+    judged = any(k.startswith("judge_") for a in answers for k in (a.get("metrics") or {}))
+    res = aggregate(answers, model_info, cfg)
+    res.update(name=cfg["name"], config=cfg,
+               judge_status="complete" if cfg.get("judge_model") and judged else "unavailable")
+    return res
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", required=True)
@@ -35,6 +56,9 @@ def main(argv=None) -> int:
     ap.add_argument("--generate-only", action="store_true",
                     help="generation only: save answers but skip scoring (e.g. one process per GPU; score afterwards "
                          "with a normal run, which reuses the saved answers)")
+    ap.add_argument("--aggregate-only", action="store_true",
+                    help="generation only: rebuild the summary, tests and tables from the saved scored.jsonl (e.g. after "
+                         "a run that scored every answer but failed while aggregating)")
     ap.add_argument("--models", nargs="+", help="generation only: run just these model keys (e.g. one per Kaggle session); "
                                                "results are merged with earlier runs of the same experiment")
     args = ap.parse_args(argv)
@@ -76,7 +100,10 @@ def main(argv=None) -> int:
             cfg["run_models"] = args.models
         from eval.generation_eval import RateLimited
 
-        if not args.tables_only:
+        if args.aggregate_only:
+            res = aggregate_saved(cfg, s)
+            out.write_text(json.dumps(res, indent=1))
+        elif not args.tables_only:
             try:
                 if args.generate_only:
                     from eval.generation_eval import generate
