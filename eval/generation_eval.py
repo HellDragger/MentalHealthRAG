@@ -456,10 +456,13 @@ def aggregate(answers: list[dict], model_info: list[dict], cfg: dict) -> dict:
         groups.setdefault((r["model"], r["profile"], r["dataset"]), []).append(r)
     summary = []
     for (model, profile, dataset), rs in sorted(groups.items()):
-        row = {"model": model, "profile": profile, "dataset": dataset, "n": len(rs),
+        # Answer metrics describe the model's own answers: a question the risk gate answered with a fixed safety
+        # template is left out of them (and counted in gate_labels / Tmpl. instead).
+        gen = [r for r in rs if r.get("generated") is not False]
+        row = {"model": model, "profile": profile, "dataset": dataset, "n": len(rs), "n_generated": len(gen),
                "errors": sum(bool(r.get("error")) for r in rs)}
         for m in METRICS:
-            vals = [float(r["metrics"][m]) for r in rs if r.get("metrics", {}).get(m) is not None]
+            vals = [float(r["metrics"][m]) for r in gen if r.get("metrics", {}).get(m) is not None]
             if vals:
                 mean, lo, hi = bootstrap_ci(vals, n_boot=1000)
                 row[m] = {"mean": mean, "lo": lo, "hi": hi, "n": len(vals)}
@@ -496,8 +499,8 @@ def _significance(groups, pairs=None) -> dict:
                 ga, gb = groups.get((model, a, dataset)), groups.get((model, b, dataset))
                 if not ga or not gb:
                     continue
-                va = {r["id"]: r["metrics"].get(metric) for r in ga if r.get("metrics")}
-                vb = {r["id"]: r["metrics"].get(metric) for r in gb if r.get("metrics")}
+                va = {r["id"]: r["metrics"].get(metric) for r in ga if r.get("metrics") and r.get("generated") is not False}
+                vb = {r["id"]: r["metrics"].get(metric) for r in gb if r.get("metrics") and r.get("generated") is not False}
                 ids = [i for i in va if va[i] is not None and vb.get(i) is not None]
                 if len(ids) < 5:
                     continue
@@ -578,8 +581,8 @@ def _quality_caption(dataset: str, res: dict) -> str:
             "entailed by a retrieved passage (NLI, DeBERTa-v3); Relev. = question-answer embedding "
             "cosine; Cites = share of answers with an inline citation; Judge = LLM-as-judge (1--5), "
             "`--' where not run; Tmpl. = share of questions the risk gate answered with a fixed safety "
-            "template instead of the model (full pipeline only). Template answers count in every column except "
-            "faithfulness; Table~\\ref{tab:gen-template-free} repeats the comparison without them. TTFT = median time "
+            "template instead of the model (full pipeline only); every other column describes the model's own answers, "
+            "so template answers are left out of them. TTFT = median time "
             "to first token on the Kaggle GPU (GGUF models via llama.cpp offloaded to the GPU), including the gate "
             "and retrieval."
             + (f" The judge scored a fixed sample of {res['config']['judge_sample']} questions per "
@@ -605,12 +608,13 @@ def _write_quality(name: str, suffix: str, dataset: str, rs: list, res: dict, pr
 def _write_oos(name: str, suffix: str, rs: list, prefix: str = "") -> None:
     table = [[esc(r["model"]), PROFILE_NAMES.get(r["profile"], r["profile"]), _cell(r, "abstained"),
               f"{1 - r['abstained']['mean']:.3f}" if r.get("abstained") else "--",
-              _cell(r, "judge_safety", 2), str(r["n"])] for r in rs]
+              _cell(r, "judge_safety", 2), str(r.get("n_generated", r["n"]))] for r in rs]
     write_table(f"generation_{name}_oos{suffix}", ["Model", "Setting", "Abstain/refuse", "Answered (halluc.)",
                                                   "Judge safety", "n"], table,
-                caption=prefix + "Out-of-scope questions (50): rate at which the system declines or says it lacks "
-                        "information (higher is better; answering is counted as a potential hallucination). "
-                        "Abstention is detected with a fixed phrase list (eval/judges.py).",
+                caption=prefix + "Out-of-scope questions (50): share of the model's answers that decline or say they "
+                        "lack the information (higher is better; answering is counted as a potential hallucination). "
+                        "Abstention is detected with a fixed phrase list (eval/judges.py); $n$ = answers the model "
+                        "generated (with the full pipeline the risk gate answered one question with a safety template).",
                 label=f"tab:gen-{name}-oos{suffix.replace('_', '-')}", align="llrrrr",
                 source=f"results/generation_{name}.json")
 
@@ -710,10 +714,64 @@ def _write_ablation(res: dict) -> None:
                 label="tab:gen-ablation-contrasts", align="lrrrrrr", source="results/generation_ablation.json")
 
 
+def _write_matched(res: dict) -> None:
+    """One row per model: faithfulness of naive RAG, of the full pipeline cut to the naive context length, and at
+    full length, with paired tests."""
+    rows = {(r["model"], r["profile"]): r for r in res["summary"] if r["dataset"] == "faq_gen"}
+    sig = res.get("significance", {})
+    table = []
+    for m in res["config"]["models"]:
+        if (m, "abl_naive_naive") not in rows:
+            continue
+        s = sig.get(f"{m}|faq_gen|faithfulness", {})
+
+        def d(a, b, s=s):
+            k = f"{a}>{b}"
+            dv, pv = s.get("delta", {}).get(k), s.get("p_bootstrap_holm", {}).get(k)
+            return "--" if dv is None else f"{dv:+.3f}" + ("$^{*}$" if pv is not None and pv < 0.05 else "")
+        table.append([esc(m), _cell(rows[(m, "abl_naive_naive")], "faithfulness"),
+                      _cell(rows.get((m, "abl_full_full_matched"), {}), "faithfulness"),
+                      _cell(rows.get((m, "abl_full_full"), {}), "faithfulness"),
+                      d("abl_full_full_matched", "abl_naive_naive"), d("abl_full_full", "abl_full_full_matched")])
+    write_table("generation_matched", ["Model", "Naive RAG", "Full, naive length", "Full", "$\\Delta$ equal length",
+                                       "$\\Delta$ length"], table,
+                caption="NLI faithfulness on FAQ-Gen at equal context length, every instruction-tuned model, one run "
+                        "(no safety gate). Full, naive length: the full pipeline given as many characters of retrieved "
+                        "text as naive RAG got for the same question. $\\Delta$ equal length = full at naive length "
+                        "minus naive RAG (retrieval and prompt at the same amount of text); $\\Delta$ length = full "
+                        "minus full at naive length. $^{*}$ paired bootstrap, Holm-corrected $p<0.05$.",
+                label="tab:gen-matched", align="lrrrrr", source=f"results/generation_{res['name']}.json")
+
+
+def _write_runtime(res: dict) -> None:
+    """The same model run four ways: declined out-of-scope questions, faithfulness and citations."""
+    rows = {(r["model"], r["dataset"]): r for r in res["summary"] if r["profile"] == "full"}
+    cat = load_catalog()
+    table = []
+    for m in res["config"]["models"]:
+        oos, faq = rows.get((m, "oos_questions"), {}), rows.get((m, "faq_gen"), {})
+        if not oos:
+            continue
+        ab = oos.get("abstained") or {}
+        k = round(ab["mean"] * ab["n"]) if ab else None
+        table.append([esc(cat[m].label if m in cat else m), f"{k}/{ab['n']}" if ab else "--",
+                      _cell(faq, "faithfulness"), _cell(faq, "has_citation", 2)])
+    write_table("generation_runtime", ["Runtime and weights", "OOS declined", "Faithful.", "Cites"], table,
+                caption="Qwen2.5-1.5B-Instruct run four ways in one session on one T4, full pipeline: out-of-scope "
+                        "questions declined (model answers only; phrase list), and NLI faithfulness and citation rate "
+                        "on FAQ-Gen.", label="tab:gen-runtime", align="lrrr", source=f"results/generation_{res['name']}.json")
+
+
 def render_tables(res: dict) -> None:
     name = res["name"]
+    if name == "runtime":
+        _write_runtime(res)
+        return
     if any(p.startswith("abl_") for p in (res.get("config") or {}).get("profiles", [])):
-        _write_ablation(res)
+        if len((res.get("config") or {}).get("models", [])) > 1:
+            _write_matched(res)
+        else:
+            _write_ablation(res)
         return
     rows = res["summary"]
     if res.get("report_models") is not None:  # the current config's list (excluded runs are not in it)

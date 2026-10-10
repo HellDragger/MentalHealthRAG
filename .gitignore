@@ -56,3 +56,6 @@ artifacts/index/
 # The manuscript and its related files (tables, numbers, references, journal notes) are kept private until
 # publication; the scripts still write tables/ and numbers.tex into paper/ locally.
 /paper
+
+# Human evaluation: the answer key stays local until ratings are collected
+eval/human_eval/out/*/key.csv

@@ -1,0 +1,19 @@
+# Same weights, four ways of running them, one session on one T4 (reviewer question: why did the GGUF and the
+# transformers versions of Qwen2.5-1.5B decline 35 versus 8 out-of-scope questions?). Separates the quantisation
+# scheme from the runtime:
+#   qwen2.5-1.5b-gguf          llama.cpp, Q4_K_M (the deployed model)
+#   qwen2.5-1.5b-gguf-f16      llama.cpp, 16-bit
+#   qwen2.5-1.5b-instruct-f16  transformers, 16-bit
+#   qwen2.5-1.5b-instruct      transformers, 4-bit NF4 (run with MHRAG_LOAD_IN_4BIT=1, as in the benchmark)
+#   MHRAG_LOAD_IN_4BIT=1 python -m scripts.run_eval --config configs/experiments/generation_runtime.yaml
+kind: generation
+name: runtime
+models: [qwen2.5-1.5b-gguf, qwen2.5-1.5b-gguf-f16, qwen2.5-1.5b-instruct-f16, qwen2.5-1.5b-instruct]
+profiles: [full]
+datasets: [oos_questions, faq_gen]
+naive: {embedder: minilm, chunk_tokens: 48}
+temperature: 0.0
+judge_model: null
+nli_model: cross-encoder/nli-deberta-v3-base
+bertscore_model: roberta-large
+timeout_s: 600

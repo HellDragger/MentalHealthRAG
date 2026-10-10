@@ -1,0 +1,34 @@
+# Length-matched faithfulness for every instruction-tuned benchmark model (reviewer request). Per model, one run:
+#   abl_naive_naive        naive RAG (dense MiniLM, top-2 of 48-token chunks, minimal prompt)
+#   abl_full_full_matched  full retrieval and grounded prompt, cut to the naive context length for each question
+#   abl_full_full          full retrieval and grounded prompt at full length
+# No safety gate (every answer is generated). FAQ-Gen only. Same 4-bit NF4 loading as the benchmark.
+#   MHRAG_LOAD_IN_4BIT=1 python -m scripts.run_eval --config configs/experiments/generation_matched.yaml
+kind: generation
+name: matched
+models:
+  - mistral-7b-instruct-v0.3
+  - ministral-8b-instruct-2410
+  - llama-3.1-8b-instruct
+  - llama-3.2-3b-instruct
+  - qwen2.5-7b-instruct
+  - qwen2.5-1.5b-instruct
+  - qwen3-4b
+  - qwen3-8b
+  - gemma-2-2b-it
+  - gemma-3-4b-it-fp32
+  - phi-3.5-mini-instruct
+  - phi-4-mini-instruct
+  - smollm2-1.7b-instruct
+profiles: [abl_naive_naive, abl_full_full_matched, abl_full_full]
+compare:
+  - [abl_full_full_matched, abl_naive_naive]   # full pipeline vs naive RAG at equal context length
+  - [abl_full_full, abl_full_full_matched]     # context length
+  - [abl_full_full, abl_naive_naive]           # as in the benchmark
+datasets: [faq_gen]
+naive: {embedder: minilm, chunk_tokens: 48}
+temperature: 0.0
+judge_model: null
+nli_model: cross-encoder/nli-deberta-v3-base
+bertscore_model: roberta-large
+timeout_s: 600

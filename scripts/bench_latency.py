@@ -50,6 +50,12 @@ QUERIES = [
 CONFIGS = {
     "v1_hf_fp32_cpu": {"kind": "v1", "model": "qwen2.5-1.5b-instruct", "n": 5},
     "v2_llamacpp_cpu": {"kind": "v2", "model": "qwen2.5-1.5b-gguf", "env": {"MHRAG_LLAMACPP_GPU_LAYERS": "0"}, "n": 12},
+    # same runtime, no quantisation: separates 4-bit quantisation from the llama.cpp runtime (reviewer request)
+    "v2_llamacpp_f16_cpu": {"kind": "v2", "model": "qwen2.5-1.5b-gguf-f16", "env": {"MHRAG_LLAMACPP_GPU_LAYERS": "0"},
+                            "n": 12},
+    # same weights and precision as the unoptimised baseline, but the full pipeline with streaming
+    "v2_hf_fp32_cpu": {"kind": "v2", "model": "qwen2.5-1.5b-instruct", "env": {"MHRAG_DEVICE": "cpu", "MHRAG_DTYPE": "float32"},
+                       "n": 12},
     "v2_llamacpp_metal": {"kind": "v2", "model": "qwen2.5-1.5b-gguf", "env": {"MHRAG_LLAMACPP_GPU_LAYERS": "-1"}, "n": 12,
                           "requires": "darwin"},
     "v2_hf_mps": {"kind": "v2", "model": "qwen2.5-1.5b-instruct", "env": {"MHRAG_DEVICE": "mps"}, "n": 12,
