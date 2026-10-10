@@ -54,3 +54,28 @@ def test_significance_accepts_boolean_metrics():
     groups = {("m", "a", "oos"): arm([True] * 8 + [False] * 2), ("m", "b", "oos"): arm([False] * 8 + [True] * 2)}
     out = _significance(groups, [("a", "b")])
     assert out["m|oos|abstained"]["delta"]["a>b"] == pytest.approx(0.6)
+
+
+def test_cited_sentences_attach_leading_markers_to_previous_sentence():
+    from scripts.citation_precision import cited_sentences
+
+    cs, n = cited_sentences("Lithium stabilises mood in bipolar disorder [1]. It needs regular blood tests. [2][3] "
+                            "Talk to your doctor about side effects [1, 4].")
+    assert [c for _, c in cs] == [[1], [2, 3], [1, 4]] and n == 3
+
+
+def test_full_passages_drop_the_title_line():
+    from scripts.rescore_faithfulness import full_passages
+
+    assert full_passages("[1] Depression — Causes\nfirst text\n\n[2] Anxiety\nsecond text") == ["first text", "second text"]
+
+
+def test_aggregate_counts_only_model_answers():
+    from eval.generation_eval import aggregate
+
+    rows = [{"id": "a", "model": "m", "profile": "full", "dataset": "oos", "generated": True, "timing": {}, "metrics": {"abstained": True}},
+            {"id": "b", "model": "m", "profile": "full", "dataset": "oos", "generated": False, "gate": "crisis",
+             "metrics": {"abstained": True}},
+            {"id": "c", "model": "m", "profile": "full", "dataset": "oos", "generated": True, "timing": {}, "metrics": {"abstained": False}}]
+    row = aggregate(rows, [], {})["summary"][0]
+    assert row["n"] == 3 and row["n_generated"] == 2 and row["abstained"]["mean"] == pytest.approx(0.5)

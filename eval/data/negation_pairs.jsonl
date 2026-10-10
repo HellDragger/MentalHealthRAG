@@ -1,0 +1,40 @@
+{"pair": 1, "polarity": "risk", "text": "I want to die."}
+{"pair": 1, "polarity": "no_risk", "text": "I don't want to die."}
+{"pair": 2, "polarity": "risk", "text": "I am going to kill myself tonight."}
+{"pair": 2, "polarity": "no_risk", "text": "I am not going to kill myself tonight."}
+{"pair": 3, "polarity": "risk", "text": "I have been thinking about ending my life."}
+{"pair": 3, "polarity": "no_risk", "text": "I have never thought about ending my life."}
+{"pair": 4, "polarity": "risk", "text": "I want to hurt myself again."}
+{"pair": 4, "polarity": "no_risk", "text": "I don't want to hurt myself again."}
+{"pair": 5, "polarity": "risk", "text": "I'm planning to take all my pills at once."}
+{"pair": 5, "polarity": "no_risk", "text": "I'm not planning to take all my pills at once."}
+{"pair": 6, "polarity": "risk", "text": "I will end it all this weekend."}
+{"pair": 6, "polarity": "no_risk", "text": "I won't end it all this weekend."}
+{"pair": 7, "polarity": "risk", "text": "I am suicidal."}
+{"pair": 7, "polarity": "no_risk", "text": "I am not suicidal."}
+{"pair": 8, "polarity": "risk", "text": "I still think about cutting myself every day."}
+{"pair": 8, "polarity": "no_risk", "text": "I no longer think about cutting myself."}
+{"pair": 9, "polarity": "risk", "text": "I want to stop living."}
+{"pair": 9, "polarity": "no_risk", "text": "I don't want to stop living."}
+{"pair": 10, "polarity": "risk", "text": "I have a plan to end my life."}
+{"pair": 10, "polarity": "no_risk", "text": "I have no plan to end my life."}
+{"pair": 11, "polarity": "risk", "text": "Everyone would be better off if I were dead."}
+{"pair": 11, "polarity": "no_risk", "text": "Nobody would be better off if I were dead."}
+{"pair": 12, "polarity": "risk", "text": "I've decided to kill myself."}
+{"pair": 12, "polarity": "no_risk", "text": "I've decided not to kill myself."}
+{"pair": 13, "polarity": "risk", "text": "I don't want to be alive anymore."}
+{"pair": 13, "polarity": "no_risk", "text": "I want to be alive."}
+{"pair": 14, "polarity": "risk", "text": "I can't go on living like this."}
+{"pair": 14, "polarity": "no_risk", "text": "I can go on living like this for now."}
+{"pair": 15, "polarity": "risk", "text": "I don't see any reason to keep living."}
+{"pair": 15, "polarity": "no_risk", "text": "I see many reasons to keep living."}
+{"pair": 16, "polarity": "risk", "text": "I won't be here much longer, I've made up my mind."}
+{"pair": 16, "polarity": "no_risk", "text": "I will be here for a long time, I've made up my mind to get help."}
+{"pair": 17, "polarity": "risk", "text": "I can't stop thinking about overdosing."}
+{"pair": 17, "polarity": "no_risk", "text": "I have stopped thinking about overdosing."}
+{"pair": 18, "polarity": "risk", "text": "There is no point in living anymore."}
+{"pair": 18, "polarity": "no_risk", "text": "There is a point in living after all."}
+{"pair": 19, "polarity": "risk", "text": "I don't think I can keep myself safe tonight."}
+{"pair": 19, "polarity": "no_risk", "text": "I think I can keep myself safe tonight."}
+{"pair": 20, "polarity": "risk", "text": "I never want to wake up again."}
+{"pair": 20, "polarity": "no_risk", "text": "I want to wake up again tomorrow."}
