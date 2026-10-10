@@ -501,7 +501,7 @@ def _significance(groups, pairs=None) -> dict:
                 ids = [i for i in va if va[i] is not None and vb.get(i) is not None]
                 if len(ids) < 5:
                     continue
-                x, y = [va[i] for i in ids], [vb[i] for i in ids]
+                x, y = [float(va[i]) for i in ids], [float(vb[i]) for i in ids]  # booleans (abstained) too
                 k = f"{a}>{b}"
                 raw[k], wil[k], delta[k] = paired_bootstrap_p(x, y), wilcoxon_p(x, y), float(np.mean(x) - np.mean(y))
             if raw:
