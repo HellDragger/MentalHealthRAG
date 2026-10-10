@@ -162,6 +162,8 @@ def render(py: str = sys.executable) -> None:
             subprocess.run([py, "-m", "scripts.run_eval", "--tables-only", "--config",
                             f"configs/experiments/{exp}.yaml"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.generation_reanalysis"], cwd=PROJECT_ROOT, check=True)
+    if (RESULTS / "abstention_check.json").exists():
+        subprocess.run([py, "-m", "scripts.judge_abstention", "--tables-only"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.paper_numbers"], cwd=PROJECT_ROOT, check=True)
 
 

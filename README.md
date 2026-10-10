@@ -179,8 +179,14 @@ helpfulness 3.00 against 3.61 without retrieval, so the lower helpfulness is not
 classifier crisis threshold removes FAQ over-escalation only at a large cost in recall (capping the classifier at the
 elevated tier: 0 of 98 FAQ questions to the crisis protocol, but 17 instead of 30 of 36 held-out crisis prompts).
 
-**Still to run:** the component ablation and the LLM-judge abstention check (Kaggle notebook steps
-`generation_ablation` and `abstention_check`), and the human evaluation with clinician raters.
+**Component ablation** (`results/generation_ablation.json`, Kaggle; Qwen2.5-1.5B GGUF, no gate): at equal context
+length, full retrieval adds no NLI faithfulness over naive retrieval (0.209 vs 0.211, p=0.94); the full pipeline's gain
+comes from giving the model more retrieved text (+0.149, p<0.001), and its abstention from the system prompt
+(+0.66 declined, p<0.001). **Abstention check** (`results/abstention_check.json`): an LLM judge that does not see the
+prompt puts the full pipeline's out-of-scope decline rate at 0.61 against 0.34 for naive RAG (phrase list: 0.71 vs
+0.10), so the phrase list overstates the gain, but it remains (+0.29, p<0.001).
+
+**Still to run:** the human evaluation with clinician raters.
 The Kaggle notebook is resumable across 12-hour sessions: attach its previous output as an input and run it
 again. Finished steps are skipped, and interrupted ones continue from their last saved answer.
 To bring results back, download `mhrag_results.zip` from the notebook's Output tab and run

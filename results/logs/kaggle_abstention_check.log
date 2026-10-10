@@ -1,0 +1,44 @@
+
+===== session started 2026-10-10 06:08
+$ /usr/bin/python3 -m scripts.judge_abstention
+{
+ "local:qwen2.5-1.5b-gguf:no_rag,naive,full": {
+  "no_rag": {
+   "regex_rate": 0.14,
+   "judge_rate": 0.24,
+   "cohen_kappa": 0.6803069053708442
+  },
+  "naive": {
+   "regex_rate": 0.1,
+   "judge_rate": 0.34,
+   "cohen_kappa": 0.3548387096774194
+  },
+  "full": {
+   "regex_rate": 0.7142857142857143,
+   "judge_rate": 0.6122448979591837,
+   "cohen_kappa": 0.5032258064516129
+  },
+  "full>naive": {
+   "judge_delta": 0.28571428571428575,
+   "p_bootstrap": 0.0006,
+   "n": 49
+  },
+  "full>no_rag": {
+   "judge_delta": 0.3673469387755102,
+   "p_bootstrap": 0.0,
+   "n": 49
+  }
+ },
+ "ablation:qwen2.5-1.5b-gguf:abl_naive_full,abl_full_naive": {
+  "abl_naive_full": {
+   "regex_rate": 0.76,
+   "judge_rate": 0.58,
+   "cohen_kappa": 0.4328097731239093
+  },
+  "abl_full_naive": {
+   "regex_rate": 0.14,
+   "judge_rate": 0.34,
+   "cohen_kappa": 0.48024948024948055
+  }
+ }
+}
