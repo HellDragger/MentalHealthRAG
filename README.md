@@ -213,6 +213,40 @@ GPU-scale results (7–12B models) and the LLM judge are marked `TODO(run)` unti
 
 Tests: `pytest` (offline; uses a mock LLM and a hand-built fixture corpus). Lint: `ruff check .`.
 
+### Running the Kaggle notebook: private or public repository
+
+Cell 3 of [notebooks/kaggle_experiments.ipynb](notebooks/kaggle_experiments.ipynb) clones the code from GitHub. By default
+it clones the author's working repository, `HellDragger/MentalHealthRAG-Chatbot`, which is **private** because it also
+holds the manuscript, which stays unpublished until the paper is accepted. The public repository,
+[HellDragger/MentalHealthRAG](https://github.com/HellDragger/MentalHealthRAG), contains the same code, evaluation data
+and results without the manuscript, so every result can be reproduced from it.
+
+**To reproduce the results (anyone):** in cell 3 set
+`REPO_URL = "https://github.com/HellDragger/MentalHealthRAG.git"`, and in cell 1 set `BRANCH = "main"`. A public
+repository needs no GitHub token; leave the `GITHUB_TOKEN` secret out.
+
+**To run against the private repository (the author, or someone given access):** the notebook needs a read-only GitHub
+token in the Kaggle secret `GITHUB_TOKEN`. A token can only open repositories its owner can already access; it does not
+grant access to anyone else.
+
+1. On GitHub: profile picture → **Settings** → **Developer settings** → **Personal access tokens**.
+   - **Owner of the repository:** choose **Fine-grained tokens** → **Generate new token**. Set **Resource owner** to the
+     account that owns the repository, **Repository access** to *Only select repositories* (pick only this one), and
+     under **Repository permissions** set **Contents** to *Read-only*. Choose a short expiry (7–30 days).
+   - **Collaborator on someone else's repository:** fine-grained tokens do not work there yet (GitHub lists this as a
+     known gap), so use **Tokens (classic)** → **Generate new token (classic)** with the `repo` scope. That scope covers
+     all your private repositories, so give it a short expiry and delete it after the run.
+2. Copy the token; GitHub shows it only once.
+3. In the Kaggle notebook editor: **Add-ons** → **Secrets** → **Add a new secret**, name it `GITHUB_TOKEN`, paste the
+   token, and tick it for this notebook.
+
+The notebook passes the token to git through environment variables only, so it never appears on the command line, in
+the cloned repository's `.git/config` (which Kaggle saves with the output) or in the printed output. Keep the Kaggle
+notebook private all the same: its output contains the cloned code and the results.
+
+The other secrets are optional: `GROQ_API_KEY` for the LLM judge and the zero-shot safety classifier, and `HF_TOKEN` for
+gated models (Llama, Gemma, Llama Guard, ShieldGemma); accept each model's licence on Hugging Face first.
+
 ## Safety, limitations and ethics
 - **Not clinically validated.** No clinician has evaluated the responses yet (the protocol is in [eval/human_eval/](eval/human_eval/)). Do not use it with patients or as a crisis service.
 - **The safety gate misses some crises**, about 1 in 6 on held-out prompts (for example implicit preparation statements and some third-party disclosures), and it over-escalates some figurative language ("this traffic is killing me"). Crisis messages are never answered by the LLM, but a missed crisis is answered as a normal question with the helpline banner.
