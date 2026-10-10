@@ -45,8 +45,9 @@ class HFBackend(Backend):
 
         self.device = os.environ.get("MHRAG_DEVICE") or pick_device()
         model_id = spec.raw["hf_id"]
-        if load_in_4bit is None:
-            load_in_4bit = os.environ.get("MHRAG_LOAD_IN_4BIT", "0") == "1"
+        if load_in_4bit is None:  # a catalogue entry can pin it (e.g. a 16-bit variant in a 4-bit run)
+            load_in_4bit = (bool(spec.raw["load_in_4bit"]) if "load_in_4bit" in spec.raw
+                            else os.environ.get("MHRAG_LOAD_IN_4BIT", "0") == "1")
         if dtype is None:  # MHRAG_DTYPE overrides everything; a model's catalogue `dtype` overrides "auto"
             dtype = os.environ.get("MHRAG_DTYPE") or spec.raw.get("dtype") or "auto"
         if dtype == "auto":

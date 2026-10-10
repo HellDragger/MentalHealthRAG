@@ -34,8 +34,15 @@ STEP_OUTPUTS = {
     "generation_gpu": ["generation_gpu.json", "generation/gpu"],
     "generation_ablation": ["generation_ablation.json", "generation/ablation"],
     "abstention_check": ["abstention_check.json", "generation/abstention_judge_cache.jsonl"],
+    "safety_baselines": ["safety_baselines.json", "safety_baselines_cache.jsonl"],
+    "generation_runtime": ["generation_runtime.json", "generation/runtime"],
+    "generation_matched": ["generation_matched.json", "generation/matched"],
+    # the re-scored generation files come back with the generation_local / generation_gpu steps
+    "rescore": ["citation_precision.json"],
+    "latency_cpu": ["latency_cpu.json"],
 }
-EXPERIMENTS = ["retrieval_main", "retrieval_chunks", "generation_local", "generation_gpu", "generation_ablation"]
+EXPERIMENTS = ["retrieval_main", "retrieval_chunks", "generation_local", "generation_gpu", "generation_ablation",
+               "generation_runtime", "generation_matched"]
 
 
 def find_root(src: Path) -> Path:
@@ -162,6 +169,8 @@ def render(py: str = sys.executable) -> None:
             subprocess.run([py, "-m", "scripts.run_eval", "--tables-only", "--config",
                             f"configs/experiments/{exp}.yaml"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.generation_reanalysis"], cwd=PROJECT_ROOT, check=True)
+    if (RESULTS / "safety_baselines.json").exists():
+        subprocess.run([py, "-m", "scripts.eval_safety_baselines", "--tables-only"], cwd=PROJECT_ROOT, check=True)
     if (RESULTS / "abstention_check.json").exists():
         subprocess.run([py, "-m", "scripts.judge_abstention", "--tables-only"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.paper_numbers"], cwd=PROJECT_ROOT, check=True)
