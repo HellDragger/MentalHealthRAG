@@ -170,6 +170,7 @@ def main():
     # Row labels as the paper presents them: one system, with an unoptimised baseline (the result keys keep their
     # historical v1_/v2_ prefixes).
     names = {"v1_hf_fp32_cpu": "Unoptimised baseline (fp32, CPU, no streaming)",
+             "v2_hf_fp32_cpu": "transformers fp32, CPU, streaming", "v2_llamacpp_f16_cpu": "llama.cpp F16, CPU",
              "v2_llamacpp_cpu": "llama.cpp Q4\\_K\\_M, CPU", "v2_llamacpp_metal": "llama.cpp Q4\\_K\\_M, Metal",
              "v2_hf_mps": "transformers fp16, MPS", "v2_hf_cuda": "transformers 16-bit, CUDA",
              "v2_hf_cuda_4bit": "transformers NF4, CUDA"}
@@ -215,6 +216,14 @@ def main():
         if metal:
             txt += (f"; with Metal offload the first token appeared after {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
                     f"{metal['tokens_per_s']['p50']:.1f} tokens/s")
+        f16, hf32 = get(lat, "v2_llamacpp_f16_cpu", "summary"), get(lat, "v2_hf_fp32_cpu", "summary")
+        if f16 and hf32:
+            txt += (f". Separating the two effects on all {cpu['n']} questions: with full-precision weights, the full "
+                    f"pipeline took a median {hf32['e2e_ms']['p50'] / 1000:.1f}~s end to end in transformers and "
+                    f"{f16['e2e_ms']['p50'] / 1000:.1f}~s in llama.cpp (16-bit), and 4-bit weights in llama.cpp took "
+                    f"{cpu['e2e_ms']['p50'] / 1000:.1f}~s; streaming showed the first words after "
+                    f"{hf32['ttft_ms']['p50'] / 1000:.1f}~s, {f16['ttft_ms']['p50'] / 1000:.1f}~s and "
+                    f"{cpu['ttft_ms']['p50'] / 1000:.1f}~s")
         txt += (" (Table~\\ref{tab:latency}). These laptop figures are not comparable with the TTFT column of the "
                 "generation tables, which was measured on the Kaggle GPU (llama.cpp offloaded to the GPU for the GGUF "
                 "model).")
@@ -505,11 +514,11 @@ def main():
             else:
                 won = f"for {up} ({sig_up} significantly)"
             gpu_txt = (f"Across the {n} instruction-tuned models of the multi-model benchmark "
-                       f"(Table~\\ref{{tab:gen-gpu-summary}}), the full pipeline gave higher NLI faithfulness on "
-                       f"FAQ-Gen than naive RAG {won}, and the median share of "
-                       f"out-of-scope questions declined was {statistics.median(oos['full']):.2f} with the full "
-                       f"pipeline versus {statistics.median(oos['naive']):.2f} with naive RAG. The highest "
-                       f"full-pipeline faithfulness was {faith_full[best]:.3f} ({best.replace('_', chr(92) + '_')}).")
+                       f"(Table~\\ref{{tab:benchmark-summary}}), the full pipeline raised the median share of "
+                       f"out-of-scope questions declined from {statistics.median(oos['naive']):.2f} (naive RAG) to "
+                       f"{statistics.median(oos['full']):.2f} and added inline citations. At full context length it also "
+                       f"gave higher NLI faithfulness on FAQ-Gen than naive RAG {won}, but that comparison is confounded "
+                       "by the amount of retrieved text, as the ablation showed.")
             excl = gcfg.get("excluded_runs") or {}
             if excl:
                 count = {1: "One further run", 2: "Two further runs", 3: "Three further runs"}.get(
@@ -601,15 +610,15 @@ def main():
         qga = get(ra, "experiments", "local", gl_first, "abstention_wording")
         ge4 = get(ra, "experiments", "gpu", "gemma-3-4b-it-fp32", "abstention_wording")
         if q and qg and qa and qga:
-            txt = (f"Two results stand out. Qwen2.5-1.5B served through transformers had the highest faithfulness of the "
-                   f"benchmark ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
+            txt = (f"Two results stand out. Qwen2.5-1.5B served through transformers with 4-bit NF4 weights, as in the whole "
+                   f"benchmark, had the highest faithfulness ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
                    f"{q['full']['faq_citation_rate']:.2f} of its FAQ-Gen answers and declined {qa['full']['abstained']} of "
                    f"{qa['full']['generated']} out-of-scope questions with the full pipeline, no more than without "
                    f"retrieval ({qa['no_rag']['abstained']} of {qa['no_rag']['generated']}); it often answered off-topic "
                    "questions from its own knowledge, sometimes attaching a citation to an unrelated passage. The same "
-                   f"weights quantised and served by llama.cpp declined {qga['full']['abstained']} of "
-                   f"{qga['full']['generated']} under the same prompt and decoding parameters. I did not isolate whether "
-                   "quantisation or the runtime explains the difference.")
+                   f"weights in llama.cpp with a different 4-bit scheme (Q4\\_K\\_M) declined {qga['full']['abstained']} of "
+                   f"{qga['full']['generated']} under the same prompt and decoding parameters; the runtime comparison "
+                   "below separates the quantisation scheme from the runtime.")
             if ge4:
                 txt += (f" Gemma-3-4B declined {ge4['full']['abstained']} of {ge4['full']['generated']} out-of-scope "
                         f"questions with the full pipeline against {ge4['naive']['abstained']} with naive RAG; an apparent "
@@ -638,6 +647,104 @@ def main():
                "help-seeking questions), evaluated on a new held-out set.", c_gt)
     else:
         m.text("GateTradeoffSummary", None, c_gt)
+
+    # ---------------------------------------------------------------- negation, safety baselines
+    ng = load("negation_test.json")
+    c_ng = "python -m scripts.eval_negation"
+    nv, nt = get(ng, "variants", dep), get(ng, "variants", "tfidf_lr_only")
+    if nv and nt:
+        m.text("NegationSummary",
+               f"On {ng['n_pairs']} minimal pairs that differ only in polarity (Table~\\ref{{tab:negation-test}}), the "
+               f"TF-IDF classifier scored risk and no-risk statements almost identically (mean "
+               f"{nt['mean_score_risk']:.2f} vs {nt['mean_score_no_risk']:.2f}): the stop-word normalisation of its "
+               f"training data removes the negation. The deployed gate escalated {nv['risk_to_crisis']} of "
+               f"{nv['risk_n']} risk statements but also {nv['no_risk_to_crisis']} of {nv['no_risk_n']} negated ones "
+               f"(``I don't want to die''), separating only {nv['pairs_separated']} pairs; the lexicon's negation "
+               "guard moves some of them to the non-blocking tier, but not most. The error is on the safe side, but it "
+               "adds to the over-escalation of ordinary messages.", c_ng)
+    else:
+        m.text("NegationSummary", None, c_ng)
+    sb = load("safety_baselines.json")
+    c_sb = "notebooks/kaggle\\_experiments.ipynb step safety\\_baselines"
+    sbm = {k: v for k, v in (sb or {}).get("methods", {}).items() if "error" not in v and k != "gate"}
+    if sb and sbm:
+        g_ = sb["methods"]["gate"]
+        names_sb = {"llama_guard": "Llama Guard 3 (1B)", "shieldgemma": "ShieldGemma (2B)",
+                    "zeroshot": "a zero-shot LLM classifier (gpt-oss-120b)"}
+        parts_sb = [f"{names_sb.get(k, k)} escalated {v['heldout']['crisis_k']} of {v['heldout']['crisis_n']} held-out "
+                    f"crisis prompts, {v['heldout']['fp']} of {v['heldout']['neg_n']} venting or informational ones and "
+                    f"{v['faq_gen']['escalated']} of {v['faq_gen']['n']} FAQ-Gen questions" for k, v in sbm.items()]
+        miss = [names_sb.get(k, k) for k, v in sb["methods"].items() if "error" in v]
+        m.text("SafetyBaselinesSummary",
+               f"Off-the-shelf classifiers, scored the same way (Table~\\ref{{tab:safety-baselines}}): the gate escalated "
+               f"{g_['heldout']['crisis_k']} of {g_['heldout']['crisis_n']}, {g_['heldout']['fp']} of "
+               f"{g_['heldout']['neg_n']} and {g_['faq_gen']['escalated']} of {g_['faq_gen']['n']}; "
+               + "; ".join(parts_sb) + "."
+               + (f" {', '.join(miss)} could not be run (no access)." if miss else ""), c_sb)
+    else:
+        m.text("SafetyBaselinesSummary", None, c_sb)
+
+    # ---------------------------------------------------------------- citation precision, matched length, runtime
+    cp = load("citation_precision.json")
+    c_cp = "python -m scripts.citation\\_precision"
+    if cp:
+        gpu_cp = {k.split(":")[1]: v for k, v in cp["sets"].items() if k.startswith("gpu:") and v["citation_precision"] is not None}
+        loc_cp = next((v for k, v in cp["sets"].items() if k.startswith("local:")), None)
+        abl_cp = {k.split(":")[2]: v for k, v in cp["sets"].items() if k.startswith("ablation:")}
+        if gpu_cp:
+            vals = sorted(v["citation_precision"] for v in gpu_cp.values())
+            import statistics as _st
+            txt = (f"Citation precision, which checks each cited passage against the sentence that cites it and so does "
+                   f"not grow with the amount of retrieved text (Table~\\ref{{tab:citation-precision}}), ranged from "
+                   f"{vals[0]:.2f} to {vals[-1]:.2f} across the {len(vals)} models that cited (median "
+                   f"{_st.median(vals):.2f})")
+            if loc_cp and loc_cp["citation_precision"] is not None:
+                txt += f"; it was {loc_cp['citation_precision']:.2f} for the deployed model"
+            if "abl_full_full" in abl_cp and "abl_full_full_matched" in abl_cp and \
+                    None not in (abl_cp["abl_full_full"]["citation_precision"], abl_cp["abl_full_full_matched"]["citation_precision"]):
+                txt += (f", and {abl_cp['abl_full_full']['citation_precision']:.2f} at full context length against "
+                        f"{abl_cp['abl_full_full_matched']['citation_precision']:.2f} at naive length in the ablation")
+            m.text("CitationPrecisionSummary", txt + ".", c_cp)
+        else:
+            m.text("CitationPrecisionSummary", None, c_cp)
+    else:
+        m.text("CitationPrecisionSummary", None, c_cp)
+    mt = load("generation_matched.json")
+    c_mt = "notebooks/kaggle\\_experiments.ipynb step generation\\_matched"
+    if mt:
+        sig_m = mt.get("significance", {})
+        ms = [x for x in mt["config"]["models"] if f"{x}|faq_gen|faithfulness" in sig_m]
+
+        def dp(x, a, b):
+            g = sig_m[f"{x}|faq_gen|faithfulness"]
+            return g["delta"].get(f"{a}>{b}"), g["p_bootstrap_holm"].get(f"{a}>{b}")
+        eq = [dp(x, "abl_full_full_matched", "abl_naive_naive") for x in ms]
+        ln = [dp(x, "abl_full_full", "abl_full_full_matched") for x in ms]
+        up = sum(d > 0 and pv < 0.05 for d, pv in eq if d is not None)
+        down = sum(d < 0 and pv < 0.05 for d, pv in eq if d is not None)
+        lup = sum(d > 0 and pv < 0.05 for d, pv in ln if d is not None)
+        m.text("MatchedSummary",
+               f"Across the {len(ms)} instruction-tuned models (Table~\\ref{{tab:gen-matched}}; one run, no gate), the "
+               f"full pipeline cut to the naive context length was significantly more faithful than naive RAG for {up} "
+               f"models and less faithful for {down}, while restoring the full context raised faithfulness "
+               f"significantly for {lup}.", c_mt)
+    else:
+        m.text("MatchedSummary", None, c_mt)
+    rt = load("generation_runtime.json")
+    c_rt = "notebooks/kaggle\\_experiments.ipynb step generation\\_runtime"
+    if rt:
+        rr = {r["model"]: r for r in rt["summary"] if r["dataset"] == "oos_questions"}
+
+        def kdec(x):
+            a_ = get(rr.get(x), "abstained")
+            return f"{round(a_['mean'] * a_['n'])} of {a_['n']}" if a_ else "--"
+        m.text("RuntimeSummary",
+               "Run four ways in one session on one GPU (Table~\\ref{tab:gen-runtime}), the same Qwen2.5-1.5B weights "
+               f"declined {kdec('qwen2.5-1.5b-gguf')} out-of-scope questions with llama.cpp at 4 bits (Q4\\_K\\_M), "
+               f"{kdec('qwen2.5-1.5b-gguf-f16')} with llama.cpp at 16 bits, {kdec('qwen2.5-1.5b-instruct-f16')} with "
+               f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4).", c_rt)
+    else:
+        m.text("RuntimeSummary", None, c_rt)
 
     # ---------------------------------------------------------------- component ablation (Kaggle)
     ab = load("generation_ablation.json")
@@ -685,6 +792,81 @@ def main():
                 f"${ab_r2:+.2f}$ ({fp(ab_r2_p)}) with the full one.")
     m.text("AblationSummary", ab_txt, c_ab)
 
+    # ---------------------------------------------------------------- benchmark summary (main text)
+    if gg:
+        from eval.generation_eval import model_group as _mg2
+        from mhrag.llm.registry import load_catalog as _lc2
+
+        cat2 = _lc2()
+        g_rows = {(r["model"], r["profile"], r["dataset"]): r for r in gg["summary"]}
+        m_rows = {(r["model"], r["profile"]): r for r in (mt or {}).get("summary", []) if r["dataset"] == "faq_gen"}
+        m_sig = (mt or {}).get("significance", {})
+        cp_sets = {k.split(":")[1]: v for k, v in (cp or {}).get("sets", {}).items() if k.startswith("gpu:")}
+        gcfg2 = gg.get("config", {}).get("models", [])
+        brows = []
+        for x in gcfg2:
+            if _mg2(x, cat2) == "base" or (x, "full", "faq_gen") not in g_rows:
+                continue
+
+            def mean_(r, k, nd=3):
+                v = get(r, k, "mean")
+                return "--" if v is None else f"{v:.{nd}f}"
+            mn, mm_, mf = (m_rows.get((x, a_)) for a_ in ("abl_naive_naive", "abl_full_full_matched", "abl_full_full"))
+            pv = get(m_sig, f"{x}|faq_gen|faithfulness", "p_bootstrap_holm", "abl_full_full_matched>abl_naive_naive")
+            star = "$^{*}$" if pv is not None and pv < 0.05 else ""
+            cpv = get(cp_sets.get(x), "citation_precision")
+            size = cat2[x].raw.get("params_b") if x in cat2 else None
+            brows.append([x.replace("_", "\\_"), f"{size:g}" if size else "--",
+                          mean_(mn, "faithfulness") if mn else mean_(g_rows.get((x, "naive", "faq_gen")), "faithfulness"),
+                          (mean_(mm_, "faithfulness") + star) if mm_ else "--",
+                          mean_(mf, "faithfulness") if mf else mean_(g_rows.get((x, "full", "faq_gen")), "faithfulness"),
+                          mean_(g_rows.get((x, "full", "faq_gen")), "has_citation", 2),
+                          "--" if cpv is None else f"{cpv:.2f}",
+                          mean_(g_rows.get((x, "naive", "oos_questions")), "abstained", 2),
+                          mean_(g_rows.get((x, "full", "oos_questions")), "abstained", 2)])
+        if brows:
+            write_table("benchmark_summary", ["Model", "Size (B)", "Faithful. naive", "Faithful. full, naive length",
+                                              "Faithful. full", "Cites", "Citation prec.", "OOS declined naive",
+                                              "OOS declined full"], brows,
+                        "Instruction-tuned models, naive RAG versus the full pipeline. Faithfulness (FAQ-Gen) is given at "
+                        "naive RAG's context length as well as at full length, because it grows with the amount of "
+                        "retrieved text" + (" (one run per model, no gate; $^{*}$ the full pipeline at naive length "
+                        "differs significantly from naive RAG, paired bootstrap, Holm-corrected)" if mt else
+                        "; the length-matched column is pending") + ". Cites = share of FAQ-Gen answers with a citation; "
+                        "Citation prec. = share of cited passages that entail the citing sentence; OOS declined = share "
+                        "of the model's answers to the 50 out-of-scope questions that decline (phrase list). Per-setting "
+                        "results for every model, including the non-chat baselines, are in \\ref{app:generation}.",
+                        "tab:benchmark-summary", align="lrrrrrrrr", source="results/generation_*.json")
+
+    # ---------------------------------------------------------------- run-to-run divergence (main run vs ablation)
+    def _scored(exp):
+        import gzip as _gz
+        d_ = R / "generation" / exp
+        for nm, op in (("scored.jsonl", open), ("scored.jsonl.gz", _gz.open)):
+            if (d_ / nm).exists():
+                with op(d_ / nm, "rt", encoding="utf-8") as f_:
+                    return [json.loads(x) for x in f_]
+        return []
+    div_txt = None
+    if ab and gl_first:
+        loc_r = {r["id"]: r for r in _scored("local") if r["model"] == gl_first and r["profile"] == "full"
+                 and r["dataset"] == "faq_gen" and r.get("generated")}
+        abl_r = {r["id"]: r for r in _scored("ablation") if r["profile"] == "abl_full_full" and r["dataset"] == "faq_gen"}
+        ids = [i for i in loc_r if i in abl_r and loc_r[i].get("gate") in (None, "none")
+               and [x["chunk_id"] for x in loc_r[i]["sources"]] == [x["chunk_id"] for x in abl_r[i]["sources"]]]
+        same_ans = sum(loc_r[i]["answer"].strip() == abl_r[i]["answer"].strip() for i in ids)
+        fl = [loc_r[i]["metrics"].get("faithfulness") for i in ids]
+        fa_ = [abl_r[i]["metrics"].get("faithfulness") for i in ids]
+        pairs_ = [(x, y) for x, y in zip(fl, fa_, strict=True) if x is not None and y is not None]
+        if ids and pairs_:
+            div_txt = (f"only {same_ans} of {len(ids)} answers to questions the gate passed were identical. The "
+                       "answers diverged after a shared opening, which points to numerical differences between the two "
+                       "Kaggle sessions (the GPU build of llama.cpp is not pinned), not to a configuration difference. Their mean faithfulness differed by "
+                       f"{abs(sum(x for x, _ in pairs_) - sum(y for _, y in pairs_)) / len(pairs_):.3f} "
+                       f"({sum(x for x, _ in pairs_) / len(pairs_):.3f} vs {sum(y for _, y in pairs_) / len(pairs_):.3f}), "
+                       "a measure of run-to-run variation; every comparison in a table comes from a single run.")
+    m.text("AblationRunDivergence", div_txt, "python -m scripts.rescore\\_faithfulness")
+
     # ---------------------------------------------------------------- abstention cross-check (LLM judge)
     ac = load("abstention_check.json")
     c_ac = "notebooks/kaggle\\_experiments.ipynb step abstention\\_check"
@@ -704,66 +886,52 @@ def main():
     else:
         m.text("AbstentionCheckSummary", None, c_ac)
 
-    # ---------------------------------------------------------------- abstract
+    # ---------------------------------------------------------------- abstract: four findings, one sentence each
     parts = []
-    if get(load("safety_gate_v2_heldout.json"), "variants", dep):
-        g = load("safety_gate_v2_heldout.json")["variants"][dep]
-        pc, e = g["per_category"], g["escalation"]
-        nc = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
-        kc = round(g["crisis_recall_any_escalation"] * nc)
-        dev = get(load("safety_gate_v2_devset.json"), "variants", dep, "crisis_recall_any_escalation")
-        parts.append(f"On a held-out red-team set the gate escalated {kc} of {nc} crisis messages (recall "
-                     f"{f3(g['crisis_recall_any_escalation'])}" + (f", against {f3(dev)} on the development set" if dev else "")
-                     + f") and {e['fp']} of {e['fp'] + e['tn']} non-crisis messages; the lexicon component generalised "
-                     "worst.")
-    if rm:
-        # only claim an improvement that is significant (Holm-corrected paired bootstrap) on HeadingQA and SynthQA
-        wins = []
-        for ds in ("heading_qa", "synth_qa"):
-            runs = [r for r in rm["runs"] if r["dataset"] == ds]
-            if not runs:
-                continue
-            best = max(runs, key=lambda r: r["summary"]["nDCG@10"]["mean"])
-            fam = rm["significance"].get(f"{ds}|c{best['chunk_tokens']}|nDCG@10", {})
-            rid = f"{best['system']}|{best['embedder'] or '-'}|c{best['chunk_tokens']}"
-            p = fam.get("p_bootstrap_holm", {}).get(rid)
-            if p is not None and p < 0.05 and fam["delta"][rid] > 0:
-                wins.append(f"{DS[ds]}: +{fam['delta'][rid]:.3f} nDCG@10 with "
-                            f"{SYS[best['system']].replace(' (RRF)', '')}")
-        if wins:
-            parts.append("Relative to a dense-retrieval baseline, the best configurations improved nDCG@10 "
-                         "significantly (" + "; ".join(wins) + ").")
-    if v1 and cpu:
-        parts.append(f"On a laptop CPU, quantised inference cut the median end-to-end answer time from "
-                     f"{same['base_e2e']:.0f}~s to {same['e2e']:.0f}~s, and streaming showed the first words after "
-                     f"{same['ttft']:.1f}~s.")
-    if gl and gl_first:
-        fn, fu = get(row.get(("naive", "faq_gen")), "faithfulness", "mean"), get(row.get(("full", "faq_gen")), "faithfulness", "mean")
-        on, ou = (get(row.get(("naive", "oos_questions")), "abstained", "mean"),
-                  get(row.get(("full", "oos_questions")), "abstained", "mean"))
-        if None not in (fn, fu, on, ou):
-            txt = (f"With the same 1.5B model, the full pipeline raised NLI faithfulness on FAQ-Gen from {f3(fn)} to "
-                   f"{f3(fu)} and the share of out-of-scope questions it declined from {on:.2f} to {ou:.2f}")
-            loc_ac = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items()
-                           if k.startswith("local:")), None)
-            if loc_ac and "full" in loc_ac and "naive" in loc_ac:
-                txt += (f" ({loc_ac['naive']['judge_rate']:.2f} to {loc_ac['full']['judge_rate']:.2f} according to an "
-                        "LLM judge that does not see the prompt)")
-            if ab_txt:
-                txt += ("; a component ablation attributes the faithfulness gain mainly to the amount of retrieved text "
-                        "rather than better retrieval, and the abstention to the system prompt")
-            if judge_txt:
-                jr = {(r["profile"], r["dataset"]): r for r in gl["summary"] if r["model"] == gl_first}
-                h_nr = get(jr.get(("no_rag", "faq_gen")), "judge_helpfulness", "mean")
-                h_fu = get(jr.get(("full", "faq_gen")), "judge_helpfulness", "mean")
-                txt += (f"; {'the' if loc_ac else 'an LLM'} judge nevertheless rated its answers less helpful than answers "
-                        "without retrieval "
-                        f"({h_fu:.2f} vs {h_nr:.2f} on a 1--5 scale, {gl['config'].get('judge_sample')}-question sample)")
-            if ge and "faq_gen" in ge["datasets"]:
-                fq = ge["datasets"]["faq_gen"]
-                txt += (f", and the risk gate sent {fq['labels'].get('crisis', 0)} of {fq['n']} informational FAQ "
-                        "questions to the crisis protocol")
-            parts.append(txt + ".")
+    mt = load("generation_matched.json")
+    if ab:
+        rows_ab = {(r["profile"], r["dataset"]): r for r in ab["summary"]}
+
+        def fab(arm):
+            return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
+        txt = (f"(1) The full pipeline's higher NLI faithfulness came mainly from giving the model more retrieved text: "
+               f"at equal context length, better retrieval added nothing ({f3(fab('abl_full_full_matched'))} vs "
+               f"{f3(fab('abl_naive_full'))})")
+        if mt:
+            sig_m = mt.get("significance", {})
+            ms = [m_ for m_ in mt["config"]["models"]
+                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", "abl_full_full_matched>abl_naive_naive") is not None]
+            up = [m_ for m_ in ms if (get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm",
+                                          "abl_full_full_matched>abl_naive_naive") or 1) < 0.05
+                  and sig_m[f"{m_}|faq_gen|faithfulness"]["delta"]["abl_full_full_matched>abl_naive_naive"] > 0]
+            txt += f", and at naive context length the full pipeline beat naive RAG significantly for {len(up)} of {len(ms)} models"
+        parts.append(txt + ".")
+    ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
+    ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
+    if ac_loc and ac_abl and "naive" in ac_loc and "abl_naive_full" in ac_abl:
+        parts.append(f"(2) Declining out-of-scope questions came from the system prompt, not retrieval (judge-rated "
+                     f"{ac_loc['naive']['judge_rate']:.2f} $\\rightarrow$ {ac_abl['abl_naive_full']['judge_rate']:.2f} "
+                     f"with the grounded prompt; {ac_abl['abl_full_naive']['judge_rate']:.2f} with better retrieval alone).")
+    gd, gh = (get(load(f"safety_gate_v2_{t}.json"), "variants", dep) for t in ("devset", "heldout"))
+    neg = get(load("negation_test.json"), "variants", dep)
+    if gd and gh:
+        def kn(v):
+            pc = v["per_category"]
+            n = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
+            return f"{round(v['crisis_recall_any_escalation'] * n)} of {n}"
+        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the author-written development set but "
+               f"{kn(gh)} on the frozen held-out set")
+        if neg:
+            txt += f", escalated {neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements (``I don't want to die'')"
+        if ge and "faq_gen" in ge["datasets"]:
+            fq = ge["datasets"]["faq_gen"]
+            txt += f" and sent {fq['labels'].get('crisis', 0)} of {fq['n']} ordinary FAQ questions to the crisis protocol"
+        parts.append(txt + ".")
+    if tf:
+        hf, hn = (get(tf, "metrics", "judge_helpfulness", "settings", p_, "mean") for p_ in ("full", "no_rag"))
+        if None not in (hf, hn):
+            parts.append(f"(4) An LLM judge rated grounded answers less helpful than answers without retrieval "
+                         f"({hf:.2f} vs {hn:.2f} on 1--5).")
     m.text("AbstractResults", " ".join(p for p in parts if p), "run all experiments (scripts/run_all_local.sh)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)  # paper/ is not in the repository (kept private)

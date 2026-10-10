@@ -78,6 +78,26 @@ models:
     license: apache-2.0
     gated: false
     context: 8192
+  qwen2.5-1.5b-instruct-f16:
+    label: Qwen2.5-1.5B-Instruct (transformers, 16-bit weights)
+    backend: hf
+    hf_id: Qwen/Qwen2.5-1.5B-Instruct
+    family: qwen2
+    params_b: 1.54
+    license: apache-2.0
+    gated: false
+    context: 8192
+    load_in_4bit: false            # runtime comparison: unquantised, whatever MHRAG_LOAD_IN_4BIT says
+  qwen2.5-1.5b-gguf-f16:
+    label: Qwen2.5-1.5B-Instruct (GGUF F16, llama.cpp)
+    backend: llamacpp
+    gguf_repo: Qwen/Qwen2.5-1.5B-Instruct-GGUF
+    gguf_file: qwen2.5-1.5b-instruct-fp16.gguf   # listed in the repo (huggingface.co/api/models/Qwen/Qwen2.5-1.5B-Instruct-GGUF)
+    family: qwen2
+    params_b: 1.54
+    license: apache-2.0
+    gated: false
+    context: 8192
   qwen2.5-1.5b-gguf:
     label: Qwen2.5-1.5B-Instruct (GGUF Q4_K_M, CPU)
     backend: llamacpp

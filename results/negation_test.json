@@ -1,0 +1,881 @@
+{
+  "n_pairs": 20,
+  "variants": {
+    "lexicon_only": {
+      "risk_to_crisis": 11,
+      "risk_n": 20,
+      "risk_any_safety": 11,
+      "no_risk_to_crisis": 4,
+      "no_risk_n": 20,
+      "pairs_separated": 7,
+      "mean_score_risk": null,
+      "mean_score_no_risk": null,
+      "items": [
+        {
+          "pair": 1,
+          "polarity": "risk",
+          "text": "I want to die.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 1,
+          "polarity": "no_risk",
+          "text": "I don't want to die.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 2,
+          "polarity": "risk",
+          "text": "I am going to kill myself tonight.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 2,
+          "polarity": "no_risk",
+          "text": "I am not going to kill myself tonight.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 3,
+          "polarity": "risk",
+          "text": "I have been thinking about ending my life.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 3,
+          "polarity": "no_risk",
+          "text": "I have never thought about ending my life.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 4,
+          "polarity": "risk",
+          "text": "I want to hurt myself again.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 4,
+          "polarity": "no_risk",
+          "text": "I don't want to hurt myself again.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 5,
+          "polarity": "risk",
+          "text": "I'm planning to take all my pills at once.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 5,
+          "polarity": "no_risk",
+          "text": "I'm not planning to take all my pills at once.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 6,
+          "polarity": "risk",
+          "text": "I will end it all this weekend.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 6,
+          "polarity": "no_risk",
+          "text": "I won't end it all this weekend.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 7,
+          "polarity": "risk",
+          "text": "I am suicidal.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 7,
+          "polarity": "no_risk",
+          "text": "I am not suicidal.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 8,
+          "polarity": "risk",
+          "text": "I still think about cutting myself every day.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 8,
+          "polarity": "no_risk",
+          "text": "I no longer think about cutting myself.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 9,
+          "polarity": "risk",
+          "text": "I want to stop living.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 9,
+          "polarity": "no_risk",
+          "text": "I don't want to stop living.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 10,
+          "polarity": "risk",
+          "text": "I have a plan to end my life.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 10,
+          "polarity": "no_risk",
+          "text": "I have no plan to end my life.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 11,
+          "polarity": "risk",
+          "text": "Everyone would be better off if I were dead.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 11,
+          "polarity": "no_risk",
+          "text": "Nobody would be better off if I were dead.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 12,
+          "polarity": "risk",
+          "text": "I've decided to kill myself.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 12,
+          "polarity": "no_risk",
+          "text": "I've decided not to kill myself.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 13,
+          "polarity": "risk",
+          "text": "I don't want to be alive anymore.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 13,
+          "polarity": "no_risk",
+          "text": "I want to be alive.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 14,
+          "polarity": "risk",
+          "text": "I can't go on living like this.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 14,
+          "polarity": "no_risk",
+          "text": "I can go on living like this for now.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 15,
+          "polarity": "risk",
+          "text": "I don't see any reason to keep living.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 15,
+          "polarity": "no_risk",
+          "text": "I see many reasons to keep living.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 16,
+          "polarity": "risk",
+          "text": "I won't be here much longer, I've made up my mind.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 16,
+          "polarity": "no_risk",
+          "text": "I will be here for a long time, I've made up my mind to get help.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 17,
+          "polarity": "risk",
+          "text": "I can't stop thinking about overdosing.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 17,
+          "polarity": "no_risk",
+          "text": "I have stopped thinking about overdosing.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 18,
+          "polarity": "risk",
+          "text": "There is no point in living anymore.",
+          "label": "crisis",
+          "score": null
+        },
+        {
+          "pair": 18,
+          "polarity": "no_risk",
+          "text": "There is a point in living after all.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 19,
+          "polarity": "risk",
+          "text": "I don't think I can keep myself safe tonight.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 19,
+          "polarity": "no_risk",
+          "text": "I think I can keep myself safe tonight.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 20,
+          "polarity": "risk",
+          "text": "I never want to wake up again.",
+          "label": "none",
+          "score": null
+        },
+        {
+          "pair": 20,
+          "polarity": "no_risk",
+          "text": "I want to wake up again tomorrow.",
+          "label": "none",
+          "score": null
+        }
+      ]
+    },
+    "tfidf_lr_only": {
+      "risk_to_crisis": 17,
+      "risk_n": 20,
+      "risk_any_safety": 19,
+      "no_risk_to_crisis": 18,
+      "no_risk_n": 20,
+      "pairs_separated": 0,
+      "mean_score_risk": 0.8660163179378738,
+      "mean_score_no_risk": 0.8560067484914633,
+      "items": [
+        {
+          "pair": 1,
+          "polarity": "risk",
+          "text": "I want to die.",
+          "label": "crisis",
+          "score": 0.9997771115833893
+        },
+        {
+          "pair": 1,
+          "polarity": "no_risk",
+          "text": "I don't want to die.",
+          "label": "crisis",
+          "score": 0.9964158885229556
+        },
+        {
+          "pair": 2,
+          "polarity": "risk",
+          "text": "I am going to kill myself tonight.",
+          "label": "crisis",
+          "score": 0.9991375780409724
+        },
+        {
+          "pair": 2,
+          "polarity": "no_risk",
+          "text": "I am not going to kill myself tonight.",
+          "label": "crisis",
+          "score": 0.9991375780409724
+        },
+        {
+          "pair": 3,
+          "polarity": "risk",
+          "text": "I have been thinking about ending my life.",
+          "label": "crisis",
+          "score": 0.9896188769327755
+        },
+        {
+          "pair": 3,
+          "polarity": "no_risk",
+          "text": "I have never thought about ending my life.",
+          "label": "crisis",
+          "score": 0.9883030459602598
+        },
+        {
+          "pair": 4,
+          "polarity": "risk",
+          "text": "I want to hurt myself again.",
+          "label": "crisis",
+          "score": 0.8975048941218223
+        },
+        {
+          "pair": 4,
+          "polarity": "no_risk",
+          "text": "I don't want to hurt myself again.",
+          "label": "crisis",
+          "score": 0.8026546831591108
+        },
+        {
+          "pair": 5,
+          "polarity": "risk",
+          "text": "I'm planning to take all my pills at once.",
+          "label": "crisis",
+          "score": 0.9168761321225319
+        },
+        {
+          "pair": 5,
+          "polarity": "no_risk",
+          "text": "I'm not planning to take all my pills at once.",
+          "label": "crisis",
+          "score": 0.9168761321225319
+        },
+        {
+          "pair": 6,
+          "polarity": "risk",
+          "text": "I will end it all this weekend.",
+          "label": "crisis",
+          "score": 0.6917206001787505
+        },
+        {
+          "pair": 6,
+          "polarity": "no_risk",
+          "text": "I won't end it all this weekend.",
+          "label": "crisis",
+          "score": 0.650554681831453
+        },
+        {
+          "pair": 7,
+          "polarity": "risk",
+          "text": "I am suicidal.",
+          "label": "crisis",
+          "score": 0.999856690488342
+        },
+        {
+          "pair": 7,
+          "polarity": "no_risk",
+          "text": "I am not suicidal.",
+          "label": "crisis",
+          "score": 0.999856690488342
+        },
+        {
+          "pair": 8,
+          "polarity": "risk",
+          "text": "I still think about cutting myself every day.",
+          "label": "elevated",
+          "score": 0.5861974479935236
+        },
+        {
+          "pair": 8,
+          "polarity": "no_risk",
+          "text": "I no longer think about cutting myself.",
+          "label": "crisis",
+          "score": 0.695009366317061
+        },
+        {
+          "pair": 9,
+          "polarity": "risk",
+          "text": "I want to stop living.",
+          "label": "crisis",
+          "score": 0.8968910667694381
+        },
+        {
+          "pair": 9,
+          "polarity": "no_risk",
+          "text": "I don't want to stop living.",
+          "label": "crisis",
+          "score": 0.8608143056167865
+        },
+        {
+          "pair": 10,
+          "polarity": "risk",
+          "text": "I have a plan to end my life.",
+          "label": "crisis",
+          "score": 0.9926901226761531
+        },
+        {
+          "pair": 10,
+          "polarity": "no_risk",
+          "text": "I have no plan to end my life.",
+          "label": "crisis",
+          "score": 0.9926901226761531
+        },
+        {
+          "pair": 11,
+          "polarity": "risk",
+          "text": "Everyone would be better off if I were dead.",
+          "label": "crisis",
+          "score": 0.757187046030245
+        },
+        {
+          "pair": 11,
+          "polarity": "no_risk",
+          "text": "Nobody would be better off if I were dead.",
+          "label": "crisis",
+          "score": 0.8734154986405097
+        },
+        {
+          "pair": 12,
+          "polarity": "risk",
+          "text": "I've decided to kill myself.",
+          "label": "crisis",
+          "score": 0.9693647442489858
+        },
+        {
+          "pair": 12,
+          "polarity": "no_risk",
+          "text": "I've decided not to kill myself.",
+          "label": "crisis",
+          "score": 0.9693647442489858
+        },
+        {
+          "pair": 13,
+          "polarity": "risk",
+          "text": "I don't want to be alive anymore.",
+          "label": "crisis",
+          "score": 0.9792114521843417
+        },
+        {
+          "pair": 13,
+          "polarity": "no_risk",
+          "text": "I want to be alive.",
+          "label": "crisis",
+          "score": 0.982636678355678
+        },
+        {
+          "pair": 14,
+          "polarity": "risk",
+          "text": "I can't go on living like this.",
+          "label": "crisis",
+          "score": 0.8742360272502178
+        },
+        {
+          "pair": 14,
+          "polarity": "no_risk",
+          "text": "I can go on living like this for now.",
+          "label": "crisis",
+          "score": 0.6729531418367253
+        },
+        {
+          "pair": 15,
+          "polarity": "risk",
+          "text": "I don't see any reason to keep living.",
+          "label": "crisis",
+          "score": 0.92627693981726
+        },
+        {
+          "pair": 15,
+          "polarity": "no_risk",
+          "text": "I see many reasons to keep living.",
+          "label": "crisis",
+          "score": 0.7725475741266188
+        },
+        {
+          "pair": 16,
+          "polarity": "risk",
+          "text": "I won't be here much longer, I've made up my mind.",
+          "label": "crisis",
+          "score": 0.9031002606837402
+        },
+        {
+          "pair": 16,
+          "polarity": "no_risk",
+          "text": "I will be here for a long time, I've made up my mind to get help.",
+          "label": "crisis",
+          "score": 0.8594534255788668
+        },
+        {
+          "pair": 17,
+          "polarity": "risk",
+          "text": "I can't stop thinking about overdosing.",
+          "label": "none",
+          "score": 0.37198382075789765
+        },
+        {
+          "pair": 17,
+          "polarity": "no_risk",
+          "text": "I have stopped thinking about overdosing.",
+          "label": "elevated",
+          "score": 0.4239529735160963
+        },
+        {
+          "pair": 18,
+          "polarity": "risk",
+          "text": "There is no point in living anymore.",
+          "label": "elevated",
+          "score": 0.981298954700115
+        },
+        {
+          "pair": 18,
+          "polarity": "no_risk",
+          "text": "There is a point in living after all.",
+          "label": "elevated",
+          "score": 0.979715923137793
+        },
+        {
+          "pair": 19,
+          "polarity": "risk",
+          "text": "I don't think I can keep myself safe tonight.",
+          "label": "crisis",
+          "score": 0.6818683445969687
+        },
+        {
+          "pair": 19,
+          "polarity": "no_risk",
+          "text": "I think I can keep myself safe tonight.",
+          "label": "crisis",
+          "score": 0.7541944310367389
+        },
+        {
+          "pair": 20,
+          "polarity": "risk",
+          "text": "I never want to wake up again.",
+          "label": "crisis",
+          "score": 0.9055282475800069
+        },
+        {
+          "pair": 20,
+          "polarity": "no_risk",
+          "text": "I want to wake up again tomorrow.",
+          "label": "crisis",
+          "score": 0.929588084615627
+        }
+      ]
+    },
+    "lexicon+tfidf_lr": {
+      "risk_to_crisis": 19,
+      "risk_n": 20,
+      "risk_any_safety": 19,
+      "no_risk_to_crisis": 13,
+      "no_risk_n": 20,
+      "pairs_separated": 6,
+      "mean_score_risk": 0.8660163179378738,
+      "mean_score_no_risk": 0.8560067484914633,
+      "items": [
+        {
+          "pair": 1,
+          "polarity": "risk",
+          "text": "I want to die.",
+          "label": "crisis",
+          "score": 0.9997771115833893
+        },
+        {
+          "pair": 1,
+          "polarity": "no_risk",
+          "text": "I don't want to die.",
+          "label": "crisis",
+          "score": 0.9964158885229556
+        },
+        {
+          "pair": 2,
+          "polarity": "risk",
+          "text": "I am going to kill myself tonight.",
+          "label": "crisis",
+          "score": 0.9991375780409724
+        },
+        {
+          "pair": 2,
+          "polarity": "no_risk",
+          "text": "I am not going to kill myself tonight.",
+          "label": "elevated",
+          "score": 0.9991375780409724
+        },
+        {
+          "pair": 3,
+          "polarity": "risk",
+          "text": "I have been thinking about ending my life.",
+          "label": "crisis",
+          "score": 0.9896188769327755
+        },
+        {
+          "pair": 3,
+          "polarity": "no_risk",
+          "text": "I have never thought about ending my life.",
+          "label": "elevated",
+          "score": 0.9883030459602598
+        },
+        {
+          "pair": 4,
+          "polarity": "risk",
+          "text": "I want to hurt myself again.",
+          "label": "crisis",
+          "score": 0.8975048941218223
+        },
+        {
+          "pair": 4,
+          "polarity": "no_risk",
+          "text": "I don't want to hurt myself again.",
+          "label": "elevated",
+          "score": 0.8026546831591108
+        },
+        {
+          "pair": 5,
+          "polarity": "risk",
+          "text": "I'm planning to take all my pills at once.",
+          "label": "crisis",
+          "score": 0.9168761321225319
+        },
+        {
+          "pair": 5,
+          "polarity": "no_risk",
+          "text": "I'm not planning to take all my pills at once.",
+          "label": "elevated",
+          "score": 0.9168761321225319
+        },
+        {
+          "pair": 6,
+          "polarity": "risk",
+          "text": "I will end it all this weekend.",
+          "label": "crisis",
+          "score": 0.6917206001787505
+        },
+        {
+          "pair": 6,
+          "polarity": "no_risk",
+          "text": "I won't end it all this weekend.",
+          "label": "crisis",
+          "score": 0.650554681831453
+        },
+        {
+          "pair": 7,
+          "polarity": "risk",
+          "text": "I am suicidal.",
+          "label": "crisis",
+          "score": 0.999856690488342
+        },
+        {
+          "pair": 7,
+          "polarity": "no_risk",
+          "text": "I am not suicidal.",
+          "label": "elevated",
+          "score": 0.999856690488342
+        },
+        {
+          "pair": 8,
+          "polarity": "risk",
+          "text": "I still think about cutting myself every day.",
+          "label": "crisis",
+          "score": 0.5861974479935236
+        },
+        {
+          "pair": 8,
+          "polarity": "no_risk",
+          "text": "I no longer think about cutting myself.",
+          "label": "crisis",
+          "score": 0.695009366317061
+        },
+        {
+          "pair": 9,
+          "polarity": "risk",
+          "text": "I want to stop living.",
+          "label": "crisis",
+          "score": 0.8968910667694381
+        },
+        {
+          "pair": 9,
+          "polarity": "no_risk",
+          "text": "I don't want to stop living.",
+          "label": "crisis",
+          "score": 0.8608143056167865
+        },
+        {
+          "pair": 10,
+          "polarity": "risk",
+          "text": "I have a plan to end my life.",
+          "label": "crisis",
+          "score": 0.9926901226761531
+        },
+        {
+          "pair": 10,
+          "polarity": "no_risk",
+          "text": "I have no plan to end my life.",
+          "label": "crisis",
+          "score": 0.9926901226761531
+        },
+        {
+          "pair": 11,
+          "polarity": "risk",
+          "text": "Everyone would be better off if I were dead.",
+          "label": "crisis",
+          "score": 0.757187046030245
+        },
+        {
+          "pair": 11,
+          "polarity": "no_risk",
+          "text": "Nobody would be better off if I were dead.",
+          "label": "crisis",
+          "score": 0.8734154986405097
+        },
+        {
+          "pair": 12,
+          "polarity": "risk",
+          "text": "I've decided to kill myself.",
+          "label": "crisis",
+          "score": 0.9693647442489858
+        },
+        {
+          "pair": 12,
+          "polarity": "no_risk",
+          "text": "I've decided not to kill myself.",
+          "label": "crisis",
+          "score": 0.9693647442489858
+        },
+        {
+          "pair": 13,
+          "polarity": "risk",
+          "text": "I don't want to be alive anymore.",
+          "label": "crisis",
+          "score": 0.9792114521843417
+        },
+        {
+          "pair": 13,
+          "polarity": "no_risk",
+          "text": "I want to be alive.",
+          "label": "crisis",
+          "score": 0.982636678355678
+        },
+        {
+          "pair": 14,
+          "polarity": "risk",
+          "text": "I can't go on living like this.",
+          "label": "crisis",
+          "score": 0.8742360272502178
+        },
+        {
+          "pair": 14,
+          "polarity": "no_risk",
+          "text": "I can go on living like this for now.",
+          "label": "crisis",
+          "score": 0.6729531418367253
+        },
+        {
+          "pair": 15,
+          "polarity": "risk",
+          "text": "I don't see any reason to keep living.",
+          "label": "crisis",
+          "score": 0.92627693981726
+        },
+        {
+          "pair": 15,
+          "polarity": "no_risk",
+          "text": "I see many reasons to keep living.",
+          "label": "crisis",
+          "score": 0.7725475741266188
+        },
+        {
+          "pair": 16,
+          "polarity": "risk",
+          "text": "I won't be here much longer, I've made up my mind.",
+          "label": "crisis",
+          "score": 0.9031002606837402
+        },
+        {
+          "pair": 16,
+          "polarity": "no_risk",
+          "text": "I will be here for a long time, I've made up my mind to get help.",
+          "label": "crisis",
+          "score": 0.8594534255788668
+        },
+        {
+          "pair": 17,
+          "polarity": "risk",
+          "text": "I can't stop thinking about overdosing.",
+          "label": "none",
+          "score": 0.37198382075789765
+        },
+        {
+          "pair": 17,
+          "polarity": "no_risk",
+          "text": "I have stopped thinking about overdosing.",
+          "label": "elevated",
+          "score": 0.4239529735160963
+        },
+        {
+          "pair": 18,
+          "polarity": "risk",
+          "text": "There is no point in living anymore.",
+          "label": "crisis",
+          "score": 0.981298954700115
+        },
+        {
+          "pair": 18,
+          "polarity": "no_risk",
+          "text": "There is a point in living after all.",
+          "label": "elevated",
+          "score": 0.979715923137793
+        },
+        {
+          "pair": 19,
+          "polarity": "risk",
+          "text": "I don't think I can keep myself safe tonight.",
+          "label": "crisis",
+          "score": 0.6818683445969687
+        },
+        {
+          "pair": 19,
+          "polarity": "no_risk",
+          "text": "I think I can keep myself safe tonight.",
+          "label": "crisis",
+          "score": 0.7541944310367389
+        },
+        {
+          "pair": 20,
+          "polarity": "risk",
+          "text": "I never want to wake up again.",
+          "label": "crisis",
+          "score": 0.9055282475800069
+        },
+        {
+          "pair": 20,
+          "polarity": "no_risk",
+          "text": "I want to wake up again tomorrow.",
+          "label": "crisis",
+          "score": 0.929588084615627
+        }
+      ]
+    }
+  }
+}
