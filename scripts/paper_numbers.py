@@ -695,7 +695,12 @@ def main():
                f"An LLM judge that does not see the system prompt labelled the deployed model as declining "
                f"{f_['judge_rate']:.2f} of out-of-scope questions with the full pipeline and {n_['judge_rate']:.2f} with "
                f"naive RAG, against {f_['regex_rate']:.2f} and {n_['regex_rate']:.2f} by the phrase list (Cohen's "
-               f"$\\kappa$ {f_['cohen_kappa']:.2f} and {n_['cohen_kappa']:.2f}; Table~\\ref{{tab:abstention-check}}).", c_ac)
+               f"$\\kappa$ {f_['cohen_kappa']:.2f} and {n_['cohen_kappa']:.2f}; Table~\\ref{{tab:abstention-check}}). "
+               + (f"The phrase list therefore overstates the full pipeline's gain over naive RAG, but the gain remains: "
+                  f"{loc['full>naive']['judge_delta']:+.2f} by the judge "
+                  f"(paired bootstrap $p{'<0.001' if loc['full>naive']['p_bootstrap'] < 0.001 else '=' + format(loc['full>naive']['p_bootstrap'], '.3f')}$) "
+                  f"against {f_['regex_rate'] - n_['regex_rate']:+.2f} by the phrase list."
+                  if loc.get("full>naive") else ""), c_ac)
     else:
         m.text("AbstentionCheckSummary", None, c_ac)
 
@@ -739,14 +744,20 @@ def main():
         if None not in (fn, fu, on, ou):
             txt = (f"With the same 1.5B model, the full pipeline raised NLI faithfulness on FAQ-Gen from {f3(fn)} to "
                    f"{f3(fu)} and the share of out-of-scope questions it declined from {on:.2f} to {ou:.2f}")
+            loc_ac = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items()
+                           if k.startswith("local:")), None)
+            if loc_ac and "full" in loc_ac and "naive" in loc_ac:
+                txt += (f" ({loc_ac['naive']['judge_rate']:.2f} to {loc_ac['full']['judge_rate']:.2f} according to an "
+                        "LLM judge that does not see the prompt)")
             if ab_txt:
-                txt += (" (a component ablation attributes the first gain mainly to the amount of retrieved text rather "
-                        "than better retrieval, and the second to the system prompt)")
+                txt += ("; a component ablation attributes the faithfulness gain mainly to the amount of retrieved text "
+                        "rather than better retrieval, and the abstention to the system prompt")
             if judge_txt:
                 jr = {(r["profile"], r["dataset"]): r for r in gl["summary"] if r["model"] == gl_first}
                 h_nr = get(jr.get(("no_rag", "faq_gen")), "judge_helpfulness", "mean")
                 h_fu = get(jr.get(("full", "faq_gen")), "judge_helpfulness", "mean")
-                txt += (f"; an LLM judge nevertheless rated its answers less helpful than answers without retrieval "
+                txt += (f"; {'the' if loc_ac else 'an LLM'} judge nevertheless rated its answers less helpful than answers "
+                        "without retrieval "
                         f"({h_fu:.2f} vs {h_nr:.2f} on a 1--5 scale, {gl['config'].get('judge_sample')}-question sample)")
             if ge and "faq_gen" in ge["datasets"]:
                 fq = ge["datasets"]["faq_gen"]

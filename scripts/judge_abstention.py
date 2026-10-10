@@ -1,6 +1,7 @@
 """Cross-check the phrase-list abstention metric with an LLM judge on the out-of-scope answers.
 
     python -m scripts.judge_abstention            # needs GROQ_API_KEY; -> results/abstention_check.json
+    python -m scripts.judge_abstention --tables-only
 
 The phrase list (eval/judges.py) includes the sentence the full pipeline's system prompt suggests, so it may favour the
 full pipeline. Here an LLM judge, which never sees the system prompt, labels each saved out-of-scope answer as
@@ -56,11 +57,33 @@ def kappa(a: list[int], b: list[int]) -> float:
     return (po - pe) / (1 - pe) if pe < 1 else float("nan")
 
 
+def write_tables(out: dict) -> None:
+    names = {"no_rag": "No RAG", "naive": "Naive RAG", "full": "Full pipeline",
+             "abl_naive_full": "Naive retrieval + full prompt", "abl_full_naive": "Full retrieval + naive prompt"}
+    trows = []
+    for res in out["sets"].values():
+        for prof, v in res.items():
+            if ">" in prof:
+                continue
+            trows.append([names.get(prof, prof), str(v["n"]), f"{v['regex_rate']:.2f}", f"{v['judge_rate']:.2f}",
+                          f"{v['agreement']:.2f}", f"{v['cohen_kappa']:.2f}" if v["cohen_kappa"] == v["cohen_kappa"] else "--"])
+    if trows:
+        write_table("abstention_check", ["Setting", "$n$", "Declined (phrases)", "Declined (judge)", "Agreement",
+                                         "Cohen $\\kappa$"], trows,
+                    "Out-of-scope questions answered by Qwen2.5-1.5B (GGUF): share declined according to the phrase "
+                    f"list and according to an LLM judge ({out['judge'].replace('-groq', '')}) that does not see the "
+                    "system prompt.", "tab:abstention-check", align="lrrrrr", source="results/abstention_check.json")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sets", nargs="+", default=DEFAULT, help="experiment:model:profile1,profile2 ...")
     ap.add_argument("--judge", default="gpt-oss-120b-groq")
+    ap.add_argument("--tables-only", action="store_true", help="re-render the table from results/abstention_check.json")
     args = ap.parse_args(argv)
+    if args.tables_only:
+        write_tables(json.loads((R / "abstention_check.json").read_text()))
+        return 0
     from mhrag.llm.base import BackendError, GenerationParams
     from mhrag.llm.registry import ModelManager, availability, load_catalog
 
@@ -129,21 +152,7 @@ def main(argv=None) -> int:
     out["complete"] = complete
     (R / "abstention_check.json").write_text(json.dumps(out, indent=2))
 
-    names = {"no_rag": "No RAG", "naive": "Naive RAG", "full": "Full pipeline",
-             "abl_naive_full": "Naive retrieval + full prompt", "abl_full_naive": "Full retrieval + naive prompt"}
-    trows = []
-    for res in out["sets"].values():
-        for prof, v in res.items():
-            if ">" in prof:
-                continue
-            trows.append([names.get(prof, prof), str(v["n"]), f"{v['regex_rate']:.2f}", f"{v['judge_rate']:.2f}",
-                          f"{v['agreement']:.2f}", f"{v['cohen_kappa']:.2f}" if v["cohen_kappa"] == v["cohen_kappa"] else "--"])
-    if trows:
-        write_table("abstention_check", ["Setting", "$n$", "Declined (phrases)", "Declined (judge)", "Agreement",
-                                         "Cohen $\\kappa$"], trows,
-                    "Out-of-scope questions answered by Qwen2.5-1.5B (GGUF): share declined according to the phrase "
-                    f"list and according to an LLM judge ({args.judge.replace('-groq', '')}) that does not see the "
-                    "system prompt.", "tab:abstention-check", align="lrrrrr", source="results/abstention_check.json")
+    write_tables(out)
     print(json.dumps({s: {p: {k: v[k] for k in ("regex_rate", "judge_rate", "cohen_kappa")} if "regex_rate" in v else v
                           for p, v in r.items()} for s, r in out["sets"].items()}, indent=1))
     return 0 if complete else 75

@@ -129,3 +129,38 @@ Traceback (most recent call last):
     d = x - y
         ~~^~~
 TypeError: numpy boolean subtract, the `-` operator, is not supported, use the bitwise_xor, the `^` operator, or the logical_xor function instead.
+
+===== session started 2026-10-10 06:02
+$ CUDA_VISIBLE_DEVICES=0 MHRAG_LLAMACPP_GPU_LAYERS=-1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_ablation.yaml
+2026-10-10 06:02:58,471 INFO NumExpr defaulting to 4 threads.
+2026-10-10 06:03:00,300 INFO qwen2.5-1.5b-gguf: all answers already in the checkpoint; skipping
+2026-10-10 06:03:39,273 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-10 06:03:39,273 INFO Disabling JAX because USE_JAX is set to False
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-10 06:03:44,712 WARNING Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 202/202 [00:00<00:00, 2565.95it/s]
+2026-10-10 06:03:56,795 INFO Using default tokenizer.
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2566.04it/s]
+
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]
+Loading weights:  50%|████▉     | 194/389 [00:00<00:00, 1930.04it/s]
+Loading weights: 100%|██████████| 389/389 [00:00<00:00, 3143.48it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+wrote /kaggle/working/mhrag_results/generation_ablation.json
