@@ -40,17 +40,28 @@ def source_label(chunk) -> str:
     return f"{chunk.title}{sec}"
 
 
-def build_context(hits, budget_tokens: int, count: Callable[[str], int]) -> tuple[str, list]:
-    """Numbered context blocks, trimmed to a token budget (whole chunks only; at least one chunk)."""
-    blocks, used, total = [], [], 0
+def build_context(hits, budget_tokens: int, count: Callable[[str], int],
+                  max_chars: int | None = None) -> tuple[str, list]:
+    """Numbered context blocks, trimmed to a token budget (whole chunks only; at least one chunk).
+
+    max_chars (ablation only) caps the total passage text, cutting the last chunk at a word boundary, so a
+    configuration can be given exactly as much retrieved text as another one."""
+    blocks, used, total, chars = [], [], 0, 0
     for h in hits:
-        block = f"[{len(used) + 1}] {source_label(h.chunk)}\n{h.chunk.text.strip()}"
+        text = h.chunk.text.strip()
+        cut = max_chars is not None and chars + len(text) > max_chars
+        if cut:
+            text = text[: max_chars - chars].rsplit(" ", 1)[0]
+        block = f"[{len(used) + 1}] {source_label(h.chunk)}\n{text}"
         n = count(block)
-        if used and total + n > budget_tokens:
+        if used and (total + n > budget_tokens or (cut and len(text) < 40)):  # no scraps of a passage
             break
         blocks.append(block)
         used.append(h)
         total += n
+        chars += len(text)
+        if cut:
+            break
     return "\n\n".join(blocks), used
 
 

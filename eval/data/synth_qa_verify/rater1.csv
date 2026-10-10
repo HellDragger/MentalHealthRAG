@@ -1,0 +1,101 @@
+id,answerable_from_passage (y/n),natural_question (y/n),notes
+sq0131,Y,Y,
+sq0061,Y,Y,
+sq0110,Y,Y,Partially
+sq0018,Y,Y,
+sq0048,Y,Y,
+sq0105,Y,Y,Partially
+sq0001,Y,Y,
+sq0107,Y,Y,Partially
+sq0075,Y,Y,Partially
+sq0124,Y,Y,Partially but the other contacts are in disclaimer
+sq0081,Y,Y,
+sq0116,Y,Y,
+sq0150,Y,Y,Multiple questions
+sq0179,Y,Y,
+sq0132,Y,Y,
+sq0045,Y,Y,
+sq0054,N,Y,
+sq0083,Y,N,
+sq0062,Y,Y,
+sq0017,Y,Y,
+sq0158,Y,N,Question is directly referencing passage
+sq0146,N,Y,
+sq0196,Y,Y,Multiple questions
+sq0088,Y,Y,
+sq0186,Y,Y,
+sq0014,Y,Y,
+sq0159,Y,Y,Partially
+sq0130,Y,Y,
+sq0136,Y,Y,
+sq0143,Y,Y,Multiple questions
+sq0046,Y,Y,
+sq0174,Y,Y,
+sq0138,Y,Y,
+sq0023,Y,Y,Partially
+sq0053,Y,Y,
+sq0020,Y,Y,
+sq0162,Y,Y,
+sq0163,Y,Y,
+sq0068,N,Y,
+sq0111,Y,Y,
+sq0034,Y,Y,Partially
+sq0154,Y,Y,
+sq0071,Y,Y,
+sq0012,Y,Y,
+sq0165,N,Y,Multiple questions
+sq0115,Y,Y,
+sq0141,Y,Y,
+sq0175,Y,Y,
+sq0074,Y,Y,
+sq0059,Y,Y,
+sq0149,Y,Y,
+sq0069,N,Y,
+sq0191,N,Y,
+sq0109,Y,Y,
+sq0037,N,Y,
+sq0084,Y,Y,Partially but the other contacts are in disclaimer
+sq0125,Y,Y,
+sq0177,Y,Y,
+sq0021,N,Y,
+sq0003,Y,Y,
+sq0140,Y,Y,
+sq0028,Y,Y,
+sq0011,Y,Y,
+sq0076,Y,Y,
+sq0030,Y,Y,
+sq0072,Y,N,Question is directly referencing passage
+sq0142,Y,Y,
+sq0019,Y,Y,
+sq0127,N,Y,
+sq0050,Y,Y,
+sq0120,Y,Y,
+sq0010,Y,Y,
+sq0126,Y,Y,
+sq0035,Y,Y,
+sq0164,Y,Y,
+sq0040,Y,Y,
+sq0153,Y,Y,
+sq0063,Y,Y,
+sq0114,Y,Y,
+sq0077,Y,Y,
+sq0098,Y,Y,
+sq0043,Y,Y,
+sq0086,Y,Y,
+sq0172,N,Y,
+sq0091,Y,N,Question is directly referencing passage
+sq0144,Y,Y,Can get more detailed
+sq0002,N,Y,
+sq0093,Y,Y,
+sq0078,Y,Y,Partially but the other contacts are in disclaimer
+sq0151,Y,Y,Can get more detailed
+sq0092,Y,Y,
+sq0015,Y,Y,
+sq0161,Y,Y,Partially but the other contacts are in disclaimer
+sq0171,Y,Y,Partially first section seems useless
+sq0167,Y,Y,
+sq0194,N,Y,
+sq0108,Y,Y,
+sq0022,Y,Y,
+sq0038,Y,Y,
+sq0121,Y,N,Question is directly referencing passage and passage is answering question partially
