@@ -1,0 +1,131 @@
+
+===== session started 2026-10-10 05:05
+$ CUDA_VISIBLE_DEVICES=0 MHRAG_LLAMACPP_GPU_LAYERS=-1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_ablation.yaml
+2026-10-10 05:05:58,146 INFO NumExpr defaulting to 4 threads.
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-10 05:06:03,386 WARNING Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-10 05:06:18,701 INFO Loaded GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf in 16.5s (n_ctx=4096, gpu_layers=-1)
+2026-10-10 05:06:50,726 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-10 05:06:50,726 INFO Disabling JAX because USE_JAX is set to False
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2640.04it/s]
+2026-10-10 05:07:10,401 DEBUG Building index from IDs objects
+2026-10-10 05:07:10,770 INFO Built /kaggle/working/mhrag/artifacts/index/minilm-c48-nofaq: 10160 chunks in 51.1s (embed 5.8s)
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2669.22it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2616.08it/s]
+2026-10-10 05:11:15,376 INFO qwen2.5-1.5b-gguf abl_naive_naive faq_gen: 98 answers
+2026-10-10 05:11:15,987 INFO Index /kaggle/working/mhrag/artifacts/index/minilm-c48-nofaq is up to date (corpus hash be1f74d00f12ab383aae); skipping.
+2026-10-10 05:13:50,535 INFO qwen2.5-1.5b-gguf abl_naive_full faq_gen: 98 answers
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2646.05it/s]
+2026-10-10 05:14:19,375 DEBUG Building index from IDs objects
+2026-10-10 05:14:19,542 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq: 2216 chunks in 28.1s (embed 11.0s)
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2564.80it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2554.52it/s]
+2026-10-10 05:18:46,527 INFO qwen2.5-1.5b-gguf abl_full_naive faq_gen: 98 answers
+2026-10-10 05:18:47,137 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+2026-10-10 05:22:55,881 INFO qwen2.5-1.5b-gguf abl_full_full faq_gen: 98 answers
+2026-10-10 05:22:56,489 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+2026-10-10 05:25:29,160 INFO qwen2.5-1.5b-gguf abl_full_full_matched faq_gen: 98 answers
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2568.88it/s]
+2026-10-10 05:25:51,127 DEBUG Building index from IDs objects
+2026-10-10 05:25:51,533 INFO Built /kaggle/working/mhrag/artifacts/index/minilm-c48: 10923 chunks in 21.8s (embed 6.0s)
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2505.33it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2525.85it/s]
+2026-10-10 05:27:11,045 INFO qwen2.5-1.5b-gguf abl_naive_naive oos_questions: 50 answers
+2026-10-10 05:27:11,680 INFO Index /kaggle/working/mhrag/artifacts/index/minilm-c48 is up to date (corpus hash 84763c5d065d2dfcd417); skipping.
+2026-10-10 05:28:05,291 INFO qwen2.5-1.5b-gguf abl_naive_full oos_questions: 50 answers
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2651.89it/s]
+2026-10-10 05:28:30,552 DEBUG Building index from IDs objects
+2026-10-10 05:28:30,744 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256: 2420 chunks in 24.8s (embed 12.0s)
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2431.86it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2625.39it/s]
+2026-10-10 05:30:09,677 INFO qwen2.5-1.5b-gguf abl_full_naive oos_questions: 50 answers
+2026-10-10 05:30:10,291 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 05:31:20,212 INFO qwen2.5-1.5b-gguf abl_full_full oos_questions: 50 answers
+2026-10-10 05:31:20,822 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 05:32:11,483 INFO qwen2.5-1.5b-gguf abl_full_full_matched oos_questions: 50 answers
+2026-10-10 05:32:12,061 INFO freed 1.1G from the model cache (Qwen/Qwen2.5-1.5B-Instruct-GGUF)
+
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 202/202 [00:00<00:00, 2482.90it/s]
+2026-10-10 05:32:23,548 INFO Using default tokenizer.
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2635.52it/s]
+
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]
+Loading weights:  62%|██████▏   | 241/389 [00:00<00:00, 2353.50it/s]
+Loading weights: 100%|██████████| 389/389 [00:00<00:00, 3256.71it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/mhrag/scripts/run_eval.py", line 110, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/kaggle/working/mhrag/scripts/run_eval.py", line 89, in main
+    res = run_generation_experiment(cfg, s, limit=args.limit)
+  File "/kaggle/working/mhrag/eval/generation_eval.py", line 535, in run_generation_experiment
+    res = aggregate(answers, model_info, cfg)
+  File "/kaggle/working/mhrag/eval/generation_eval.py", line 484, in aggregate
+    return {"summary": summary, "models": model_info, "significance": _significance(groups, cfg.get("compare")),
+                                                                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/mhrag/eval/generation_eval.py", line 506, in _significance
+    raw[k], wil[k], delta[k] = paired_bootstrap_p(x, y), wilcoxon_p(x, y), float(np.mean(x) - np.mean(y))
+                                                         ~~~~~~~~~~^^^^^^
+  File "/kaggle/working/mhrag/eval/metrics.py", line 85, in wilcoxon_p
+    return float(wilcoxon(a, b, zero_method="wilcox").pvalue)
+                 ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/scipy/_lib/_util.py", line 1006, in wrapper
+    return fun(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/scipy/stats/_axis_nan_policy.py", line 579, in axis_nan_policy_wrapper
+    res = hypotest_fun_out(*samples, **kwds)
+  File "/usr/local/lib/python3.13/dist-packages/scipy/stats/_morestats.py", line 3755, in wilcoxon
+    return _wilcoxon._wilcoxon_nd(x, y, zero_method, correction, alternative,
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                  method, axis)
+                                  ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/scipy/stats/_wilcoxon.py", line 197, in _wilcoxon_nd
+    temp = _wilcoxon_iv(x, y, zero_method, correction, alternative, method, axis)
+  File "/usr/local/lib/python3.13/dist-packages/scipy/stats/_wilcoxon.py", line 72, in _wilcoxon_iv
+    d = x - y
+        ~~^~~
+TypeError: numpy boolean subtract, the `-` operator, is not supported, use the bitwise_xor, the `^` operator, or the logical_xor function instead.

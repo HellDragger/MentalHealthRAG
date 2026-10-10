@@ -642,32 +642,48 @@ def main():
     # ---------------------------------------------------------------- component ablation (Kaggle)
     ab = load("generation_ablation.json")
     c_ab = "notebooks/kaggle\\_experiments.ipynb step generation\\_ablation"
+    ab_txt = None
     if ab:
         rows_ab = {(r["profile"], r["dataset"]): r for r in ab["summary"]}
         mdl = ab["config"]["models"][0]
-        sig = ab.get("significance", {}).get(f"{mdl}|faq_gen|faithfulness", {})
+        sig_ab = ab.get("significance", {})
 
-        def fa(arm):
-            return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
+        def fa(arm, ds="faq_gen", k="faithfulness"):
+            return get(rows_ab.get((arm, ds)), k, "mean")
 
-        def pp(a, b):
-            v = get(sig, "p_bootstrap_holm", f"{a}>{b}")
-            return f"$p={v:.3f}$" if v is not None else "$p$ n/a"
-        if None not in (fa("abl_naive_naive"), fa("abl_full_full"), fa("abl_full_naive"), fa("abl_naive_full"),
-                        fa("abl_full_full_matched")):
-            m.text("AblationSummary",
-                   "The component ablation (Tables~\\ref{tab:gen-ablation} and \\ref{tab:gen-ablation-contrasts}) separates "
-                   f"the sources of the faithfulness gain. With the naive prompt, full retrieval changed faithfulness from "
-                   f"{f3(fa('abl_naive_naive'))} to {f3(fa('abl_full_naive'))} ({pp('abl_full_naive', 'abl_naive_naive')}); "
-                   f"with naive retrieval, the full prompt changed it to {f3(fa('abl_naive_full'))} "
-                   f"({pp('abl_naive_full', 'abl_naive_naive')}). With both, it was {f3(fa('abl_full_full'))}, and full "
-                   f"retrieval cut to the naive context length gave {f3(fa('abl_full_full_matched'))} "
-                   f"(against naive retrieval with the full prompt: {pp('abl_full_full_matched', 'abl_naive_full')}).",
-                   c_ab)
-        else:
-            m.text("AblationSummary", None, c_ab)
-    else:
-        m.text("AblationSummary", None, c_ab)
+        def ct(a, b, ds="faq_gen", k="faithfulness"):
+            g = sig_ab.get(f"{mdl}|{ds}|{k}", {})
+            return get(g, "delta", f"{a}>{b}"), get(g, "p_bootstrap_holm", f"{a}>{b}")
+
+        def fp(pv):
+            return "$p<0.001$" if pv < 0.001 else f"$p={pv:.3f}$"
+        arms = ("abl_naive_naive", "abl_full_naive", "abl_naive_full", "abl_full_full", "abl_full_full_matched")
+        need = [ct("abl_full_full_matched", "abl_naive_full"), ct("abl_full_full", "abl_full_full_matched"),
+                ct("abl_full_naive", "abl_naive_naive"), ct("abl_naive_full", "abl_naive_naive"),
+                ct("abl_naive_full", "abl_naive_naive", "oos_questions", "abstained"),
+                ct("abl_full_naive", "abl_naive_naive", "oos_questions", "abstained"),
+                ct("abl_full_full", "abl_naive_full", "oos_questions", "abstained")]
+        if all(fa(a) is not None for a in arms) and all(None not in x for x in need):
+            (eq_d, eq_p), (len_d, len_p), (ret_d, ret_p), (pr_d, pr_p), (ab_pr, ab_pr_p), (ab_r1, ab_r1_p), \
+                (ab_r2, ab_r2_p) = need
+            no_diff = eq_p >= 0.05
+            ab_txt = (
+                "The component ablation (Tables~\\ref{tab:gen-ablation} and~\\ref{tab:gen-ablation-contrasts}; the "
+                "same model, no gate) separates these effects. With the minimal prompt, full retrieval raised "
+                f"faithfulness from {f3(fa('abl_naive_naive'))} to {f3(fa('abl_full_naive'))} ({fp(ret_p)}), and the full "
+                f"prompt alone raised it to {f3(fa('abl_naive_full'))} ({fp(pr_p)}). Most of the retrieval gain came "
+                "from the amount of retrieved text: cut to the naive context length, full retrieval scored "
+                f"{f3(fa('abl_full_full_matched'))}, "
+                + (f"no different from naive retrieval with the same prompt ({f3(fa('abl_naive_full'))}, {fp(eq_p)})"
+                   if no_diff else f"against {f3(fa('abl_naive_full'))} for naive retrieval ({fp(eq_p)})")
+                + f", while the full-length context added ${len_d:+.3f}$ ({fp(len_p)}). Because NLI faithfulness counts a "
+                "sentence as supported when any passage entails it, this part of the gain reflects how much text the "
+                "metric can match against, not necessarily better answers; retrieval quality itself is measured in "
+                "Section~\\ref{sec:results-retrieval}. The prompt, not retrieval, produced the abstention: it raised "
+                f"the share of out-of-scope questions declined by {ab_pr:.2f} with naive retrieval ({fp(ab_pr_p)}), "
+                f"whereas retrieval changed it by ${ab_r1:+.2f}$ ({fp(ab_r1_p)}) with the minimal prompt and "
+                f"${ab_r2:+.2f}$ ({fp(ab_r2_p)}) with the full one.")
+    m.text("AblationSummary", ab_txt, c_ab)
 
     # ---------------------------------------------------------------- abstention cross-check (LLM judge)
     ac = load("abstention_check.json")
@@ -723,6 +739,9 @@ def main():
         if None not in (fn, fu, on, ou):
             txt = (f"With the same 1.5B model, the full pipeline raised NLI faithfulness on FAQ-Gen from {f3(fn)} to "
                    f"{f3(fu)} and the share of out-of-scope questions it declined from {on:.2f} to {ou:.2f}")
+            if ab_txt:
+                txt += (" (a component ablation attributes the first gain mainly to the amount of retrieved text rather "
+                        "than better retrieval, and the second to the system prompt)")
             if judge_txt:
                 jr = {(r["profile"], r["dataset"]): r for r in gl["summary"] if r["model"] == gl_first}
                 h_nr = get(jr.get(("no_rag", "faq_gen")), "judge_helpfulness", "mean")
