@@ -1,0 +1,413 @@
+{
+  "classifier": "tfidf_lr",
+  "deployed_threshold": 0.6459582421941066,
+  "elevated_threshold": 0.3872327132437396,
+  "points": [
+    {
+      "crisis_threshold": 0.387,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 12,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.9166666666666666,
+        "crisis_k": 33,
+        "crisis_n": 36,
+        "fp": 9,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 23,
+        "elevated": 0,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 43,
+        "elevated": 15,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.438,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 10,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.9166666666666666,
+        "crisis_k": 33,
+        "crisis_n": 36,
+        "fp": 8,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 21,
+        "elevated": 2,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 38,
+        "elevated": 20,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.49,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 8,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.8888888888888888,
+        "crisis_k": 32,
+        "crisis_n": 36,
+        "fp": 5,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 20,
+        "elevated": 3,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 35,
+        "elevated": 23,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.541,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 7,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.8888888888888888,
+        "crisis_k": 32,
+        "crisis_n": 36,
+        "fp": 4,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 20,
+        "elevated": 3,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 30,
+        "elevated": 28,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.592,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 6,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.8888888888888888,
+        "crisis_k": 32,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 17,
+        "elevated": 6,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 29,
+        "elevated": 29,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.643,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 4,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.8333333333333334,
+        "crisis_k": 30,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 11,
+        "elevated": 12,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 27,
+        "elevated": 31,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.646,
+      "cap_at_elevated": false,
+      "deployed": true,
+      "dev": {
+        "crisis_recall": 0.9833333333333333,
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 4,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.8333333333333334,
+        "crisis_k": 30,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 11,
+        "elevated": 12,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 27,
+        "elevated": 31,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.694,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9666666666666667,
+        "crisis_k": 58,
+        "crisis_n": 60,
+        "fp": 4,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.7222222222222222,
+        "crisis_k": 26,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 8,
+        "elevated": 15,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 25,
+        "elevated": 33,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.745,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9166666666666666,
+        "crisis_k": 55,
+        "crisis_n": 60,
+        "fp": 3,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.6944444444444444,
+        "crisis_k": 25,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 7,
+        "elevated": 16,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 22,
+        "elevated": 36,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.797,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.9166666666666666,
+        "crisis_k": 55,
+        "crisis_n": 60,
+        "fp": 1,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.6111111111111112,
+        "crisis_k": 22,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 5,
+        "elevated": 18,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 15,
+        "elevated": 43,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.848,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.8833333333333333,
+        "crisis_k": 53,
+        "crisis_n": 60,
+        "fp": 1,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.6111111111111112,
+        "crisis_k": 22,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 5,
+        "elevated": 18,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 10,
+        "elevated": 48,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.899,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.8166666666666667,
+        "crisis_k": 49,
+        "crisis_n": 60,
+        "fp": 1,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.5555555555555556,
+        "crisis_k": 20,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 3,
+        "elevated": 20,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 8,
+        "elevated": 50,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 0.95,
+      "cap_at_elevated": false,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.7833333333333333,
+        "crisis_k": 47,
+        "crisis_n": 60,
+        "fp": 1,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.5277777777777778,
+        "crisis_k": 19,
+        "crisis_n": 36,
+        "fp": 2,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 1,
+        "elevated": 22,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 4,
+        "elevated": 54,
+        "n": 100
+      }
+    },
+    {
+      "crisis_threshold": 1.01,
+      "cap_at_elevated": true,
+      "deployed": false,
+      "dev": {
+        "crisis_recall": 0.6833333333333333,
+        "crisis_k": 41,
+        "crisis_n": 60,
+        "fp": 1,
+        "neg_n": 60
+      },
+      "heldout": {
+        "crisis_recall": 0.4722222222222222,
+        "crisis_k": 17,
+        "crisis_n": 36,
+        "fp": 1,
+        "neg_n": 30
+      },
+      "faq_gen": {
+        "crisis": 0,
+        "elevated": 23,
+        "n": 98
+      },
+      "counsel_gen": {
+        "crisis": 3,
+        "elevated": 55,
+        "n": 100
+      }
+    }
+  ]
+}

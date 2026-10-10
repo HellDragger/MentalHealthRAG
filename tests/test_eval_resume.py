@@ -311,7 +311,8 @@ def test_many_models_are_split_into_group_tables_plus_a_summary(tmp_path, monkey
     large = (tmp_path / "generation_t_faq_gen_large.tex").read_text()
     assert "gemma-3-12b-it" in large and "gpt2" not in large and "qwen2.5-1.5b" not in large
     summary_tex = (tmp_path / "generation_t_summary.tex").read_text()
-    assert summary_tex.index("mistral-7b") < summary_tex.index("qwen2.5-1.5b") < summary_tex.index("gpt2")
+    assert summary_tex.index("mistral-7b") < summary_tex.index("qwen2.5-1.5b")
+    assert "gpt2" not in summary_tex  # non-chat baselines: appendix tables only
 
 
 def test_excluded_runs_are_left_out_and_explained(tmp_path, monkeypatch):

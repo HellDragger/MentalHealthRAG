@@ -146,6 +146,12 @@ between the five embedders fall within the confidence intervals. On HeadingQA an
 beats the v1 configuration significantly (paired bootstrap, Holm-corrected). On ParaphraseQA (only 58 queries), the
 reranked systems do, but unreranked hybrid retrieval and BM25 do not.
 
+**SynthQA human check** (`results/synth_qa_verification.json`, `python -m scripts.synth_qa_agreement`): four raters
+(one an author) judged 100 random SynthQA questions. Counting an item when at least 3 of 4 said yes (ties fail, equal
+weights), 88 were answerable from their passage, 94 read naturally and 85 passed both. Fleiss' κ is low (0.127 / 0.139)
+because almost every answer was yes; Gwet's AC1 is 0.685 / 0.851. On the 85 verified questions the system ranking holds
+(Kendall τ 0.85 on nDCG@10) and 14 of 15 hybrid configurations still beat the dense MiniLM baseline (Holm-corrected).
+
 **Chunk size** (`results/retrieval_chunks.json`, Kaggle): 128-token chunks are clearly worse (best nDCG@10 on SynthQA
 0.604 vs 0.805 at 256 tokens). 256 and 512 tokens are close: HeadingQA 0.946 at both; ParaphraseQA 0.858 vs 0.900
 (n=58, overlapping CIs); SynthQA 0.805 vs 0.774. MiniLM is capped at its 256-token input, so its 512 column repeats 256.
@@ -161,12 +167,20 @@ find therapy"). It fails safe, but replaces useful answers.
 
 **Multi-model benchmark** (`results/generation_gpu.json`, Kaggle T4s): 17 open models are reported. For all 13
 instruction-tuned models, the full pipeline gave higher NLI faithfulness than v1-style naive RAG (all significant after
-Holm correction), and the median share of out-of-scope questions declined rose from 0.18 to 0.60. Three runs produced
+Holm correction), and the median share of out-of-scope questions declined rose from 0.18 to 0.64 (after the
+apostrophe fix in the CHANGELOG, D43). Three runs produced
 degenerate output and are excluded with the reason (Gemma-3-4B and -12B overflow in float16 on a T4; MentaLLaMA-7B
 repeats one token); Gemma-3-4B was rerun with 32-bit compute and is reported. The LLM judge (gpt-oss-120b on Groq's free plan)
 scored a fixed sample of 20 questions per dataset in the local experiment. CUDA latency is measured on a single T4.
 
-**Still to run:** the human evaluation with clinician raters.
+**Re-analyses of saved answers** (`python -m scripts.generation_reanalysis`, `scripts.gate_tradeoff`): without the 11
+template answers, the full pipeline's relevance is 0.825 against 0.851 (naive RAG) and 0.844 (no retrieval), and judge
+helpfulness 3.00 against 3.61 without retrieval, so the lower helpfulness is not a gate artefact. Raising the gate's
+classifier crisis threshold removes FAQ over-escalation only at a large cost in recall (capping the classifier at the
+elevated tier: 0 of 98 FAQ questions to the crisis protocol, but 17 instead of 30 of 36 held-out crisis prompts).
+
+**Still to run:** the component ablation and the LLM-judge abstention check (Kaggle notebook steps
+`generation_ablation` and `abstention_check`), and the human evaluation with clinician raters.
 The Kaggle notebook is resumable across 12-hour sessions: attach its previous output as an input and run it
 again. Finished steps are skipped, and interrupted ones continue from their last saved answer.
 To bring results back, download `mhrag_results.zip` from the notebook's Output tab and run

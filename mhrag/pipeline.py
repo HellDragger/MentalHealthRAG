@@ -6,11 +6,15 @@ the evaluation scripts. Three profiles are used in the experiments:
 - full:    gate + configured retrieval (hybrid + rerank by default) + grounded prompt + output checks
 - naive:   the v1 set-up (dense top-2, chunks joined by a space, v1 markdown template, no system prompt/gate)
 - no_rag:  the LLM alone with a safety-aware system prompt
+Component ablation (no gate, no output checks): abl_<retrieval>_<prompt>[_matched], where retrieval and prompt are
+each "naive" or "full" as above, and _matched cuts the retrieved text to `context_chars` characters (the length the
+naive set-up retrieved for the same question).
 """
 
 from __future__ import annotations
 
 import logging
+import re
 import time
 from collections.abc import Iterator
 from dataclasses import dataclass, field
@@ -26,6 +30,7 @@ from mhrag.safety.gate import GateResult, SafetyGate
 from mhrag.safety.output_check import check_output
 
 log = logging.getLogger(__name__)
+ABLATION = re.compile(r"abl_(naive|full)_(naive|full)(_matched)?$")
 
 
 @dataclass
@@ -71,12 +76,15 @@ class RAGPipeline:
         exclude_doc_ids: set[str] | None = None,
         retrieval_mode: str | None = None,
         top_k: int | None = None,
+        context_chars: int | None = None,
     ) -> Iterator[Event]:
         t0 = time.perf_counter()
         timing: dict = {}
         hist = self._history(history)
         params = params or self.params()
         region = region or self.s.safety.region
+        abl = ABLATION.match(profile)
+        r_prof, p_prof = (abl.group(1), abl.group(2)) if abl else (profile, profile)
 
         # 1) safety gate
         gate: GateResult | None = None
@@ -95,9 +103,9 @@ class RAGPipeline:
 
         # 2) retrieval
         used, hits, context = [], [], ""
-        if profile in ("full", "naive") and self.retriever is not None:
+        if r_prof in ("full", "naive") and self.retriever is not None:
             tr = time.perf_counter()
-            if profile == "naive":
+            if r_prof == "naive":
                 hits = self.retriever.retrieve(message, top_k or 2, retrieval_mode or "dense", exclude_doc_ids)
                 used = hits
             else:
@@ -118,7 +126,17 @@ class RAGPipeline:
         # Small-context models (GPT-2: 1024, FLAN-T5: 512, MentaLLaMA: 2048) get a proportionally smaller budget.
         budget = min(self.s.retrieval.context_token_budget,
                      max(150, int(spec.context) - params.max_new_tokens - 400))
-        if profile == "full" and self.retriever is not None:
+        passages: list[str] = []
+        if abl and self.retriever is not None:
+            context, used = prompts.build_context(hits, budget, _approx_tokens,
+                                                  context_chars if abl.group(3) else None)
+            passages = [b.split("\n", 1)[1] if "\n" in b else "" for b in context.split("\n\n[")]
+            if p_prof == "full":
+                messages = prompts.grounded_messages(message, context, hist)
+            else:  # the naive template over the same passages
+                context = " ".join(passages)
+                messages = [{"role": "user", "content": prompts.V1_TEMPLATE.format(context=context, question=message)}]
+        elif profile == "full" and self.retriever is not None:
             context, used = prompts.build_context(hits, budget, _approx_tokens)
             messages = prompts.grounded_messages(message, context, hist)
         elif profile == "naive":
@@ -186,7 +204,7 @@ class RAGPipeline:
             "timing": timing, "answer": final, "raw_answer": answer, "sources": sources,
             "model": backend.spec.key, "gate": gate.label if gate else None, "generated": True,
             "usage": usage, "context": context if profile != "no_rag" else "", "truncated": truncated,
-            "prompt_version": prompts.PROMPT_VERSION,
+            "prompt_version": prompts.PROMPT_VERSION, **({"passages": passages} if abl else {}),
         })
 
     def answer(self, message: str, **kw) -> dict:

@@ -46,7 +46,7 @@ def _index_for(settings: Settings, cfg: dict, dataset: str, profile: str):
     nofaq = dataset == "faq_gen"
     ing = settings.ingest.model_copy(update={"exclude_faq_from_index": nofaq})
     s2 = settings.model_copy(update={"ingest": ing})
-    if profile == "naive":
+    if profile == "naive" or profile.startswith("abl_naive"):
         emb, chunk = cfg["naive"]["embedder"], cfg["naive"]["chunk_tokens"]
     else:
         emb, chunk = settings.index.embedder, settings.chunking.chunk_tokens
@@ -115,13 +115,18 @@ def generate(cfg: dict, settings: Settings, out_dir: Path, limit: int | None) ->
                     retriever = retrievers[key]
                 pipe = RAGPipeline(s2, retriever, mm, gate if profile == "full" else None)
                 params = pipe.params(temperature=cfg.get("temperature", 0.0))
+                # matched-context ablation: as much retrieved text as the naive set-up got for the same question
+                naive_chars = {i: len(r.get("context") or "") for i, r in
+                               _answers(out_dir / f"{model}__abl_naive_naive__{dataset}.jsonl").items()}
                 with open(path, "a", encoding="utf-8") as f:
                     for row in rows:
                         if row["id"] in done:
                             continue
                         with peak:
                             try:
-                                res = pipe.answer(row["query"], model=model, profile=profile, params=params)
+                                extra = ({"context_chars": naive_chars[row["id"]]} if profile.endswith("_matched")
+                                         else {})
+                                res = pipe.answer(row["query"], model=model, profile=profile, params=params, **extra)
                                 err = None
                             except Exception as e:  # keep going; record the failure
                                 res, err = {}, f"{type(e).__name__}: {e}"
@@ -129,7 +134,8 @@ def generate(cfg: dict, settings: Settings, out_dir: Path, limit: int | None) ->
                                "query": row["query"], "answer": res.get("answer", ""),
                                "context": res.get("context", ""), "sources": res.get("sources", []),
                                "gate": res.get("gate"), "generated": res.get("generated"),
-                               "timing": res.get("timing", {}), "usage": res.get("usage", {}), "error": err}
+                               "timing": res.get("timing", {}), "usage": res.get("usage", {}), "error": err,
+                               **({"passages": res["passages"]} if "passages" in res else {})}
                         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
                         f.flush()
                         if err and "HTTP 429" in err:
@@ -302,7 +308,9 @@ def score(records: list[dict], cfg: dict, cache_dir: Path | None = None) -> list
         refs = [refs] if isinstance(refs, str) else (refs or [])
         passages = [s["snippet"] for s in r.get("sources", [])]
         # use full chunk text when available (context) for NLI: split context blocks
-        if r.get("context"):
+        if r.get("passages") is not None:  # ablation: each retrieved passage is a premise, whatever the prompt
+            passages = [p for p in r["passages"] if p.strip()]
+        elif r.get("context"):
             passages = [b for b in r["context"].split("\n\n[") if b.strip()] if r["profile"] == "full" else [r["context"]]
         m: dict = {}
         if r.get("generated") and r["profile"] != "no_rag":
@@ -313,6 +321,8 @@ def score(records: list[dict], cfg: dict, cache_dir: Path | None = None) -> list
         text = strip_citations(a).strip()
         m["flesch"] = float(textstat.flesch_reading_ease(text)) if text else None  # none for citation-only answers
         m["words"] = len(a.split())
+        if r.get("passages") is not None:  # ablation: how much retrieved text the model was given
+            m["context_chars"] = sum(len(x) for x in r["passages"])
         m["abstained"] = abstained(a)
         m.update(citation_stats(a, len(r.get("sources", []))))
         r["metrics"] = m
@@ -437,7 +447,7 @@ def _llm_judge(answers, cfg, cache_dir: Path | None = None) -> str:
 # ------------------------------------------------------------------------------ aggregation
 METRICS = ["faithfulness", "contradiction_rate", "answer_relevance", "rougeL", "bertscore_f1", "flesch", "words",
            "has_citation", "abstained", "judge_empathy", "judge_safety", "judge_helpfulness", "judge_correctness",
-           "judge_faithfulness"]
+           "judge_faithfulness", "context_chars"]
 
 
 def aggregate(answers: list[dict], model_info: list[dict], cfg: dict) -> dict:
@@ -471,16 +481,18 @@ def aggregate(answers: list[dict], model_info: list[dict], cfg: dict) -> dict:
                 else "TODO(run): set price_per_m_input/output in configs/models.yaml"
             )
         summary.append(row)
-    return {"summary": summary, "models": model_info, "significance": _significance(groups),
+    return {"summary": summary, "models": model_info, "significance": _significance(groups, cfg.get("compare")),
             "verbosity_bias": _verbosity(answers), "judge_version": JUDGE_VERSION}
 
 
-def _significance(groups) -> dict:
+def _significance(groups, pairs=None) -> dict:
     out = {}
+    pairs = [tuple(p) for p in pairs] if pairs else [("full", "naive"), ("full", "no_rag"), ("naive", "no_rag")]
     for model, dataset in {(m, d) for m, _, d in groups}:
-        for metric in ("faithfulness", "rougeL", "bertscore_f1", "answer_relevance", "judge_helpfulness"):
+        for metric in ("faithfulness", "rougeL", "bertscore_f1", "answer_relevance", "judge_helpfulness", "abstained",
+                       "has_citation"):
             raw, wil, delta = {}, {}, {}
-            for a, b in (("full", "naive"), ("full", "no_rag"), ("naive", "no_rag")):
+            for a, b in pairs:
                 ga, gb = groups.get((model, a, dataset)), groups.get((model, b, dataset))
                 if not ga or not gb:
                     continue
@@ -526,7 +538,7 @@ def run_generation_experiment(cfg: dict, settings: Settings, limit: int | None =
 
 
 # ------------------------------------------------------------------------------ tables
-PROFILE_NAMES = {"no_rag": "No RAG", "naive": "Naive RAG (v1)", "full": "Full pipeline"}
+PROFILE_NAMES = {"no_rag": "No RAG", "naive": "Naive RAG", "full": "Full pipeline"}
 
 
 def _cell(row, m, nd=3):
@@ -566,7 +578,10 @@ def _quality_caption(dataset: str, res: dict) -> str:
             "entailed by a retrieved passage (NLI, DeBERTa-v3); Relev. = question-answer embedding "
             "cosine; Cites = share of answers with an inline citation; Judge = LLM-as-judge (1--5), "
             "`--' where not run; Tmpl. = share of questions the risk gate answered with a fixed safety "
-            "template instead of the model (full pipeline only; these are included in the other columns)."
+            "template instead of the model (full pipeline only). Template answers count in every column except "
+            "faithfulness; Table~\\ref{tab:gen-template-free} repeats the comparison without them. TTFT = median time "
+            "to first token on the Kaggle GPU (GGUF models via llama.cpp offloaded to the GPU), including the gate "
+            "and retrieval."
             + (f" The judge scored a fixed sample of {res['config']['judge_sample']} questions per "
                "dataset, the same for every model and setting."
                if (res.get("config") or {}).get("judge_sample") else ""))
@@ -618,7 +633,7 @@ def _write_summary(name: str, res: dict, groups: dict, catalog: dict) -> None:
     sig = res.get("significance", {})
     table = []
     for g, label in MODEL_GROUPS:
-        if not groups.get(g):
+        if not groups.get(g) or g == "base":  # non-chat baselines: per-setting tables in the appendix only
             continue
         table.append([f"\\addlinespace\\multicolumn{{8}}{{l}}{{\\textit{{{label}}}}}"])
         for m in groups[g]:
@@ -636,16 +651,70 @@ def _write_summary(name: str, res: dict, groups: dict, catalog: dict) -> None:
     write_table(f"generation_{name}_summary",
                 ["Model", "Size (B)", "Faithful. naive", "Faithful. full", "Relev. full", "Cites full",
                  "OOS declined naive", "OOS declined full"], table,
-                caption="All models, naive RAG (the v1 configuration) versus the full pipeline. Faithfulness and "
+                caption="Instruction-tuned models, naive RAG versus the full pipeline. Faithfulness and "
                         "relevance on FAQ-Gen; Cites = share of FAQ-Gen answers with an inline citation; OOS declined "
                         "= share of the 50 out-of-scope questions declined. $^{*}$ faithfulness differs significantly "
                         "between the two settings (paired bootstrap, Holm-corrected $p<0.05$). Per-setting results, "
-                        "including no retrieval and Counsel-Gen, are in the appendix." + _run_notes(res, groups),
+                        "including no retrieval, Counsel-Gen and the non-chat baselines (base language models, a "
+                        "summariser, seq2seq), are in \\ref{app:generation}." + _run_notes(res, groups),
                 label=f"tab:gen-{name}-summary", align="lrrrrrrr", source=f"results/generation_{name}.json")
+
+
+ABLATION_ARMS = {"abl_naive_naive": ("Naive", "Naive"), "abl_naive_full": ("Naive", "Full"),
+                 "abl_full_naive": ("Full", "Naive"), "abl_full_full": ("Full", "Full"),
+                 "abl_full_full_matched": ("Full, cut to naive length", "Full")}
+ABLATION_CONTRASTS = (("abl_full_naive", "abl_naive_naive", "Retrieval (naive prompt)"),
+                      ("abl_full_full", "abl_naive_full", "Retrieval (full prompt)"),
+                      ("abl_naive_full", "abl_naive_naive", "Prompt (naive retrieval)"),
+                      ("abl_full_full", "abl_full_naive", "Prompt (full retrieval)"),
+                      ("abl_full_full_matched", "abl_naive_full", "Retrieval at equal length (full prompt)"),
+                      ("abl_full_full", "abl_full_full_matched", "Context length (full retrieval and prompt)"))
+
+
+def _write_ablation(res: dict) -> None:
+    rows = {(r["profile"], r["dataset"]): r for r in res["summary"]}
+    model = next(iter(res["config"]["models"]))
+    table = []
+    for arm, (ret, prompt) in ABLATION_ARMS.items():
+        faq, oos = rows.get((arm, "faq_gen")) or {}, rows.get((arm, "oos_questions")) or {}
+        if not faq:
+            continue
+        chars = faq.get("context_chars")
+        table.append([ret, prompt, f"{chars['mean']:.0f}" if chars else "--", _cell(faq, "faithfulness"),
+                      _cell(faq, "answer_relevance"), _cell(faq, "rougeL"), _cell(faq, "bertscore_f1"),
+                      _cell(faq, "has_citation", 2), _cell(oos, "abstained", 2)])
+    write_table("generation_ablation", ["Retrieval", "Prompt", "Context (chars)", "Faithful.", "Relev.", "ROUGE-L",
+                                        "BERTScore", "Cites", "OOS declined"], table,
+                caption=f"Component ablation with {esc(model)}: each retrieval set-up crossed with each prompt, on "
+                        "FAQ-Gen (FAQ removed from the index) and the out-of-scope set; one run on the same hardware, no "
+                        "safety gate and no output check. Naive retrieval: dense MiniLM, top-2 of 48-token chunks; full: "
+                        "hybrid + reranking, 256-token chunks. Naive prompt: minimal template without a system prompt; "
+                        "full: grounded system prompt with numbered sources. ``Cut to naive length'' gives the model as "
+                        "many characters of retrieved text as naive retrieval did for the same question. Context: mean "
+                        "characters of retrieved text.",
+                label="tab:gen-ablation", align="llrrrrrrr", source="results/generation_ablation.json")
+    sig = res.get("significance", {})
+    ctab = []
+    for a, b, label in ABLATION_CONTRASTS:
+        cells = [label]
+        for ds, metric in (("faq_gen", "faithfulness"), ("faq_gen", "answer_relevance"), ("oos_questions", "abstained")):
+            s = sig.get(f"{model}|{ds}|{metric}", {})
+            k = f"{a}>{b}"
+            d, p = s.get("delta", {}).get(k), s.get("p_bootstrap_holm", {}).get(k)
+            cells += [f"{d:+.3f}" if d is not None else "--", f"{p:.3f}" if p is not None else "--"]
+        ctab.append(cells)
+    write_table("generation_ablation_contrasts", ["Effect of", "$\\Delta$ faithful.", "$p$", "$\\Delta$ relev.", "$p$",
+                                                  "$\\Delta$ declined", "$p$"], ctab,
+                caption="Paired contrasts from Table~\\ref{tab:gen-ablation} (the first setting minus the second, same "
+                        "questions); $p$: paired bootstrap, Holm-corrected within each metric.",
+                label="tab:gen-ablation-contrasts", align="lrrrrrr", source="results/generation_ablation.json")
 
 
 def render_tables(res: dict) -> None:
     name = res["name"]
+    if any(p.startswith("abl_") for p in (res.get("config") or {}).get("profiles", [])):
+        _write_ablation(res)
+        return
     rows = res["summary"]
     if res.get("report_models") is not None:  # the current config's list (excluded runs are not in it)
         rows = [r for r in rows if r["model"] in res["report_models"]]

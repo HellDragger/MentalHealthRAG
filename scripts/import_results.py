@@ -32,8 +32,10 @@ STEP_OUTPUTS = {
     "retrieval_chunks": ["retrieval_chunks.json"],
     "generation_local": ["generation_local.json", "generation/local"],
     "generation_gpu": ["generation_gpu.json", "generation/gpu"],
+    "generation_ablation": ["generation_ablation.json", "generation/ablation"],
+    "abstention_check": ["abstention_check.json", "generation/abstention_judge_cache.jsonl"],
 }
-EXPERIMENTS = ["retrieval_main", "retrieval_chunks", "generation_local", "generation_gpu"]
+EXPERIMENTS = ["retrieval_main", "retrieval_chunks", "generation_local", "generation_gpu", "generation_ablation"]
 
 
 def find_root(src: Path) -> Path:
@@ -159,6 +161,7 @@ def render(py: str = sys.executable) -> None:
         if (RESULTS / f"{exp}.json").exists():
             subprocess.run([py, "-m", "scripts.run_eval", "--tables-only", "--config",
                             f"configs/experiments/{exp}.yaml"], cwd=PROJECT_ROOT, check=True)
+    subprocess.run([py, "-m", "scripts.generation_reanalysis"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.paper_numbers"], cwd=PROJECT_ROOT, check=True)
 
 
