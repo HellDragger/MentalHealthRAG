@@ -1,0 +1,30 @@
+.git
+.github
+.venv
+venv
+.env
+.env.*
+!.env.example
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.claude
+.idea
+.vscode
+# research-only material is not needed to serve the app
+paper
+notebooks
+results/generation
+results/logs
+eval/human_eval/out
+artifacts/risk_classifier/transformer
+artifacts/index/*-c128*
+artifacts/index/*-c512*
+artifacts/index/*nofaq*
+artifacts/index/minilm-*
+artifacts/index/bge-base-*
+artifacts/index/e5-base-*
+artifacts/index/gte-base-*
+Blank diagram.png
+*.gguf
