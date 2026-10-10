@@ -1,0 +1,71 @@
+{
+  "judge": "gpt-oss-120b-groq",
+  "prompt_version": "abstain-v1",
+  "sets": {
+    "local:qwen2.5-1.5b-gguf:no_rag,naive,full": {
+      "no_rag": {
+        "n": 50,
+        "unparsed": 0,
+        "regex_rate": 0.14,
+        "judge_rate": 0.24,
+        "agreement": 0.9,
+        "cohen_kappa": 0.6803069053708442,
+        "regex_only": 0,
+        "judge_only": 5
+      },
+      "naive": {
+        "n": 50,
+        "unparsed": 0,
+        "regex_rate": 0.1,
+        "judge_rate": 0.34,
+        "agreement": 0.76,
+        "cohen_kappa": 0.3548387096774194,
+        "regex_only": 0,
+        "judge_only": 12
+      },
+      "full": {
+        "n": 49,
+        "unparsed": 0,
+        "regex_rate": 0.7142857142857143,
+        "judge_rate": 0.6122448979591837,
+        "agreement": 0.7755102040816326,
+        "cohen_kappa": 0.5032258064516129,
+        "regex_only": 8,
+        "judge_only": 3
+      },
+      "full>naive": {
+        "judge_delta": 0.28571428571428575,
+        "p_bootstrap": 0.0006,
+        "n": 49
+      },
+      "full>no_rag": {
+        "judge_delta": 0.3673469387755102,
+        "p_bootstrap": 0.0,
+        "n": 49
+      }
+    },
+    "ablation:qwen2.5-1.5b-gguf:abl_naive_full,abl_full_naive": {
+      "abl_naive_full": {
+        "n": 50,
+        "unparsed": 0,
+        "regex_rate": 0.76,
+        "judge_rate": 0.58,
+        "agreement": 0.74,
+        "cohen_kappa": 0.4328097731239093,
+        "regex_only": 11,
+        "judge_only": 2
+      },
+      "abl_full_naive": {
+        "n": 50,
+        "unparsed": 0,
+        "regex_rate": 0.14,
+        "judge_rate": 0.34,
+        "agreement": 0.8,
+        "cohen_kappa": 0.48024948024948055,
+        "regex_only": 0,
+        "judge_only": 10
+      }
+    }
+  },
+  "complete": true
+}
