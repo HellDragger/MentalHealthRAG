@@ -269,10 +269,7 @@ model says the cited passage entails the sentence. To see whether that model is 
 scripts.citation_check --make` sampled 30 (sentence, cited passage) pairs from the deployed model and the 13
 benchmark models: 10 that NLI accepted and 20 that it rejected, shuffled, without the verdict. The rater labels each
 pair `supported`, `partly` or `not`; the NLI verdicts are in `key.csv` (git-ignored, so it is not opened before
-rating). Results from one rater: of the 20 pairs NLI rejected, 10 were judged supported and 5 partly supported; of the
-10 it accepted, 8 were judged supported (agreement with NLI 0.60, Cohen's κ 0.25). Weighting the two groups by their
-share of all 5,338 citation pairs gives an estimated citation precision of 0.57 (95% CI 0.34–0.76) instead of the NLI
-figure of 0.22, or 0.81 if partial support counts. The NLI model therefore understates how often citations are
+rating). Results from one rater (the author): of the 20 pairs NLI rejected, 11 were judged supported and 4 partly supported; of the 10 it accepted, 9 were judged supported (agreement with NLI 0.60, Cohen's κ 0.28). Weighting the two groups by their share of all 5,338 citation pairs gives an estimated citation precision of 0.63 (95% CI 0.40–0.80) instead of the NLI figure of 0.22, or 0.81 if partial support counts. The NLI model therefore understates how often citations are
 supported, so the NLI precision values are not citation rates. More raters can each fill a copy of the sheet
 (`sheet_rater2.csv`, ...); the scorer then adds inter-rater agreement.
 

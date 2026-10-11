@@ -1106,12 +1106,9 @@ def main():
             cor_ = [r_["corrected_citation_precision"] for r_ in (ck_ or {}).get("raters", {}).values()
                     if r_.get("corrected_citation_precision") is not None]
             if cor_:
-                ck0 = next(iter(ck_["raters"].values()))
-                txt += (f" An NLI check found the cited passage supported the citing sentence in {100 * loc_p:.0f}\\% "
-                        f"of the deployed model's citations (median {100 * _st.median(gpu_p):.0f}\\% across models), "
-                        f"but a blinded hand check showed the NLI model was too strict (estimated "
-                        f"{100 * cor_[0]:.0f}\\%, 95\\% CI {100 * ck0['corrected_ci'][0]:.0f}--"
-                        f"{100 * ck0['corrected_ci'][1]:.0f}\\%).")
+                txt += (f" NLI judged few citations supported ({100 * loc_p:.0f}\\% for the deployed model), but a "
+                        f"blinded hand check found it too strict: an estimated {100 * cor_[0]:.0f}\\% of all citations "
+                        "were supported.")
             else:
                 txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
                         f"{100 * loc_p:.0f}\\% of the deployed model's citations (median "

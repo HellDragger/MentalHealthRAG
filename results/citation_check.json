@@ -10,34 +10,34 @@
       "strata": {
         "nli_supported": {
           "n": 10,
-          "supported": 8,
-          "partly": 2,
+          "supported": 9,
+          "partly": 1,
           "not": 0,
-          "human_supported_share": 0.8,
+          "human_supported_share": 0.9,
           "human_supported_ci": [
-            0.49015684672072335,
-            0.9433190520193067
+            0.5958436145024278,
+            0.9821242504842788
           ]
         },
         "nli_unsupported": {
           "n": 20,
-          "supported": 10,
-          "partly": 5,
+          "supported": 11,
+          "partly": 4,
           "not": 5,
-          "human_supported_share": 0.5,
+          "human_supported_share": 0.55,
           "human_supported_ci": [
-            0.2992949144298199,
-            0.7007050855701801
+            0.3420820083075997,
+            0.7418049791429071
           ]
         }
       },
       "agreement": 0.6,
-      "cohen_kappa": 0.24999999999999994,
+      "cohen_kappa": 0.2799999999999999,
       "nli_citation_precision": 0.2242412888722368,
-      "corrected_citation_precision": 0.567272386661671,
+      "corrected_citation_precision": 0.628484451105283,
       "corrected_ci": [
-        0.3420940401233777,
-        0.7551091541051379
+        0.398985837947017,
+        0.795694482289333
       ],
       "corrected_partly_as_supported": 0.8060603222180592
     }
