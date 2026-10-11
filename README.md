@@ -216,18 +216,17 @@ Tests: `pytest` (offline; uses a mock LLM and a hand-built fixture corpus). Lint
 ### Running the Kaggle notebook: private or public repository
 
 Cell 3 of [notebooks/kaggle_experiments.ipynb](notebooks/kaggle_experiments.ipynb) clones the code from GitHub. By default
-it clones the author's working repository, `HellDragger/MentalHealthRAG-Chatbot`, which is **private** because it also
-holds the manuscript, which stays unpublished until the paper is accepted. The public repository,
-[HellDragger/MentalHealthRAG](https://github.com/HellDragger/MentalHealthRAG), contains the same code, evaluation data
-and results without the manuscript, so every result can be reproduced from it.
+it clones this public repository, [HellDragger/MentalHealthRAG](https://github.com/HellDragger/MentalHealthRAG), which
+holds the code, evaluation data and results, so every result can be reproduced from it. The manuscript is kept in a
+separate **private** repository, `HellDragger/MentalHealthRAG-Chatbot`, until the paper is accepted; its code was
+developed there first, which is why the notebook can also clone a private repository.
 
-**To reproduce the results (anyone):** in cell 3 set
-`REPO_URL = "https://github.com/HellDragger/MentalHealthRAG.git"`, and in cell 1 set `BRANCH = "main"`. A public
+**To reproduce the results (anyone):** keep the defaults (`REPO_URL` in cell 3, `BRANCH = "main"` in cell 1). A public
 repository needs no GitHub token; leave the `GITHUB_TOKEN` secret out.
 
-**To run against the private repository (the author, or someone given access):** the notebook needs a read-only GitHub
-token in the Kaggle secret `GITHUB_TOKEN`. A token can only open repositories its owner can already access; it does not
-grant access to anyone else.
+**To run against a private repository (the private repository above, or your own private fork):** set `REPO_URL` in
+cell 3 to it, and give the notebook a read-only GitHub token in the Kaggle secret `GITHUB_TOKEN`. A token can only open
+repositories its owner can already access; it does not grant access to anyone else.
 
 1. On GitHub: profile picture → **Settings** → **Developer settings** → **Personal access tokens**.
    - **Owner of the repository:** choose **Fine-grained tokens** → **Generate new token**. Set **Resource owner** to the
