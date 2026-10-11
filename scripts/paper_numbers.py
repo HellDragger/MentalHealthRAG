@@ -832,6 +832,26 @@ def main():
                     txt += (f", although at naive length {am['invalid']} citations (against {af['invalid']}) named a "
                             "source that was not in the prompt and are not counted")
             m.text("CitationPrecisionSummary", txt + ".", c_cp)
+            ck = load("citation_check.json")
+            if ck and ck.get("raters"):
+                rs_ = list(ck["raters"].values())
+                ns_ = rs_[0]["strata"]["nli_unsupported"]
+                ss_ = rs_[0]["strata"]["nli_supported"]
+                cor = [r_["corrected_citation_precision"] for r_ in rs_]
+                txt_ck = (f"To check that the NLI model is not simply too strict, {len(rs_)} "
+                          f"rater{'s' if len(rs_) > 1 else ''} labelled {ck['pairs']} (sentence, cited passage) pairs, "
+                          f"blind to the NLI verdict: of {ns_['n']} pairs NLI judged unsupported, {ns_['supported']} "
+                          f"were judged supported ({ns_['partly']} partly), and of {ss_['n']} it judged supported, "
+                          f"{ss_['supported']} were. Re-weighted to the full set of pairs, citation precision would be "
+                          + " and ".join(f"{c_:.2f}" for c_ in cor if c_ is not None)
+                          + f" instead of {rs_[0]['nli_citation_precision']:.2f}"
+                          + (f" (agreement between raters $\\kappa={ck['inter_rater_kappa']:.2f}$)"
+                             if ck.get("inter_rater_kappa") is not None else "") + ".")
+                m.text("CitationCheckSummary", txt_ck, "python -m scripts.citation\\_check")
+            else:
+                m.lines.append("\\newcommand{\\CitationCheckSummary}{\\todohuman{label the 30 pairs in "
+                               "eval/human\\_eval/out/citation\\_check/sheet\\_rater1.csv, then python -m "
+                               "scripts.citation\\_check}}")
         else:
             m.text("CitationPrecisionSummary", None, c_cp)
     else:
