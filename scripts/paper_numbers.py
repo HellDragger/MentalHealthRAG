@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import json
 
+from eval.tables import esc as tex_esc
 from eval.tables import fmt, fmt_ci, write_table
 from mhrag.config import PROJECT_ROOT, get_settings
 
+_WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six"}
 R = get_settings().results_dir
 OUT = PROJECT_ROOT / "paper" / "numbers.tex"
 
@@ -359,6 +361,41 @@ def main():
                f"All of these escalations were triggered by {who}.", c_ge)
     else:
         m.text("GateOnRealQuestions", None, c_ge)
+
+    # ---------------------------------------------------------------- held-out harmful requests the gate missed
+    gh_ = load("safety_gate_v2_heldout.json")
+    gd_ = load("safety_gate_v2_devset.json")
+    c_hm = "python -m scripts.eval\\_safety --data eval/data/safety\\_prompts\\_heldout.jsonl --tag v2\\_heldout"
+    vh, vd = get(gh_, "variants", dep), get(gd_, "variants", dep)
+    if vh and vd and get(vh, "per_category", "harmful_request"):
+        ph, pd_ = vh["per_category"]["harmful_request"], vd["per_category"]["harmful_request"]
+        lab = ph["labels"]
+        caught = lab.get("harmful_request", 0) + lab.get("crisis", 0) + lab.get("third_party", 0)
+        miss = [e for e in vh["errors"] if e["expected"] == "harmful_request"]
+        none_ = [e for e in miss if e["got"] == "none"]
+        thr = vh.get("crisis_threshold")
+        guarded = [e for e in none_ if thr is not None and (e.get("score") or 0) >= thr]
+        texts = {}
+        hp = PROJECT_ROOT / "eval" / "data" / "safety_prompts_heldout.jsonl"
+        for line in hp.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                r_ = json.loads(line)
+                texts[r_["id"]] = r_["text"]
+        ex = next((texts.get(e["id"]) for e in guarded if texts.get(e["id"])), None)
+        dev_caught = round(pd_["escalated"] * pd_["n"])
+        m.text("HarmfulMissSummary",
+               f"(iv) Requests for suicide or self-harm methods: the gate escalated {caught} of {ph['n']} held-out "
+               f"harmful requests, against {dev_caught} of {pd_['n']} on the development set. Of the {len(miss)} it "
+               f"missed, {lab.get('elevated', 0)} went to the non-blocking elevated tier and {len(none_)} were not "
+               f"flagged at all. {_WORDS.get(len(guarded), str(len(guarded))).capitalize()} of the unflagged ones had a classifier score above the crisis threshold "
+               "but were phrased as general questions without a first-person pronoun"
+               + (f" (``{tex_esc(ex.rstrip('?'))}?'')" if ex else "")
+               + ", so the informational-question guard, which keeps factual questions from being escalated, overrode "
+               "the classifier, and the lexicon's method patterns did not match their wording. I left the gate "
+               "unchanged after seeing these results so that the held-out set stays held out; exempting method "
+               "questions from the guard is the obvious fix, and it needs a new held-out set to evaluate.", c_hm)
+    else:
+        m.text("HarmfulMissSummary", None, c_hm)
 
     # ---------------------------------------------------------------- SynthQA human verification
     sv = load("synth_qa_verification.json")
@@ -737,6 +774,14 @@ def main():
                 sig.append(f"{names.get(m_, m_)} {verb} ({c['method']} vs {c['gate']} of {c['n']}, {fp_(c['p_mcnemar_holm'])})")
         txt = (f" Compared with the gate prompt by prompt (exact McNemar, Holm-corrected over {n_tests} contrasts), "
                + ("; ".join(sig) if sig else "no difference was significant") + ".")
+        hm = [(names.get(m_, m_), res["heldout_harmful"]) for m_, res in pv.items() if "heldout_harmful" in res]
+        if hm:
+            c0 = hm[0][1]
+            txt += (f" On held-out requests for methods, the gate escalated {c0['gate']} of {c0['n']}; "
+                    + "; ".join(f"{nm} escalated {c['method']} ({c['only_method']} that the gate did not, "
+                                f"{c['only_gate']} the other way; Holm-corrected {fp_(c['p_mcnemar_holm'])})"
+                                for nm, c in hm)
+                    + f". With {c0['n']} requests these tests have little power (Section~\\ref{{sec:error-analysis}}).")
         z = pv.get("zeroshot", {})
         ns = [f"{what[k_]} ({z[k_]['method']} vs {z[k_]['gate']})" for k_ in ("heldout_crisis", "faq_gen")
               if k_ in z and z[k_]["p_mcnemar_holm"] >= 0.05]
