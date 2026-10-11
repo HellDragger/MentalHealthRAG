@@ -624,15 +624,20 @@ def main():
         qga = get(ra, "experiments", "local", gl_first, "abstention_wording")
         ge4 = get(ra, "experiments", "gpu", "gemma-3-4b-it-fp32", "abstention_wording")
         if q and qg and qa and qga:
+            faiths = sorted((get(gpu_aw, k, "diagnostics", "full", "faq_faithfulness") or 0 for k in chat), reverse=True)
+            rank = faiths.index(q["full"]["faq_faithfulness"]) + 1 if q["full"]["faq_faithfulness"] in faiths else None
+            where = ("the highest faithfulness" if rank == 1 else
+                     f"the {rank}{'nd' if rank == 2 else 'rd' if rank == 3 else 'th'}-highest faithfulness of {len(chat)}"
+                     if rank else "a faithfulness")
             txt = (f"Two results stand out. Qwen2.5-1.5B served through transformers with 4-bit NF4 weights, as in the whole "
-                   f"benchmark, had the highest faithfulness ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
+                   f"benchmark, had {where} ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
                    f"{q['full']['faq_citation_rate']:.2f} of its FAQ-Gen answers and declined {qa['full']['abstained']} of "
                    f"{qa['full']['generated']} out-of-scope questions with the full pipeline, no more than without "
                    f"retrieval ({qa['no_rag']['abstained']} of {qa['no_rag']['generated']}); it often answered off-topic "
                    "questions from its own knowledge, sometimes attaching a citation to an unrelated passage. The same "
                    f"weights in llama.cpp with a different 4-bit scheme (Q4\\_K\\_M) declined {qga['full']['abstained']} of "
                    f"{qga['full']['generated']} under the same prompt and decoding parameters; the runtime comparison "
-                   "below separates the quantisation scheme from the runtime.")
+                   "below shows where the difference comes from.")
             if ge4:
                 txt += (f" Gemma-3-4B declined {ge4['full']['abstained']} of {ge4['full']['generated']} out-of-scope "
                         f"questions with the full pipeline against {ge4['naive']['abstained']} with naive RAG; an apparent "
@@ -716,8 +721,12 @@ def main():
                 txt += f"; it was {loc_cp['citation_precision']:.2f} for the deployed model"
             if "abl_full_full" in abl_cp and "abl_full_full_matched" in abl_cp and \
                     None not in (abl_cp["abl_full_full"]["citation_precision"], abl_cp["abl_full_full_matched"]["citation_precision"]):
-                txt += (f", and {abl_cp['abl_full_full']['citation_precision']:.2f} at full context length against "
-                        f"{abl_cp['abl_full_full_matched']['citation_precision']:.2f} at naive length in the ablation")
+                af, am = abl_cp["abl_full_full"], abl_cp["abl_full_full_matched"]
+                txt += (f", and {af['citation_precision']:.2f} at full context length against "
+                        f"{am['citation_precision']:.2f} at naive length in the ablation")
+                if am["invalid"] > af["invalid"]:  # the precision denominator leaves these out
+                    txt += (f", although at naive length {am['invalid']} citations (against {af['invalid']}) named a "
+                            "source that was not in the prompt and are not counted")
             m.text("CitationPrecisionSummary", txt + ".", c_cp)
         else:
             m.text("CitationPrecisionSummary", None, c_cp)
@@ -737,15 +746,47 @@ def main():
         up = sum(d > 0 and pv < 0.05 for d, pv in eq if d is not None)
         down = sum(d < 0 and pv < 0.05 for d, pv in eq if d is not None)
         lup = sum(d > 0 and pv < 0.05 for d, pv in ln if d is not None)
+        bigger = sum(l_[0] > e_[0] for e_, l_ in zip(eq, ln, strict=True) if None not in (e_[0], l_[0]))
+        import statistics as _st
         m.text("MatchedSummary",
                f"Across the {len(ms)} instruction-tuned models (Table~\\ref{{tab:gen-matched}}; one run, no gate), the "
                f"full pipeline cut to the naive context length was significantly more faithful than naive RAG for {up} "
                f"models and less faithful for {down}, while restoring the full context raised faithfulness "
-               f"significantly for {lup}.", c_mt)
+               f"significantly for {lup}. The length step was the larger of the two for {bigger} of {len(ms)} models "
+               f"(median {_st.median(d for d, _ in ln):+.3f} against {_st.median(d for d, _ in eq):+.3f}). The "
+               "equal-length contrast changes the prompt as well as retrieval, and in the ablation the prompt alone "
+               "raised faithfulness, so it bounds the contribution of better retrieval from above.", c_mt)
     else:
         m.text("MatchedSummary", None, c_mt)
     rt = load("generation_runtime.json")
     c_rt = "notebooks/kaggle\\_experiments.ipynb step generation\\_runtime"
+
+    def runtime_tests() -> str:
+        """Paired runtime contrasts from generation_reanalysis.json (exact McNemar, Holm-corrected)."""
+        t = get(load("generation_reanalysis.json"), "runtime_oos_abstention") or {}
+        q4, rtm, nf4 = (t.get(k) for k in ("qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-gguf",
+                                            "qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-instruct-f16",
+                                            "qwen2.5-1.5b-instruct-f16>qwen2.5-1.5b-instruct"))
+        if not (q4 and rtm and nf4):
+            return ""
+
+        def pv(c):
+            p_ = c["p_mcnemar_holm"]
+            return "$p<0.001$" if p_ < 0.001 else f"$p={p_:.3f}$"
+
+        def sig(c):
+            return c["p_mcnemar_holm"] < 0.05
+        if sig(q4) or not (sig(rtm) and sig(nf4)) or rtm["only_a"] <= rtm["only_b"] or nf4["only_a"] <= nf4["only_b"]:
+            return (" Paired by question (exact McNemar, Holm-corrected): Q4\\_K\\_M vs 16 bits in llama.cpp "
+                    f"{pv(q4)}, llama.cpp vs transformers at 16 bits {pv(rtm)}, 16 bits vs NF4 in transformers {pv(nf4)}.")
+        return (" Paired by question (exact McNemar, Holm-corrected), 4-bit Q4\\_K\\_M quantisation did not "
+                f"significantly change abstention in llama.cpp ({q4['only_b']} questions declined only at 4 bits, "
+                f"{q4['only_a']} only at 16 bits; {pv(q4)}), whereas both the runtime and NF4 quantisation lowered it: at "
+                f"16 bits, {rtm['only_a']} questions were declined only in llama.cpp and {rtm['only_b']} only in "
+                f"transformers ({pv(rtm)}), and within transformers {nf4['only_a']} only at 16 bits and "
+                f"{nf4['only_b']} only with NF4 ({pv(nf4)}). The benchmark's abstention rates, all measured with "
+                "transformers and NF4, may therefore understate what the same models do in other runtimes; this was "
+                "measured for one model only.")
     if rt:
         rr = {r["model"]: r for r in rt["summary"] if r["dataset"] == "oos_questions"}
 
@@ -756,7 +797,8 @@ def main():
                "Run four ways in one session on one GPU (Table~\\ref{tab:gen-runtime}), the same Qwen2.5-1.5B weights "
                f"declined {kdec('qwen2.5-1.5b-gguf')} out-of-scope questions with llama.cpp at 4 bits (Q4\\_K\\_M), "
                f"{kdec('qwen2.5-1.5b-gguf-f16')} with llama.cpp at 16 bits, {kdec('qwen2.5-1.5b-instruct-f16')} with "
-               f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4).", c_rt)
+               f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4), the "
+               "setting used for every model in the multi-model benchmark." + runtime_tests(), c_rt)
     else:
         m.text("RuntimeSummary", None, c_rt)
 
@@ -908,17 +950,29 @@ def main():
 
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
-        txt = (f"(1) The full pipeline's higher NLI faithfulness came mainly from giving the model more retrieved text: "
-               f"at equal context length, better retrieval added nothing ({f3(fab('abl_full_full_matched'))} vs "
+        txt = (f"(1) Higher NLI faithfulness came mainly from more retrieved text: at equal length, better retrieval "
+               f"added nothing for the deployed model ({f3(fab('abl_full_full_matched'))} vs "
                f"{f3(fab('abl_naive_full'))})")
         if mt:
             sig_m = mt.get("significance", {})
+            eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
+
+            def n_up(k):  # significant gains (Holm-corrected); a p-value of 0.0 is significant
+                out_ = 0
+                for m_ in ms:
+                    d_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", k)
+                    p_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm", k)
+                    out_ += d_ is not None and p_ is not None and d_ > 0 and p_ < 0.05
+                return out_
             ms = [m_ for m_ in mt["config"]["models"]
-                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", "abl_full_full_matched>abl_naive_naive") is not None]
-            up = [m_ for m_ in ms if (get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm",
-                                          "abl_full_full_matched>abl_naive_naive") or 1) < 0.05
-                  and sig_m[f"{m_}|faq_gen|faithfulness"]["delta"]["abl_full_full_matched>abl_naive_naive"] > 0]
-            txt += f", and at naive context length the full pipeline beat naive RAG significantly for {len(up)} of {len(ms)} models"
+                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", eq_k) is not None]
+            import statistics as _st
+
+            def med(k):
+                return _st.median(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][k] for m_ in ms)
+            txt += (f"; across {len(ms)} models, full length raised it significantly for {n_up(ln_k)}, better "
+                    f"retrieval and prompt at equal length for {n_up(eq_k)} (median gains {med(ln_k):+.2f} vs "
+                    f"{med(eq_k):+.2f})")
         parts.append(txt + ".")
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
@@ -933,8 +987,8 @@ def main():
             pc = v["per_category"]
             n = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
             return f"{round(v['crisis_recall_any_escalation'] * n)} of {n}"
-        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the author-written development set but "
-               f"{kn(gh)} on the frozen held-out set")
+        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but "
+               f"{kn(gh)} on the held-out set")
         if neg:
             txt += f", escalated {neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements (``I don't want to die'')"
         if ge and "faq_gen" in ge["datasets"]:
@@ -944,8 +998,8 @@ def main():
     if tf:
         hf, hn = (get(tf, "metrics", "judge_helpfulness", "settings", p_, "mean") for p_ in ("full", "no_rag"))
         if None not in (hf, hn):
-            parts.append(f"(4) An LLM judge rated grounded answers less helpful than answers without retrieval "
-                         f"({hf:.2f} vs {hn:.2f} on 1--5).")
+            parts.append(f"(4) An LLM judge rated grounded answers less helpful than ungrounded ones "
+                         f"({hf:.2f} vs {hn:.2f}, 1--5).")
     m.text("AbstractResults", " ".join(p for p in parts if p), "run all experiments (scripts/run_all_local.sh)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)  # paper/ is not in the repository (kept private)
