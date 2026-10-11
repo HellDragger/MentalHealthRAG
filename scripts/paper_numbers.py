@@ -746,7 +746,7 @@ def main():
         up = sum(d > 0 and pv < 0.05 for d, pv in eq if d is not None)
         down = sum(d < 0 and pv < 0.05 for d, pv in eq if d is not None)
         lup = sum(d > 0 and pv < 0.05 for d, pv in ln if d is not None)
-        bigger = sum(l_[0] > e_[0] for e_, l_ in zip(eq, ln) if None not in (e_[0], l_[0]))
+        bigger = sum(l_[0] > e_[0] for e_, l_ in zip(eq, ln, strict=True) if None not in (e_[0], l_[0]))
         import statistics as _st
         m.text("MatchedSummary",
                f"Across the {len(ms)} instruction-tuned models (Table~\\ref{{tab:gen-matched}}; one run, no gate), the "
