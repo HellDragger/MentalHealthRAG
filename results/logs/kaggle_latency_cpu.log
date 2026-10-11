@@ -1,0 +1,361 @@
+
+===== session started 2026-10-10 17:02
+$ /usr/bin/python3 -m scripts.build_index
+2026-10-10 17:02:31,658 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:31,668 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:31,696 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:50,743 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-10 17:02:50,743 INFO Disabling JAX because USE_JAX is set to False
+2026-10-10 17:02:51,839 INFO No device provided, using cuda:0
+2026-10-10 17:02:51,884 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:51,892 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:51,919 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:51,940 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:51,961 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:51,983 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:51,985 INFO Loading SentenceTransformer model from BAAI/bge-small-en-v1.5.
+2026-10-10 17:02:52,004 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,014 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,034 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,054 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,077 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,103 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,110 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,141 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,164 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,188 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,212 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:52,242 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,249 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,274 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,326 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:52,333 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:52,354 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+2026-10-10 17:02:52,382 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/xet-read-token/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a "HTTP/1.1 200 OK"
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2423.24it/s]
+2026-10-10 17:02:53,780 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:53,807 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:53,837 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:53,865 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:53,889 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:53,895 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:53,919 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:53,946 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:53,954 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:53,977 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:53,984 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,006 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:54,013 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,042 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:54,068 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,091 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/vocab.txt "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:54,111 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/vocab.txt "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,134 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/vocab.txt "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,175 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:54,270 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/special_tokens_map.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:54,291 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,314 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,336 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-10-10 17:02:54,410 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-10 17:02:54,417 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,443 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-10-10 17:02:54,471 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5 "HTTP/1.1 200 OK"
+2026-10-10 17:03:08,653 DEBUG Building index from IDs objects
+2026-10-10 17:03:08,863 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256: 2420 chunks in 36.4s (embed 12.1s)
+built: /kaggle/working/mhrag/artifacts/index/bge-small-c256  (2420 chunks)
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_llamacpp_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2521.12it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2714.68it/s]
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 28757.80879974991,
+    "p50": 29331.48402300003,
+    "p95": 33791.757112399675
+  },
+  "e2e_ms": {
+    "mean": 56180.070504416864,
+    "p50": 58744.51134999981,
+    "p95": 67878.9142257002
+  },
+  "tokens_per_s": {
+    "mean": 5.140454823045592,
+    "p50": 5.511570447135062,
+    "p95": 6.340049178258003
+  },
+  "output_tokens": {
+    "mean": 292.25,
+    "p50": 306.5,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 1538.8508829167524,
+    "p50": 1536.5362629995616,
+    "p95": 1629.1219693500807
+  },
+  "throttled_queries": 0
+}
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_llamacpp_f16_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2516.29it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2428.93it/s]
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 35042.71906375,
+    "p50": 35048.88619799976,
+    "p95": 43578.73827170005
+  },
+  "e2e_ms": {
+    "mean": 87286.8081077501,
+    "p50": 89504.41956200029,
+    "p95": 109642.9450348497
+  },
+  "tokens_per_s": {
+    "mean": 3.24944954213358,
+    "p50": 3.3706390543960283,
+    "p95": 3.817215483048695
+  },
+  "output_tokens": {
+    "mean": 285.8333333333333,
+    "p50": 296.5,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 1540.9120305832857,
+    "p50": 1545.3466195003784,
+    "p95": 1659.4232056997953
+  },
+  "throttled_queries": 0
+}
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_hf_fp32_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2480.13it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2492.09it/s]
+4-bit bitsandbytes needs CUDA; loading Qwen/Qwen2.5-1.5B-Instruct unquantised on cpu
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<04:23,  1.28it/s]
+Loading weights:  40%|████      | 136/338 [00:00<00:00, 205.50it/s]
+Loading weights:  61%|██████    | 207/338 [00:01<00:00, 199.59it/s]
+Loading weights:  75%|███████▌  | 254/338 [00:01<00:00, 205.08it/s]
+Loading weights:  86%|████████▋ | 292/338 [00:01<00:00, 188.89it/s]
+Loading weights:  95%|█████████▌| 322/338 [00:01<00:00, 193.42it/s]
+Loading weights: 100%|██████████| 338/338 [00:01<00:00, 177.22it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 348, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 341, in main
+    res = run_one(args.config, args.n, args.model)
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 277, in run_one
+    res = run_v1(cfg, n) if kind == "v1" else run_v2(cfg, n) if kind == "v2" else run_retrieval(cfg, n)
+                                              ~~~~~~^^^^^^^^
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 220, in run_v2
+    res = rt.pipeline.answer(q, model=cfg["model"], params=params)
+  File "/kaggle/working/mhrag/mhrag/pipeline.py", line 212, in answer
+    for ev in self.stream(message, **kw):
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/kaggle/working/mhrag/mhrag/pipeline.py", line 174, in stream
+    raise BackendError("generation timed out")
+mhrag.llm.base.BackendError: generation timed out
+
+===== session started 2026-10-11 03:18
+$ /usr/bin/python3 -m scripts.build_index
+2026-10-11 03:18:25,249 INFO HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-10-11 03:18:25,482 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:18:25,715 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer.json "HTTP/1.1 200 OK"
+2026-10-11 03:18:25,947 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:04,518 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-11 03:19:04,518 INFO Disabling JAX because USE_JAX is set to False
+2026-10-11 03:19:09,074 INFO No device provided, using cuda:0
+2026-10-11 03:19:09,338 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:09,579 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:09,817 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:10,050 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:10,274 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:10,506 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:10,508 INFO Loading SentenceTransformer model from BAAI/bge-small-en-v1.5.
+2026-10-11 03:19:10,757 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config_sentence_transformers.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:10,765 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config_sentence_transformers.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:11,009 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:11,242 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
+2026-10-11 03:19:11,469 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/README.md "HTTP/1.1 200 OK"
+2026-10-11 03:19:11,710 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/modules.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:11,720 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/modules.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:11,960 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/sentence_bert_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:12,190 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:12,422 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/sentence_bert_config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:12,665 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/adapter_config.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:12,906 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:13,146 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:13,374 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:13,644 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:13,654 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:13,893 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+2026-10-11 03:19:14,282 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/xet-read-token/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a "HTTP/1.1 200 OK"
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2525.74it/s]
+2026-10-11 03:19:16,877 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/processor_config.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:17,119 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:17,350 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:17,619 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:17,862 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:18,135 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:18,514 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:18,751 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:18,758 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:19,004 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:19,012 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:19,248 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:19,259 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:19,511 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:19,750 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-10-11 03:19:19,993 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/vocab.txt "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:20,223 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/vocab.txt "HTTP/1.1 200 OK"
+2026-10-11 03:19:20,457 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/vocab.txt "HTTP/1.1 200 OK"
+2026-10-11 03:19:20,697 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:20,938 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/special_tokens_map.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:21,165 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:21,405 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/special_tokens_map.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:21,649 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-10-11 03:19:21,942 INFO HTTP Request: HEAD https://huggingface.co/BAAI/bge-small-en-v1.5/resolve/main/1_Pooling/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-10-11 03:19:22,177 INFO HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:22,417 INFO HTTP Request: GET https://huggingface.co/api/resolve-cache/models/BAAI/bge-small-en-v1.5/5c38ec7c405ec4b44b94cc5a9bb96e735b38267a/1_Pooling%2Fconfig.json "HTTP/1.1 200 OK"
+2026-10-11 03:19:22,663 INFO HTTP Request: GET https://huggingface.co/api/models/BAAI/bge-small-en-v1.5 "HTTP/1.1 200 OK"
+2026-10-11 03:19:36,322 DEBUG Building index from IDs objects
+2026-10-11 03:19:36,528 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256: 2420 chunks in 69.9s (embed 11.5s)
+built: /kaggle/working/mhrag/artifacts/index/bge-small-c256  (2420 chunks)
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_llamacpp_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2551.15it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2570.07it/s]
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 27444.209164916618,
+    "p50": 27355.580812499964,
+    "p95": 32604.47029979995
+  },
+  "e2e_ms": {
+    "mean": 53901.25635516668,
+    "p50": 56092.42653799993,
+    "p95": 64887.40028090007
+  },
+  "tokens_per_s": {
+    "mean": 5.366258473900216,
+    "p50": 5.82326928687808,
+    "p95": 6.562406582289028
+  },
+  "output_tokens": {
+    "mean": 292.25,
+    "p50": 306.5,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 1488.4649443333349,
+    "p50": 1474.4603675001144,
+    "p95": 1588.1157012999665
+  },
+  "throttled_queries": 0
+}
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_llamacpp_f16_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2538.20it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2321.29it/s]
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+{
+  "n": 12,
+  "ttft_ms": {
+    "mean": 33769.485625166664,
+    "p50": 33413.01325599988,
+    "p95": 42782.95923754985
+  },
+  "e2e_ms": {
+    "mean": 85902.40523316663,
+    "p50": 88468.28476400014,
+    "p95": 107863.21211699999
+  },
+  "tokens_per_s": {
+    "mean": 3.3084002598019717,
+    "p50": 3.4090883604911646,
+    "p95": 3.88096912733793
+  },
+  "output_tokens": {
+    "mean": 285.8333333333333,
+    "p50": 296.5,
+    "p95": 400.0
+  },
+  "retrieval_ms": {
+    "mean": 1509.7296805000155,
+    "p50": 1492.6072835000923,
+    "p95": 1649.11740280005
+  },
+  "throttled_queries": 0
+}
+$ CUDA_VISIBLE_DEVICES= MHRAG_DEVICE=cpu /usr/bin/python3 -m scripts.bench_latency --out /kaggle/working/mhrag_results/latency_cpu.json --config v2_hf_fp32_cpu
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2541.25it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2702.90it/s]
+4-bit bitsandbytes needs CUDA; loading Qwen/Qwen2.5-1.5B-Instruct unquantised on cpu
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<03:18,  1.70it/s]
+Loading weights:  29%|██▉       | 99/338 [00:00<00:01, 190.57it/s]
+Loading weights:  46%|████▌     | 154/338 [00:00<00:00, 203.66it/s]
+Loading weights:  58%|█████▊    | 195/338 [00:01<00:00, 200.54it/s]
+Loading weights:  67%|██████▋   | 227/338 [00:01<00:00, 209.01it/s]
+Loading weights:  76%|███████▌  | 256/338 [00:01<00:00, 193.51it/s]
+Loading weights:  83%|████████▎ | 281/338 [00:01<00:00, 193.36it/s]
+Loading weights:  90%|█████████ | 305/338 [00:01<00:00, 198.13it/s]
+Loading weights: 100%|██████████| 338/338 [00:01<00:00, 186.76it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 348, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 341, in main
+    res = run_one(args.config, args.n, args.model)
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 277, in run_one
+    res = run_v1(cfg, n) if kind == "v1" else run_v2(cfg, n) if kind == "v2" else run_retrieval(cfg, n)
+                                              ~~~~~~^^^^^^^^
+  File "/kaggle/working/mhrag/scripts/bench_latency.py", line 220, in run_v2
+    res = rt.pipeline.answer(q, model=cfg["model"], params=params)
+  File "/kaggle/working/mhrag/mhrag/pipeline.py", line 212, in answer
+    for ev in self.stream(message, **kw):
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/kaggle/working/mhrag/mhrag/pipeline.py", line 174, in stream
+    raise BackendError("generation timed out")
+mhrag.llm.base.BackendError: generation timed out

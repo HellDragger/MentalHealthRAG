@@ -743,6 +743,11 @@ def _write_matched(res: dict) -> None:
                 label="tab:gen-matched", align="lrrrrr", source=f"results/generation_{res['name']}.json")
 
 
+# runtime-comparison rows: the catalogue labels describe deployment (e.g. "CPU"), not how this run loaded the model
+RUNTIME_LABELS = {"qwen2.5-1.5b-gguf": "llama.cpp, GGUF Q4\\_K\\_M (4-bit)", "qwen2.5-1.5b-gguf-f16": "llama.cpp, GGUF F16",
+                  "qwen2.5-1.5b-instruct-f16": "transformers, 16-bit", "qwen2.5-1.5b-instruct": "transformers, 4-bit NF4"}
+
+
 def _write_runtime(res: dict) -> None:
     """The same model run four ways: declined out-of-scope questions, faithfulness and citations."""
     rows = {(r["model"], r["dataset"]): r for r in res["summary"] if r["profile"] == "full"}
@@ -754,12 +759,14 @@ def _write_runtime(res: dict) -> None:
             continue
         ab = oos.get("abstained") or {}
         k = round(ab["mean"] * ab["n"]) if ab else None
-        table.append([esc(cat[m].label if m in cat else m), f"{k}/{ab['n']}" if ab else "--",
+        label = RUNTIME_LABELS.get(m) or esc(cat[m].label if m in cat else m)
+        table.append([label, f"{k}/{ab['n']}" if ab else "--",
                       _cell(faq, "faithfulness"), _cell(faq, "has_citation", 2)])
     write_table("generation_runtime", ["Runtime and weights", "OOS declined", "Faithful.", "Cites"], table,
-                caption="Qwen2.5-1.5B-Instruct run four ways in one session on one T4, full pipeline: out-of-scope "
+                caption="Qwen2.5-1.5B-Instruct run four ways in one session on one T4 GPU, full pipeline: out-of-scope "
                         "questions declined (model answers only; phrase list), and NLI faithfulness and citation rate "
-                        "on FAQ-Gen.", label="tab:gen-runtime", align="lrrr", source=f"results/generation_{res['name']}.json")
+                        "on FAQ-Gen. The deployed system uses llama.cpp with Q4\\_K\\_M weights; the multi-model benchmark "
+                        "loads every model with transformers and 4-bit NF4 weights.", label="tab:gen-runtime", align="lrrr", source=f"results/generation_{res['name']}.json")
 
 
 def render_tables(res: dict) -> None:

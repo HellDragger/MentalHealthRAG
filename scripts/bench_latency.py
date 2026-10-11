@@ -54,8 +54,9 @@ CONFIGS = {
     "v2_llamacpp_f16_cpu": {"kind": "v2", "model": "qwen2.5-1.5b-gguf-f16", "env": {"MHRAG_LLAMACPP_GPU_LAYERS": "0"},
                             "n": 12},
     # same weights and precision as the unoptimised baseline, but the full pipeline with streaming
+    # fp32 on a few CPU cores takes minutes per answer: the default 120 s generation timeout stopped it on Kaggle
     "v2_hf_fp32_cpu": {"kind": "v2", "model": "qwen2.5-1.5b-instruct", "env": {"MHRAG_DEVICE": "cpu", "MHRAG_DTYPE": "float32"},
-                       "n": 12},
+                       "n": 12, "timeout_s": 1800},
     "v2_llamacpp_metal": {"kind": "v2", "model": "qwen2.5-1.5b-gguf", "env": {"MHRAG_LLAMACPP_GPU_LAYERS": "-1"}, "n": 12,
                           "requires": "darwin"},
     "v2_hf_mps": {"kind": "v2", "model": "qwen2.5-1.5b-instruct", "env": {"MHRAG_DEVICE": "mps"}, "n": 12,
@@ -205,6 +206,7 @@ def run_v2(cfg: dict, n: int) -> dict:
     s.llm.model = cfg["model"]
     s.llm.served_models = [cfg["model"]]
     s.llm.allow_api_models = True  # the v2_api row measures the API model on purpose
+    s.llm.timeout_s = cfg.get("timeout_s", s.llm.timeout_s)
     with PeakRSS() as mem:
         t0 = time.perf_counter()
         _ensure_index(s)
@@ -313,6 +315,8 @@ def main(argv=None):
     ap.add_argument("--n", type=int)
     ap.add_argument("--model")
     ap.add_argument("--out", help="default: <results dir>/latency.json (follows MHRAG_PATHS__RESULTS)")
+    ap.add_argument("--skip-measured", action="store_true",
+                    help="do nothing if --out already holds a measurement of this configuration (resuming a run)")
     args = ap.parse_args(argv)
     from mhrag.config import get_settings
 
@@ -334,6 +338,9 @@ def main(argv=None):
         return 0
     if not args.config:
         ap.error("--config or --all")
+    if args.skip_measured and out.exists() and "summary" in json.loads(out.read_text()).get(args.config, {}):
+        print(f"{args.config}: already measured in {out}; skipping")
+        return 0
     ok, why = can_run(CONFIGS[args.config])
     if not ok:
         print(f"cannot run {args.config}: {why}")
