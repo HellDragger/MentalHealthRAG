@@ -999,16 +999,16 @@ def main():
                           mean_(g_rows.get((x, "naive", "oos_questions")), "abstained", 2),
                           mean_(g_rows.get((x, "full", "oos_questions")), "abstained", 2)])
         if brows:
-            write_table("benchmark_summary", ["Model", "Size (B)", "Faithful. naive", "Faithful. full", "Cites",
-                                              "Citation prec.", "Declined naive", "Declined full"], brows,
+            write_table("benchmark_summary", ["Model", "B", "Faith. naive", "Faith. full", "Cites", "Cit. prec.",
+                                              "Decl. naive", "Decl. full"], brows,
                         "Instruction-tuned models in the multi-model benchmark run: naive RAG versus the full pipeline. "
                         "Every column comes from this one run (one Kaggle session per model, with the risk gate; model "
                         "answers only, so 87 FAQ-Gen and 49 out-of-scope answers per model with the full pipeline). "
                         "Faithfulness here is not length-matched; the length-matched comparison is a separate run "
-                        "(Table~\\ref{tab:gen-matched}), so its values differ slightly. Faithful. = NLI faithfulness on "
-                        "FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Citation prec. = share of (sentence, "
-                        "cited passage) pairs where the passage entails the sentence; Declined = share of out-of-scope "
-                        "questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
+                        "(Table~\\ref{tab:gen-matched}), so its values differ slightly. B = parameters (billions); Faith. = NLI "
+                        "faithfulness on FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Cit. prec. = share of "
+                        "(sentence, cited passage) pairs where the passage entails the sentence; Decl. = share of "
+                        "out-of-scope questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
                         "\\ref{app:generation}.",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
