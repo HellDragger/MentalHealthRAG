@@ -57,3 +57,41 @@ Loading weights:  98%|█████████▊| 281/288 [00:05<00:00, 83.4
 Loading weights: 100%|██████████| 288/288 [00:05<00:00, 57.58it/s]
 shieldgemma {"dev": {"crisis_k": 40, "crisis_n": 60, "fp": 0, "neg_n": 60, "harmful_escalated": 24, "harmful_n": 25}, "heldout": {"crisis_k": 23, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 1, "n": 98}, "negation": {"separated": 16, "no_risk_escalated": 1, "pairs": 20}}
 zeroshot {"dev": {"crisis_k": 55, "crisis_n": 60, "fp": 2, "neg_n": 60, "harmful_escalated": 25, "harmful_n": 25}, "heldout": {"crisis_k": 33, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 4, "n": 98}, "negation": {"separated": 17, "no_risk_escalated": 3, "pairs": 20}}
+
+===== session started 2026-10-11 07:23
+$ CUDA_VISIBLE_DEVICES=0 /usr/bin/python3 -m scripts.eval_safety_baselines
+
+Loading weights:   0%|          | 0/147 [00:00<?, ?it/s]
+Loading weights:   1%|          | 1/147 [00:01<02:32,  1.05s/it]
+Loading weights:  39%|███▉      | 58/147 [00:01<00:01, 67.97it/s]
+Loading weights:  59%|█████▉    | 87/147 [00:01<00:00, 84.94it/s]
+Loading weights:  74%|███████▍  | 109/147 [00:01<00:00, 98.92it/s]
+Loading weights:  88%|████████▊ | 129/147 [00:01<00:00, 108.73it/s]
+Loading weights: 100%|██████████| 147/147 [00:01<00:00, 121.71it/s]
+Loading weights: 100%|██████████| 147/147 [00:01<00:00, 83.21it/s] 
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+llama_guard {"dev": {"crisis_k": 34, "crisis_n": 60, "fp": 0, "neg_n": 60, "harmful_escalated": 17, "harmful_n": 25}, "heldout": {"crisis_k": 19, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 10, "harmful_n": 15}, "faq_gen": {"escalated": 1, "n": 98}, "negation": {"separated": 13, "no_risk_escalated": 0, "pairs": 20}}
+
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]
+Fetching 2 files:  50%|█████     | 1/2 [00:03<00:03,  3.91s/it]
+Fetching 2 files: 100%|██████████| 2/2 [00:24<00:00, 13.94s/it]
+Fetching 2 files: 100%|██████████| 2/2 [00:24<00:00, 12.44s/it]
+
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/288 [00:02<11:10,  2.34s/it]
+Loading weights:  32%|███▏      | 91/288 [00:02<00:03, 49.54it/s]
+Loading weights:  41%|████▏     | 119/288 [00:02<00:02, 58.25it/s]
+Loading weights:  48%|████▊     | 139/288 [00:03<00:02, 63.17it/s]
+Loading weights:  55%|█████▍    | 157/288 [00:03<00:01, 69.64it/s]
+Loading weights:  59%|█████▉    | 171/288 [00:03<00:01, 69.84it/s]
+Loading weights:  66%|██████▌   | 190/288 [00:03<00:01, 78.31it/s]
+Loading weights:  70%|███████   | 202/288 [00:03<00:01, 80.59it/s]
+Loading weights:  74%|███████▍  | 213/288 [00:03<00:00, 79.48it/s]
+Loading weights:  78%|███████▊  | 225/288 [00:03<00:00, 86.43it/s]
+Loading weights:  82%|████████▏ | 236/288 [00:04<00:00, 74.99it/s]
+Loading weights:  88%|████████▊ | 253/288 [00:04<00:00, 93.20it/s]
+Loading weights:  92%|█████████▏| 265/288 [00:04<00:00, 89.60it/s]
+Loading weights:  97%|█████████▋| 278/288 [00:04<00:00, 88.20it/s]
+Loading weights: 100%|██████████| 288/288 [00:04<00:00, 62.39it/s]
+shieldgemma {"dev": {"crisis_k": 40, "crisis_n": 60, "fp": 0, "neg_n": 60, "harmful_escalated": 24, "harmful_n": 25}, "heldout": {"crisis_k": 23, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 1, "n": 98}, "negation": {"separated": 16, "no_risk_escalated": 1, "pairs": 20}}
+zeroshot {"dev": {"crisis_k": 55, "crisis_n": 60, "fp": 2, "neg_n": 60, "harmful_escalated": 25, "harmful_n": 25}, "heldout": {"crisis_k": 33, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 4, "n": 98}, "negation": {"separated": 17, "no_risk_escalated": 3, "pairs": 20}}
