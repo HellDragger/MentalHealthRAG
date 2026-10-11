@@ -22,7 +22,7 @@ from eval.judges import (
     strip_citations,
 )
 from eval.metrics import bootstrap_ci, holm, paired_bootstrap_p, wilcoxon_p
-from eval.tables import esc, fmt, write_table
+from eval.tables import esc, fmt, signed, write_table
 from mhrag.config import Settings
 from mhrag.index.builder import build_index
 from mhrag.index.embedders import free_accelerator_memory
@@ -157,7 +157,7 @@ def generate(cfg: dict, settings: Settings, out_dir: Path, limit: int | None) ->
             records.append({"model": model, "status": f"TODO(run): no access with this API key: {no_access[:200]}"})
         else:
             records.append({"model": model, "status": "ok", "load_seconds": load_s, "peak_rss_gb": peak.gb,
-                            **_gpu_mem()})
+                            **_gpu_mem(), "versions": _versions()})
             if _complete(cfg, model, out_dir, limit):
                 status_path.write_text(json.dumps(records[-1]))  # marks the model finished (read by the notebook)
             else:  # e.g. out-of-memory on some answers: no status file, so the next run retries just those
@@ -577,7 +577,7 @@ def model_group(key: str, catalog: dict) -> str:
 
 
 def _quality_caption(dataset: str, res: dict) -> str:
-    return (f"Generation quality on {dataset.replace('_', '-')}. Faithfulness = share of answer sentences "
+    return (f"Generation quality on {DATASET_NAMES.get(dataset, esc(dataset))}. Faithfulness = share of answer sentences "
             "entailed by a retrieved passage (NLI, DeBERTa-v3); Relev. = question-answer embedding "
             "cosine; Cites = share of answers with an inline citation; Judge = LLM-as-judge (1--5), "
             "`--' where not run; Tmpl. = share of questions the risk gate answered with a fixed safety "
@@ -588,6 +588,22 @@ def _quality_caption(dataset: str, res: dict) -> str:
             + (f" The judge scored a fixed sample of {res['config']['judge_sample']} questions per "
                "dataset, the same for every model and setting."
                if (res.get("config") or {}).get("judge_sample") else ""))
+
+
+# which run a table comes from, stated in its caption (several runs of the same model exist)
+DATASET_NAMES = {"faq_gen": "FAQ-Gen", "counsel_gen": "Counsel-Gen", "oos_questions": "the out-of-scope set"}
+RUN_NAMES = {"gpu": "Multi-model benchmark run. ", "local": "Main experiment run. "}
+
+
+def _versions() -> dict:
+    """Inference library versions, recorded per model run (two sessions can differ when a library is not pinned)."""
+    out = {}
+    for mod in ("llama_cpp", "transformers", "torch", "bitsandbytes"):
+        try:
+            out[mod] = __import__(mod).__version__
+        except Exception:  # not installed in this environment
+            pass
+    return out
 
 
 def _write_quality(name: str, suffix: str, dataset: str, rs: list, res: dict, prefix: str = "") -> None:
@@ -689,9 +705,9 @@ def _write_ablation(res: dict) -> None:
                       _cell(faq, "has_citation", 2), _cell(oos, "abstained", 2)])
     write_table("generation_ablation", ["Retrieval", "Prompt", "Context (chars)", "Faithful.", "Relev.", "ROUGE-L",
                                         "BERTScore", "Cites", "OOS declined"], table,
-                caption=f"Component ablation with {esc(model)}: each retrieval set-up crossed with each prompt, on "
-                        "FAQ-Gen (FAQ removed from the index) and the out-of-scope set; one run on the same hardware, no "
-                        "safety gate and no output check. Naive retrieval: dense MiniLM, top-2 of 48-token chunks; full: "
+                caption=f"Ablation run: component ablation with {esc(model)}, each retrieval set-up crossed with each "
+                        "prompt, on FAQ-Gen (FAQ removed from the index) and the out-of-scope set; one run on the same "
+                        "hardware, no safety gate and no output check, so the model answers all 98 FAQ-Gen questions (the main experiment answers the 87 the gate passes). Naive retrieval: dense MiniLM, top-2 of 48-token chunks; full: "
                         "hybrid + reranking, 256-token chunks. Naive prompt: minimal template without a system prompt; "
                         "full: grounded system prompt with numbered sources. ``Cut to naive length'' gives the model as "
                         "many characters of retrieved text as naive retrieval did for the same question. Context: mean "
@@ -705,7 +721,7 @@ def _write_ablation(res: dict) -> None:
             s = sig.get(f"{model}|{ds}|{metric}", {})
             k = f"{a}>{b}"
             d, p = s.get("delta", {}).get(k), s.get("p_bootstrap_holm", {}).get(k)
-            cells += [f"{d:+.3f}" if d is not None else "--", f"{p:.3f}" if p is not None else "--"]
+            cells += [signed(d), f"{p:.3f}" if p is not None else "--"]
         ctab.append(cells)
     write_table("generation_ablation_contrasts", ["Effect of", "$\\Delta$ faithful.", "$p$", "$\\Delta$ relev.", "$p$",
                                                   "$\\Delta$ declined", "$p$"], ctab,
@@ -728,15 +744,17 @@ def _write_matched(res: dict) -> None:
         def d(a, b, s=s):
             k = f"{a}>{b}"
             dv, pv = s.get("delta", {}).get(k), s.get("p_bootstrap_holm", {}).get(k)
-            return "--" if dv is None else f"{dv:+.3f}" + ("$^{*}$" if pv is not None and pv < 0.05 else "")
+            return "--" if dv is None else signed(dv) + ("$^{*}$" if pv is not None and pv < 0.05 else "")
         table.append([esc(m), _cell(rows[(m, "abl_naive_naive")], "faithfulness"),
                       _cell(rows.get((m, "abl_full_full_matched"), {}), "faithfulness"),
                       _cell(rows.get((m, "abl_full_full"), {}), "faithfulness"),
                       d("abl_full_full_matched", "abl_naive_naive"), d("abl_full_full", "abl_full_full_matched")])
     write_table("generation_matched", ["Model", "Naive RAG", "Full, naive length", "Full", "$\\Delta$ equal length",
                                        "$\\Delta$ length"], table,
-                caption="NLI faithfulness on FAQ-Gen at equal context length, every instruction-tuned model, one run "
-                        "(no safety gate). Full, naive length: the full pipeline given as many characters of retrieved "
+                caption="Length-matched run: NLI faithfulness on FAQ-Gen at equal context length for every "
+                        "instruction-tuned model, all 98 questions, no safety gate. This is a separate run from the "
+                        "multi-model benchmark (Table~\\ref{tab:benchmark-summary}), so its naive and full values differ "
+                        "slightly from it. Full, naive length: the full pipeline given as many characters of retrieved "
                         "text as naive RAG got for the same question. $\\Delta$ equal length = full at naive length "
                         "minus naive RAG (retrieval and prompt at the same amount of text); $\\Delta$ length = full "
                         "minus full at naive length. $^{*}$ paired bootstrap, Holm-corrected $p<0.05$.",
@@ -795,8 +813,9 @@ def render_tables(res: dict) -> None:
         _write_summary(name, res, groups, catalog)
     for dataset in sorted({r["dataset"] for r in rows}):
         rs = [r for r in rows if r["dataset"] == dataset]
-        parts = ([("", rs, "")] if not grouped else
-                 [(f"_{g}", [r for m in groups.get(g, []) for r in rs if r["model"] == m], f"{label}. ")
+        parts = ([("", rs, RUN_NAMES.get(name, ""))] if not grouped else
+                 [(f"_{g}", [r for m in groups.get(g, []) for r in rs if r["model"] == m],
+                   f"{RUN_NAMES.get(name, '')}{label}. ")
                   for g, label in MODEL_GROUPS])
         for suffix, sub, prefix in parts:
             if not sub:

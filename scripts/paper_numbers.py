@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import json
 
+from eval.tables import esc as tex_esc
 from eval.tables import fmt, fmt_ci, write_table
 from mhrag.config import PROJECT_ROOT, get_settings
 
+_WORDS = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six"}
 R = get_settings().results_dir
 OUT = PROJECT_ROOT / "paper" / "numbers.tex"
 
@@ -359,6 +361,41 @@ def main():
                f"All of these escalations were triggered by {who}.", c_ge)
     else:
         m.text("GateOnRealQuestions", None, c_ge)
+
+    # ---------------------------------------------------------------- held-out harmful requests the gate missed
+    gh_ = load("safety_gate_v2_heldout.json")
+    gd_ = load("safety_gate_v2_devset.json")
+    c_hm = "python -m scripts.eval\\_safety --data eval/data/safety\\_prompts\\_heldout.jsonl --tag v2\\_heldout"
+    vh, vd = get(gh_, "variants", dep), get(gd_, "variants", dep)
+    if vh and vd and get(vh, "per_category", "harmful_request"):
+        ph, pd_ = vh["per_category"]["harmful_request"], vd["per_category"]["harmful_request"]
+        lab = ph["labels"]
+        caught = lab.get("harmful_request", 0) + lab.get("crisis", 0) + lab.get("third_party", 0)
+        miss = [e for e in vh["errors"] if e["expected"] == "harmful_request"]
+        none_ = [e for e in miss if e["got"] == "none"]
+        thr = vh.get("crisis_threshold")
+        guarded = [e for e in none_ if thr is not None and (e.get("score") or 0) >= thr]
+        texts = {}
+        hp = PROJECT_ROOT / "eval" / "data" / "safety_prompts_heldout.jsonl"
+        for line in hp.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                r_ = json.loads(line)
+                texts[r_["id"]] = r_["text"]
+        ex = next((texts.get(e["id"]) for e in guarded if texts.get(e["id"])), None)
+        dev_caught = round(pd_["escalated"] * pd_["n"])
+        m.text("HarmfulMissSummary",
+               f"(iv) Requests for suicide or self-harm methods: the gate escalated {caught} of {ph['n']} held-out "
+               f"harmful requests, against {dev_caught} of {pd_['n']} on the development set. Of the {len(miss)} it "
+               f"missed, {lab.get('elevated', 0)} went to the non-blocking elevated tier and {len(none_)} were not "
+               f"flagged at all. {_WORDS.get(len(guarded), str(len(guarded))).capitalize()} of the unflagged ones had a classifier score above the crisis threshold "
+               "but were phrased as general questions without a first-person pronoun"
+               + (f" (``{tex_esc(ex.rstrip('?'))}?'')" if ex else "")
+               + ", so the informational-question guard, which keeps factual questions from being escalated, overrode "
+               "the classifier, and the lexicon's method patterns did not match their wording. I left the gate "
+               "unchanged after seeing these results so that the held-out set stays held out; exempting method "
+               "questions from the guard is the obvious fix, and it needs a new held-out set to evaluate.", c_hm)
+    else:
+        m.text("HarmfulMissSummary", None, c_hm)
 
     # ---------------------------------------------------------------- SynthQA human verification
     sv = load("synth_qa_verification.json")
@@ -737,6 +774,14 @@ def main():
                 sig.append(f"{names.get(m_, m_)} {verb} ({c['method']} vs {c['gate']} of {c['n']}, {fp_(c['p_mcnemar_holm'])})")
         txt = (f" Compared with the gate prompt by prompt (exact McNemar, Holm-corrected over {n_tests} contrasts), "
                + ("; ".join(sig) if sig else "no difference was significant") + ".")
+        hm = [(names.get(m_, m_), res["heldout_harmful"]) for m_, res in pv.items() if "heldout_harmful" in res]
+        if hm:
+            c0 = hm[0][1]
+            txt += (f" On held-out requests for methods, the gate escalated {c0['gate']} of {c0['n']}; "
+                    + "; ".join(f"{nm} escalated {c['method']} ({c['only_method']} that the gate did not, "
+                                f"{c['only_gate']} the other way; Holm-corrected {fp_(c['p_mcnemar_holm'])})"
+                                for nm, c in hm)
+                    + f". With {c0['n']} requests these tests have little power (Section~\\ref{{sec:error-analysis}}).")
         z = pv.get("zeroshot", {})
         ns = [f"{what[k_]} ({z[k_]['method']} vs {z[k_]['gate']})" for k_ in ("heldout_crisis", "faq_gen")
               if k_ in z and z[k_]["p_mcnemar_holm"] >= 0.05]
@@ -787,6 +832,32 @@ def main():
                     txt += (f", although at naive length {am['invalid']} citations (against {af['invalid']}) named a "
                             "source that was not in the prompt and are not counted")
             m.text("CitationPrecisionSummary", txt + ".", c_cp)
+            ck = load("citation_check.json")
+            if ck and ck.get("raters"):
+                rs_ = list(ck["raters"].values())
+                r0 = rs_[0]
+                ns_, ss_ = r0["strata"]["nli_unsupported"], r0["strata"]["nli_supported"]
+                lo_, hi_ = r0["corrected_ci"]
+                txt_ck = (f"To check whether the NLI model is too strict, I labelled {ck['pairs']} (sentence, cited "
+                          "passage) pairs by hand, sampled from the deployed and benchmark models and blind to the NLI "
+                          f"verdict ({ss_['n']} that NLI counted as entailed, {ns_['n']} that it did not). Of the "
+                          f"{ns_['n']} that NLI rejected, I judged {ns_['supported']} supported and {ns_['partly']} partly "
+                          f"supported; of the {ss_['n']} it accepted, {ss_['supported']} supported (agreement with NLI "
+                          f"{r0['agreement']:.2f}, $\\kappa={r0['cohen_kappa']:.2f}$). Weighting each group by its share of "
+                          f"all {ck['population']['pairs']} citation pairs, the estimated citation precision is "
+                          f"{r0['corrected_citation_precision']:.2f} (95\\% CI {lo_:.2f}--{hi_:.2f}) rather than "
+                          f"{r0['nli_citation_precision']:.2f}, and {r0['corrected_partly_as_supported']:.2f} if partial "
+                          "support counts. The NLI model therefore understates how often citations are supported, so its "
+                          "absolute values should not be read as citation rates. The same model scores NLI faithfulness, "
+                          "whose absolute values are probably understated in the same way; the comparisons between "
+                          "settings assume that its errors are similar across them, which this check does not test."
+                          + (f" Agreement between raters: $\\kappa={ck['inter_rater_kappa']:.2f}$."
+                             if ck.get("inter_rater_kappa") is not None else ""))
+                m.text("CitationCheckSummary", txt_ck, "python -m scripts.citation\\_check")
+            else:
+                m.lines.append("\\newcommand{\\CitationCheckSummary}{\\todohuman{label the 30 pairs in "
+                               "eval/human\\_eval/out/citation\\_check/sheet\\_rater1.csv, then python -m "
+                               "scripts.citation\\_check}}")
         else:
             m.text("CitationPrecisionSummary", None, c_cp)
     else:
@@ -914,44 +985,39 @@ def main():
 
         cat2 = _lc2()
         g_rows = {(r["model"], r["profile"], r["dataset"]): r for r in gg["summary"]}
-        m_rows = {(r["model"], r["profile"]): r for r in (mt or {}).get("summary", []) if r["dataset"] == "faq_gen"}
-        m_sig = (mt or {}).get("significance", {})
         cp_sets = {k.split(":")[1]: v for k, v in (cp or {}).get("sets", {}).items() if k.startswith("gpu:")}
         gcfg2 = gg.get("config", {}).get("models", [])
         brows = []
-        for x in gcfg2:
+        for x in gcfg2:  # every column from the multi-model benchmark run (the length-matched run is its own table)
             if _mg2(x, cat2) == "base" or (x, "full", "faq_gen") not in g_rows:
                 continue
 
             def mean_(r, k, nd=3):
                 v = get(r, k, "mean")
                 return "--" if v is None else f"{v:.{nd}f}"
-            mn, mm_, mf = (m_rows.get((x, a_)) for a_ in ("abl_naive_naive", "abl_full_full_matched", "abl_full_full"))
-            pv = get(m_sig, f"{x}|faq_gen|faithfulness", "p_bootstrap_holm", "abl_full_full_matched>abl_naive_naive")
-            star = "$^{*}$" if pv is not None and pv < 0.05 else ""
             cpv = get(cp_sets.get(x), "citation_precision")
             size = cat2[x].raw.get("params_b") if x in cat2 else None
             brows.append([x.replace("_", "\\_"), f"{size:g}" if size else "--",
-                          mean_(mn, "faithfulness") if mn else mean_(g_rows.get((x, "naive", "faq_gen")), "faithfulness"),
-                          (mean_(mm_, "faithfulness") + star) if mm_ else "--",
-                          mean_(mf, "faithfulness") if mf else mean_(g_rows.get((x, "full", "faq_gen")), "faithfulness"),
+                          mean_(g_rows.get((x, "naive", "faq_gen")), "faithfulness"),
+                          mean_(g_rows.get((x, "full", "faq_gen")), "faithfulness"),
                           mean_(g_rows.get((x, "full", "faq_gen")), "has_citation", 2),
                           "--" if cpv is None else f"{cpv:.2f}",
                           mean_(g_rows.get((x, "naive", "oos_questions")), "abstained", 2),
                           mean_(g_rows.get((x, "full", "oos_questions")), "abstained", 2)])
         if brows:
-            write_table("benchmark_summary", ["Model", "Size (B)", "Faithful. naive", "Faithful. full, naive length",
-                                              "Faithful. full", "Cites", "Citation prec.", "OOS declined naive",
-                                              "OOS declined full"], brows,
-                        "Instruction-tuned models, naive RAG versus the full pipeline. Faithfulness (FAQ-Gen) is given at "
-                        "naive RAG's context length as well as at full length, because it grows with the amount of "
-                        "retrieved text" + (" (one run per model, no gate; $^{*}$ the full pipeline at naive length "
-                        "differs significantly from naive RAG, paired bootstrap, Holm-corrected)" if mt else
-                        "; the length-matched column is pending") + ". Cites = share of FAQ-Gen answers with a citation; "
-                        "Citation prec. = share of cited passages that entail the citing sentence; OOS declined = share "
-                        "of the model's answers to the 50 out-of-scope questions that decline (phrase list). Per-setting "
-                        "results for every model, including the non-chat baselines, are in \\ref{app:generation}.",
-                        "tab:benchmark-summary", align="lrrrrrrrr", source="results/generation_*.json")
+            write_table("benchmark_summary", ["Model", "B", "Faith. naive", "Faith. full", "Cites", "Cit. prec.",
+                                              "Decl. naive", "Decl. full"], brows,
+                        "Instruction-tuned models in the multi-model benchmark run: naive RAG versus the full pipeline. "
+                        "Every column comes from this one run (one Kaggle session per model, with the risk gate; model "
+                        "answers only, so 87 FAQ-Gen and 49 out-of-scope answers per model with the full pipeline). "
+                        "Faithfulness here is not length-matched; the length-matched comparison is a separate run "
+                        "(Table~\\ref{tab:gen-matched}), so its values differ slightly. B = parameters (billions); Faith. = NLI "
+                        "faithfulness on FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Cit. prec. = share of "
+                        "(sentence, cited passage) pairs where the passage entails the sentence; Decl. = share of "
+                        "out-of-scope questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
+                        "\\ref{app:generation}.",
+                        "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
+                        "results/citation_precision.json")
 
     # ---------------------------------------------------------------- run-to-run divergence (main run vs ablation)
     def _scored(exp):
@@ -974,12 +1040,23 @@ def main():
         fa_ = [abl_r[i]["metrics"].get("faithfulness") for i in ids]
         pairs_ = [(x, y) for x, y in zip(fl, fa_, strict=True) if x is not None and y is not None]
         if ids and pairs_:
-            div_txt = (f"only {same_ans} of {len(ids)} answers to questions the gate passed were identical. The "
-                       "answers diverged after a shared opening, which points to numerical differences between the two "
-                       "Kaggle sessions (the GPU build of llama.cpp is not pinned), not to a configuration difference. Their mean faithfulness differed by "
-                       f"{abs(sum(x for x, _ in pairs_) - sum(y for _, y in pairs_)) / len(pairs_):.3f} "
-                       f"({sum(x for x, _ in pairs_) / len(pairs_):.3f} vs {sum(y for _, y in pairs_) / len(pairs_):.3f}), "
-                       "a measure of run-to-run variation; every comparison in a table comes from a single run.")
+            n_pass = len(loc_r)
+            main_f = get(next((r for r in (load("generation_local.json") or {}).get("summary", [])
+                               if r["model"] == gl_first and r["profile"] == "full" and r["dataset"] == "faq_gen"), None),
+                         "faithfulness")
+            abl_f = get(next((r for r in ab["summary"] if r["profile"] == "abl_full_full" and r["dataset"] == "faq_gen"),
+                             None), "faithfulness")
+            div_txt = ("The full pipeline with the deployed model ran twice: in the main experiment, with the gate "
+                       f"(faithfulness {main_f['mean']:.3f} on the {main_f['n']} FAQ-Gen questions the gate passed), and "
+                       f"in the ablation, without it ({abl_f['mean']:.3f} on all {abl_f['n']}, "
+                       "Table~\\ref{tab:gen-ablation}). "
+                       f"On the {len(ids)} of the {n_pass} gate-passed questions for which both runs retrieved the same "
+                       f"passages, only {same_ans} answers were identical. They diverged after a shared opening, which "
+                       "points to numerical differences between the two Kaggle sessions rather than to a configuration "
+                       "difference; the llama.cpp version was not recorded for these runs and is now pinned. Mean "
+                       f"faithfulness on these {len(pairs_)} questions was {sum(x for x, _ in pairs_) / len(pairs_):.3f} "
+                       f"in the main run and {sum(y for _, y in pairs_) / len(pairs_):.3f} in the ablation, a measure of "
+                       "run-to-run variation. Every table comes from a single run, which its caption names.")
     m.text("AblationRunDivergence", div_txt, "python -m scripts.rescore\\_faithfulness")
 
     # ---------------------------------------------------------------- abstention cross-check (LLM judge)
@@ -1001,7 +1078,7 @@ def main():
     else:
         m.text("AbstentionCheckSummary", None, c_ac)
 
-    # ---------------------------------------------------------------- abstract: four findings, one sentence each
+    # ---------------------------------------------------------------- abstract: four findings, few figures
     parts = []
     mt = load("generation_matched.json")
     if ab:
@@ -1009,36 +1086,38 @@ def main():
 
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
-        txt = (f"(1) Higher NLI faithfulness came mainly from more retrieved text: at equal length, better retrieval "
-               f"added nothing for the deployed model ({f3(fab('abl_full_full_matched'))} vs "
-               f"{f3(fab('abl_naive_full'))})")
+        txt = "(1) Higher NLI faithfulness came mainly from more retrieved text: better retrieval added nothing at equal length for the deployed model"
         if mt:
             sig_m = mt.get("significance", {})
             eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
-
-            def n_up(k):  # significant gains (Holm-corrected); a p-value of 0.0 is significant
-                out_ = 0
-                for m_ in ms:
-                    d_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", k)
-                    p_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm", k)
-                    out_ += d_ is not None and p_ is not None and d_ > 0 and p_ < 0.05
-                return out_
             ms = [m_ for m_ in mt["config"]["models"]
                   if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", eq_k) is not None]
+            larger = sum(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][ln_k]
+                         > sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][eq_k] for m_ in ms)
+            txt += f", and across {len(ms)} models the length gain was the larger for {larger}"
+        txt += "."
+        cp_all = (load("citation_precision.json") or {}).get("sets", {})
+        loc_p = next((v["citation_precision"] for k, v in cp_all.items() if k.startswith("local:")), None)
+        gpu_p = sorted(v["citation_precision"] for k, v in cp_all.items()
+                       if k.startswith("gpu:") and v["citation_precision"] is not None)
+        if loc_p is not None and gpu_p:
             import statistics as _st
-
-            def med(k):
-                return _st.median(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][k] for m_ in ms)
-            txt += (f"; across {len(ms)} models, full length raised it significantly for {n_up(ln_k)}, better "
-                    f"retrieval and prompt at equal length for {n_up(eq_k)} (median gains {med(ln_k):+.2f} vs "
-                    f"{med(eq_k):+.2f})")
-        parts.append(txt + ".")
+            ck_ = load("citation_check.json")
+            cor_ = [r_["corrected_citation_precision"] for r_ in (ck_ or {}).get("raters", {}).values()
+                    if r_.get("corrected_citation_precision") is not None]
+            if cor_:
+                txt += (f" NLI judged few citations supported ({100 * loc_p:.0f}\\% for the deployed model), but a "
+                        f"blinded hand check found it too strict: an estimated {100 * cor_[0]:.0f}\\% of all citations "
+                        "were supported.")
+            else:
+                txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
+                        f"{100 * loc_p:.0f}\\% of the deployed model's citations (median "
+                        f"{100 * _st.median(gpu_p):.0f}\\% across models).")
+        parts.append(txt)
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
     if ac_loc and ac_abl and "naive" in ac_loc and "abl_naive_full" in ac_abl:
-        parts.append(f"(2) Declining out-of-scope questions came from the system prompt, not retrieval (judge-rated "
-                     f"{ac_loc['naive']['judge_rate']:.2f} $\\rightarrow$ {ac_abl['abl_naive_full']['judge_rate']:.2f} "
-                     f"with the grounded prompt; {ac_abl['abl_full_naive']['judge_rate']:.2f} with better retrieval alone).")
+        parts.append("(2) Declining out-of-scope questions came from the system prompt, not retrieval.")
     gd, gh = (get(load(f"safety_gate_v2_{t}.json"), "variants", dep) for t in ("devset", "heldout"))
     neg = get(load("negation_test.json"), "variants", dep)
     if gd and gh:
@@ -1046,19 +1125,23 @@ def main():
             pc = v["per_category"]
             n = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
             return f"{round(v['crisis_recall_any_escalation'] * n)} of {n}"
-        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but "
-               f"{kn(gh)} on the held-out set")
+        hr = gh["per_category"].get("harmful_request")
+        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but {kn(gh)} on a frozen "
+               "held-out set" + (f", caught {round(hr['escalated'] * hr['n'])} of {hr['n']} held-out requests for "
+                                 "suicide methods" if hr else ""))
+        extra = []
         if neg:
-            txt += f", escalated {neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements (``I don't want to die'')"
+            extra.append(f"{neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements")
         if ge and "faq_gen" in ge["datasets"]:
             fq = ge["datasets"]["faq_gen"]
-            txt += f" and sent {fq['labels'].get('crisis', 0)} of {fq['n']} ordinary FAQ questions to the crisis protocol"
+            extra.append(f"{fq['labels'].get('crisis', 0)} of {fq['n']} ordinary questions")
+        if extra:
+            txt += ", and escalated " + " and ".join(extra)
         parts.append(txt + ".")
     if tf:
         hf, hn = (get(tf, "metrics", "judge_helpfulness", "settings", p_, "mean") for p_ in ("full", "no_rag"))
-        if None not in (hf, hn):
-            parts.append(f"(4) An LLM judge rated grounded answers less helpful than ungrounded ones "
-                         f"({hf:.2f} vs {hn:.2f}, 1--5).")
+        if None not in (hf, hn) and hf < hn:
+            parts.append("(4) An LLM judge rated grounded answers less helpful than ungrounded ones.")
     m.text("AbstractResults", " ".join(p for p in parts if p), "run all experiments (scripts/run_all_local.sh)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)  # paper/ is not in the repository (kept private)

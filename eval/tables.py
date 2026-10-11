@@ -17,6 +17,13 @@ def esc(s) -> str:
     return s
 
 
+def signed(x, nd: int = 3) -> str:
+    """A signed difference with a typeset minus sign (a hyphen is not a minus in LaTeX and extracts badly)."""
+    if x is None:
+        return "--"
+    return f"{x:+.{nd}f}".replace("-", "$-$")
+
+
 def fmt(x, nd: int = 3) -> str:
     if x is None:
         return "--"

@@ -19,3 +19,10 @@ def test_runtime_comparison_pairs_questions_and_counts_discordant(tmp_path):
     assert (c["n"], c["only_a"], c["only_b"], c["declined_b"]) == (10, 6, 0, 4)
     assert abs(c["p_mcnemar"] - 2 * 0.5 ** 6) < 1e-12
     assert len(out) == 1  # contrasts with a missing runtime are skipped
+
+
+def test_citation_check_kappa():
+    from scripts.citation_check import cohen
+
+    assert cohen([1, 1, 0, 0], [1, 1, 0, 0]) == 1.0
+    assert abs(cohen([1, 0, 1, 0], [1, 1, 0, 0])) < 1e-12

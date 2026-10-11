@@ -1,0 +1,45 @@
+{
+  "definition": "python -m scripts.citation_check --make     # -> eval/human_eval/out/citation_check/sheet_rater1.csv (+ key.csv)\n    python -m scripts.citation_check            # after rating -> results/citation_check.json",
+  "pairs": 30,
+  "population": {
+    "pairs": 5338,
+    "nli_supported": 1197
+  },
+  "raters": {
+    "sheet_rater1": {
+      "strata": {
+        "nli_supported": {
+          "n": 10,
+          "supported": 9,
+          "partly": 1,
+          "not": 0,
+          "human_supported_share": 0.9,
+          "human_supported_ci": [
+            0.5958436145024278,
+            0.9821242504842788
+          ]
+        },
+        "nli_unsupported": {
+          "n": 20,
+          "supported": 11,
+          "partly": 4,
+          "not": 5,
+          "human_supported_share": 0.55,
+          "human_supported_ci": [
+            0.3420820083075997,
+            0.7418049791429071
+          ]
+        }
+      },
+      "agreement": 0.6,
+      "cohen_kappa": 0.2799999999999999,
+      "nli_citation_precision": 0.2242412888722368,
+      "corrected_citation_precision": 0.628484451105283,
+      "corrected_ci": [
+        0.398985837947017,
+        0.795694482289333
+      ],
+      "corrected_partly_as_supported": 0.8060603222180592
+    }
+  }
+}

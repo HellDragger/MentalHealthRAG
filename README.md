@@ -186,7 +186,7 @@ comes from giving the model more retrieved text (+0.149, p<0.001), and its abste
 prompt puts the full pipeline's out-of-scope decline rate at 0.61 against 0.34 for naive RAG (phrase list: 0.71 vs
 0.10), so the phrase list overstates the gain, but it remains (+0.29, p<0.001).
 
-**Still to run:** the human evaluation with clinician raters.
+**Still to run:** the human evaluation with clinician raters (see [Human evaluation](#human-evaluation)).
 The Kaggle notebook is resumable across 12-hour sessions: attach its previous output as an input and run it
 again. Finished steps are skipped, and interrupted ones continue from their last saved answer.
 To bring results back, download `mhrag_results.zip` from the notebook's Output tab and run
@@ -245,6 +245,44 @@ notebook private all the same: its output contains the cloned code and the resul
 
 The other secrets are optional: `GROQ_API_KEY` for the LLM judge and the zero-shot safety classifier, and `HF_TOKEN` for
 gated models (Llama, Gemma, Llama Guard, ShieldGemma); accept each model's licence on Hugging Face first.
+
+## Human evaluation
+
+Four tasks need people rather than scripts. Each one has a blinded sheet in the repository, a script that scores it,
+and a results file; the numbers below come from those files.
+
+| Task | Status | Sheets | Score with | Results |
+|---|---|---|---|---|
+| SynthQA verification: are the synthetic retrieval questions answerable and natural? | Done (4 raters, 100 questions) | `eval/data/synth_qa_verify/rater1-4.csv` | `python -m scripts.synth_qa_agreement` | `results/synth_qa_verification.json` |
+| Citation check: does the cited passage support the sentence that cites it? | Done (1 rater, 30 pairs) | `eval/human_eval/out/citation_check/sheet_rater1.csv` | `python -m scripts.citation_check` | `results/citation_check.json` |
+| Clinician evaluation of answers | Prepared, not yet rated | `eval/human_eval/out/local/sheet_rater1-3.csv` | `python -m eval.human_eval.agreement --exp local` | `results/human_eval_local.json` |
+| Externally written safety prompts | Kit prepared, no prompts yet | `eval/external/prompts_template.csv` | `python -m scripts.import_external_prompts <filled.csv>` | `eval/data/safety_prompts_external.jsonl` |
+
+**SynthQA verification.** Four raters (one of them the author) judged 100 random SynthQA questions on two yes/no
+criteria. Counting an item when at least 3 of 4 said yes (ties fail, raters weighted equally), 88 were answerable from
+their passage, 94 read naturally and 85 passed both. Fleiss' κ is low (0.127 / 0.139) because almost every answer was
+yes; Gwet's AC1, which is not affected by that, is 0.685 / 0.851. The retrieval ranking holds on the 85 verified
+questions (see Results).
+
+**Citation check.** NLI citation precision (`scripts/citation_precision.py`) counts a citation as supported when an NLI
+model says the cited passage entails the sentence. To see whether that model is too strict, `python -m
+scripts.citation_check --make` sampled 30 (sentence, cited passage) pairs from the deployed model and the 13
+benchmark models: 10 that NLI accepted and 20 that it rejected, shuffled, without the verdict. The rater labels each
+pair `supported`, `partly` or `not`; the NLI verdicts are in `key.csv` (git-ignored, so it is not opened before
+rating). Results from one rater (the author): of the 20 pairs NLI rejected, 11 were judged supported and 4 partly supported; of the 10 it accepted, 9 were judged supported (agreement with NLI 0.60, Cohen's κ 0.28). Weighting the two groups by their share of all 5,338 citation pairs gives an estimated citation precision of 0.63 (95% CI 0.40–0.80) instead of the NLI figure of 0.22, or 0.81 if partial support counts. The NLI model therefore understates how often citations are
+supported, so the NLI precision values are not citation rates. More raters can each fill a copy of the sheet
+(`sheet_rater2.csv`, ...); the scorer then adds inter-rater agreement.
+
+**Clinician evaluation.** 60 questions (20 FAQ-Gen, 20 Counsel-Gen, 20 venting or informational red-team prompts), each
+with the responses of every compared system in random order, rated 1–5 for accuracy, groundedness, helpfulness,
+empathy and safety, plus two yes/no items. The protocol, rater requirements (at least two clinically trained raters)
+and ethics notes are in [eval/human_eval/rubric.md](eval/human_eval/rubric.md). Sheets are made with `python -m
+eval.human_eval.make_sheets --exp local --raters 3 --n 60`; the key (`key.csv`) is git-ignored until the ratings are
+in. Agreement is reported with Krippendorff's α.
+
+**Externally written safety prompts.** The gate's red-team sets were written by the author, which makes them
+optimistic. [eval/external/README.md](eval/external/README.md) asks people who have not seen the gate to write
+messages per category; the importer turns their sheet into a held-out set for `scripts.eval_safety`.
 
 ## Safety, limitations and ethics
 - **Not clinically validated.** No clinician has evaluated the responses yet (the protocol is in [eval/human_eval/](eval/human_eval/)). Do not use it with patients or as a crisis service.
