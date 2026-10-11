@@ -9,6 +9,8 @@
    prompt suggests one of those phrases. For each setting: the share of detected abstentions that use the prompt's
    suggested sentence, and the share detected only by the other patterns.
 3. Per-model diagnostics used in the discussion (citation rate, answer length, abstention by setting).
+4. Runtime comparison (one model, four runtimes): out-of-scope questions declined, paired by question, with an exact
+   McNemar test (two-sided binomial test on the discordant questions), Holm-corrected over the listed contrasts.
 """
 
 from __future__ import annotations
@@ -27,6 +29,12 @@ from mhrag.config import get_settings
 
 R = get_settings().results_dir
 SOURCES = {"local": R / "generation" / "local" / "scored.jsonl", "gpu": R / "generation" / "gpu" / "scored.jsonl.gz"}
+RUNTIME = R / "generation" / "runtime" / "scored.jsonl"
+# (a, b, what differs): each contrast changes one thing (configs/experiments/generation_runtime.yaml)
+RUNTIME_CONTRASTS = [("qwen2.5-1.5b-gguf-f16", "qwen2.5-1.5b-gguf", "llama.cpp: 16-bit vs 4-bit Q4_K_M"),
+                     ("qwen2.5-1.5b-gguf-f16", "qwen2.5-1.5b-instruct-f16", "16-bit: llama.cpp vs transformers"),
+                     ("qwen2.5-1.5b-instruct-f16", "qwen2.5-1.5b-instruct", "transformers: 16-bit vs 4-bit NF4"),
+                     ("qwen2.5-1.5b-gguf", "qwen2.5-1.5b-instruct", "4-bit: llama.cpp Q4_K_M vs transformers NF4")]
 METRICS = ("faithfulness", "answer_relevance", "rougeL", "bertscore_f1", "has_citation", "judge_helpfulness")
 # The full pipeline's system prompt suggests this sentence when the sources lack the answer (mhrag/prompts.py)
 # ("... about that ...", or with the topic filled in: "... about changing the oil in my sources")
@@ -100,8 +108,36 @@ def diagnostics(by: dict, model: str) -> dict:
     return out
 
 
+def runtime_comparison(path=RUNTIME) -> dict | None:
+    """Paired out-of-scope abstention between runtimes (model answers on questions the gate passed in both runs)."""
+    if not path.exists():
+        return None
+    from scipy.stats import binomtest
+
+    dec: dict = defaultdict(dict)
+    for r in load(path):
+        if r["dataset"] == "oos_questions" and r["profile"] == "full" and r.get("generated"):
+            dec[r["model"]][r["id"]] = bool((r.get("metrics") or {}).get("abstained"))
+    out, raw = {}, {}
+    for a, b, what in RUNTIME_CONTRASTS:
+        if a not in dec or b not in dec:
+            continue
+        ids = sorted(set(dec[a]) & set(dec[b]))
+        only_a = sum(dec[a][i] and not dec[b][i] for i in ids)
+        only_b = sum(dec[b][i] and not dec[a][i] for i in ids)
+        p = binomtest(only_a, only_a + only_b, 0.5).pvalue if only_a + only_b else 1.0
+        key = f"{a}>{b}"
+        raw[key] = p
+        out[key] = {"what": what, "n": len(ids), "declined_a": sum(dec[a][i] for i in ids),
+                    "declined_b": sum(dec[b][i] for i in ids), "only_a": only_a, "only_b": only_b, "p_mcnemar": p}
+    for key, ph in holm(raw).items():
+        out[key]["p_mcnemar_holm"] = ph
+    return out
+
+
 def main():
     res: dict = {"note": __doc__.split("\n\n", 2)[2].strip(), "experiments": {}}
+    res["runtime_oos_abstention"] = runtime_comparison()
     for exp, path in SOURCES.items():
         if not path.exists():
             continue

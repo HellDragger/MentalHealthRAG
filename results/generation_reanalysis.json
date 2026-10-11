@@ -1,5 +1,5 @@
 {
-  "note": "1. Template-free comparison. In the full pipeline the risk gate answers some questions with a fixed safety template\n   (11 of 98 FAQ-Gen questions). Every metric is recomputed on the questions the model answered itself, and the\n   other settings are restricted to the same questions, so the comparison is paired and template-free.\n2. Abstention wording. Out-of-scope abstention is detected with a phrase list, and the full pipeline's system\n   prompt suggests one of those phrases. For each setting: the share of detected abstentions that use the prompt's\n   suggested sentence, and the share detected only by the other patterns.\n3. Per-model diagnostics used in the discussion (citation rate, answer length, abstention by setting).",
+  "note": "1. Template-free comparison. In the full pipeline the risk gate answers some questions with a fixed safety template\n   (11 of 98 FAQ-Gen questions). Every metric is recomputed on the questions the model answered itself, and the\n   other settings are restricted to the same questions, so the comparison is paired and template-free.\n2. Abstention wording. Out-of-scope abstention is detected with a phrase list, and the full pipeline's system\n   prompt suggests one of those phrases. For each setting: the share of detected abstentions that use the prompt's\n   suggested sentence, and the share detected only by the other patterns.\n3. Per-model diagnostics used in the discussion (citation rate, answer length, abstention by setting).\n4. Runtime comparison (one model, four runtimes): out-of-scope questions declined, paired by question, with an exact\n   McNemar test (two-sided binomial test on the discordant questions), Holm-corrected over the listed contrasts.",
   "experiments": {
     "local": {
       "bart-large-cnn": {
@@ -9516,6 +9516,48 @@
           }
         }
       }
+    }
+  },
+  "runtime_oos_abstention": {
+    "qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-gguf": {
+      "what": "llama.cpp: 16-bit vs 4-bit Q4_K_M",
+      "n": 49,
+      "declined_a": 32,
+      "declined_b": 35,
+      "only_a": 1,
+      "only_b": 4,
+      "p_mcnemar": 0.375,
+      "p_mcnemar_holm": 0.375
+    },
+    "qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-instruct-f16": {
+      "what": "16-bit: llama.cpp vs transformers",
+      "n": 49,
+      "declined_a": 32,
+      "declined_b": 20,
+      "only_a": 12,
+      "only_b": 0,
+      "p_mcnemar": 0.00048828125,
+      "p_mcnemar_holm": 0.00146484375
+    },
+    "qwen2.5-1.5b-instruct-f16>qwen2.5-1.5b-instruct": {
+      "what": "transformers: 16-bit vs 4-bit NF4",
+      "n": 49,
+      "declined_a": 20,
+      "declined_b": 8,
+      "only_a": 15,
+      "only_b": 3,
+      "p_mcnemar": 0.007537841796875,
+      "p_mcnemar_holm": 0.01507568359375
+    },
+    "qwen2.5-1.5b-gguf>qwen2.5-1.5b-instruct": {
+      "what": "4-bit: llama.cpp Q4_K_M vs transformers NF4",
+      "n": 49,
+      "declined_a": 35,
+      "declined_b": 8,
+      "only_a": 27,
+      "only_b": 0,
+      "p_mcnemar": 1.4901161193847656e-08,
+      "p_mcnemar_holm": 5.960464477539063e-08
     }
   }
 }
