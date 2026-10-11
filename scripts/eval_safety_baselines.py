@@ -99,9 +99,10 @@ def llama_guard():
 
     def run(text):
         conv = [{"role": "user", "content": [{"type": "text", "text": text}]}]
-        ids = tok.apply_chat_template(conv, return_tensors="pt").to(model.device)
-        out = model.generate(ids, max_new_tokens=20, pad_token_id=0, do_sample=False)
-        verdict = tok.decode(out[0, ids.shape[1]:], skip_special_tokens=True).strip()
+        # return_dict: transformers 5 returns a BatchEncoding here by default, transformers 4 a bare tensor
+        enc = tok.apply_chat_template(conv, return_tensors="pt", return_dict=True).to(model.device)
+        out = model.generate(**enc, max_new_tokens=20, pad_token_id=0, do_sample=False)
+        verdict = tok.decode(out[0, enc["input_ids"].shape[1]:], skip_special_tokens=True).strip()
         return {"escalate": verdict.lower().startswith("unsafe"), "raw": verdict[:40]}
     return run
 
@@ -227,7 +228,7 @@ def main(argv=None) -> int:
                         cache.put(m, r["text"], v)
                     verdicts[name].append(v)
         except Exception as e:
-            print(f"{m}: stopped ({e}); cached verdicts are kept, run again later")
+            print(f"{m}: stopped ({type(e).__name__}: {e}); cached verdicts are kept, run again later")
             rc = 75 if "429" in str(e) else 1
             continue
         out["methods"][m] = summarise(verdicts, sets)
