@@ -756,7 +756,8 @@ def main():
                "Run four ways in one session on one GPU (Table~\\ref{tab:gen-runtime}), the same Qwen2.5-1.5B weights "
                f"declined {kdec('qwen2.5-1.5b-gguf')} out-of-scope questions with llama.cpp at 4 bits (Q4\\_K\\_M), "
                f"{kdec('qwen2.5-1.5b-gguf-f16')} with llama.cpp at 16 bits, {kdec('qwen2.5-1.5b-instruct-f16')} with "
-               f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4).", c_rt)
+               f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4), the "
+               "setting used for every model in the multi-model benchmark.", c_rt)
     else:
         m.text("RuntimeSummary", None, c_rt)
 

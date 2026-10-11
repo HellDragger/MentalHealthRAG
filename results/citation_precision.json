@@ -1,0 +1,311 @@
+{
+  "definition": "python -m scripts.citation_precision        # -> results/citation_precision.json, paper/tables/citation_precision.tex",
+  "sets": {
+    "local:qwen2.5-1.5b-gguf:full": {
+      "answers": 87,
+      "answers_with_citations": 22,
+      "sentences": 801,
+      "citing": 49,
+      "pairs": 59,
+      "pairs_entailed": 5,
+      "supported_citing": 5,
+      "invalid": 4,
+      "citation_precision": 0.0847457627118644,
+      "citation_precision_answer_ci": [
+        0.06969696969696969,
+        0.009090909090909092,
+        0.1393939393939394
+      ],
+      "supported_citing_share": 0.10204081632653061,
+      "citing_share": 0.06117353308364544
+    },
+    "ablation:qwen2.5-1.5b-gguf:abl_naive_full": {
+      "answers": 98,
+      "answers_with_citations": 63,
+      "sentences": 714,
+      "citing": 120,
+      "pairs": 150,
+      "pairs_entailed": 20,
+      "supported_citing": 20,
+      "invalid": 13,
+      "citation_precision": 0.13333333333333333,
+      "citation_precision_answer_ci": [
+        0.13015873015873014,
+        0.0746031746031746,
+        0.18968253968253967
+      ],
+      "supported_citing_share": 0.16666666666666666,
+      "citing_share": 0.16806722689075632
+    },
+    "ablation:qwen2.5-1.5b-gguf:abl_full_full": {
+      "answers": 98,
+      "answers_with_citations": 25,
+      "sentences": 924,
+      "citing": 63,
+      "pairs": 77,
+      "pairs_entailed": 10,
+      "supported_citing": 10,
+      "invalid": 2,
+      "citation_precision": 0.12987012987012986,
+      "citation_precision_answer_ci": [
+        0.11114285714285714,
+        0.044000000000000004,
+        0.18601428571428566
+      ],
+      "supported_citing_share": 0.15873015873015872,
+      "citing_share": 0.06818181818181818
+    },
+    "ablation:qwen2.5-1.5b-gguf:abl_full_full_matched": {
+      "answers": 98,
+      "answers_with_citations": 63,
+      "sentences": 697,
+      "citing": 105,
+      "pairs": 69,
+      "pairs_entailed": 20,
+      "supported_citing": 20,
+      "invalid": 51,
+      "citation_precision": 0.2898550724637681,
+      "citation_precision_answer_ci": [
+        0.30158730158730157,
+        0.19047619047619047,
+        0.4126984126984127
+      ],
+      "supported_citing_share": 0.19047619047619047,
+      "citing_share": 0.15064562410329985
+    },
+    "gpu:mistral-7b-instruct-v0.3:full": {
+      "answers": 87,
+      "answers_with_citations": 87,
+      "sentences": 922,
+      "citing": 617,
+      "pairs": 691,
+      "pairs_entailed": 150,
+      "supported_citing": 150,
+      "invalid": 0,
+      "citation_precision": 0.2170767004341534,
+      "citation_precision_answer_ci": [
+        0.22240773946763054,
+        0.17810003152221845,
+        0.2680484660362155
+      ],
+      "supported_citing_share": 0.24311183144246354,
+      "citing_share": 0.6691973969631236
+    },
+    "gpu:ministral-8b-instruct-2410:full": {
+      "answers": 87,
+      "answers_with_citations": 68,
+      "sentences": 592,
+      "citing": 237,
+      "pairs": 271,
+      "pairs_entailed": 48,
+      "supported_citing": 48,
+      "invalid": 0,
+      "citation_precision": 0.17712177121771217,
+      "citation_precision_answer_ci": [
+        0.18566176470588236,
+        0.12818058473389354,
+        0.24441876750700275
+      ],
+      "supported_citing_share": 0.20253164556962025,
+      "citing_share": 0.40033783783783783
+    },
+    "gpu:llama-3.1-8b-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 81,
+      "sentences": 708,
+      "citing": 355,
+      "pairs": 389,
+      "pairs_entailed": 91,
+      "supported_citing": 90,
+      "invalid": 0,
+      "citation_precision": 0.23393316195372751,
+      "citation_precision_answer_ci": [
+        0.2168136390358613,
+        0.16331630903390162,
+        0.27687524495394866
+      ],
+      "supported_citing_share": 0.2535211267605634,
+      "citing_share": 0.501412429378531
+    },
+    "gpu:llama-3.2-3b-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 81,
+      "sentences": 722,
+      "citing": 371,
+      "pairs": 409,
+      "pairs_entailed": 79,
+      "supported_citing": 79,
+      "invalid": 0,
+      "citation_precision": 0.19315403422982885,
+      "citation_precision_answer_ci": [
+        0.1953120267935083,
+        0.1425619399461992,
+        0.252756734006734
+      ],
+      "supported_citing_share": 0.21293800539083557,
+      "citing_share": 0.5138504155124654
+    },
+    "gpu:qwen2.5-7b-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 84,
+      "sentences": 644,
+      "citing": 373,
+      "pairs": 466,
+      "pairs_entailed": 87,
+      "supported_citing": 85,
+      "invalid": 0,
+      "citation_precision": 0.18669527896995708,
+      "citation_precision_answer_ci": [
+        0.1873783954141097,
+        0.13686142891500036,
+        0.2383415897924826
+      ],
+      "supported_citing_share": 0.22788203753351208,
+      "citing_share": 0.5791925465838509
+    },
+    "gpu:qwen2.5-1.5b-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 17,
+      "sentences": 713,
+      "citing": 86,
+      "pairs": 55,
+      "pairs_entailed": 11,
+      "supported_citing": 11,
+      "invalid": 36,
+      "citation_precision": 0.2,
+      "citation_precision_answer_ci": [
+        0.1816653934300993,
+        0.040336134453781515,
+        0.35478227654698236
+      ],
+      "supported_citing_share": 0.12790697674418605,
+      "citing_share": 0.12061711079943899
+    },
+    "gpu:qwen3-4b:full": {
+      "answers": 87,
+      "answers_with_citations": 86,
+      "sentences": 653,
+      "citing": 453,
+      "pairs": 503,
+      "pairs_entailed": 121,
+      "supported_citing": 118,
+      "invalid": 0,
+      "citation_precision": 0.24055666003976142,
+      "citation_precision_answer_ci": [
+        0.23679863418235508,
+        0.1966689737910668,
+        0.27974079457364337
+      ],
+      "supported_citing_share": 0.26048565121412803,
+      "citing_share": 0.6937212863705973
+    },
+    "gpu:qwen3-8b:full": {
+      "answers": 87,
+      "answers_with_citations": 82,
+      "sentences": 661,
+      "citing": 494,
+      "pairs": 510,
+      "pairs_entailed": 130,
+      "supported_citing": 130,
+      "invalid": 3,
+      "citation_precision": 0.2549019607843137,
+      "citation_precision_answer_ci": [
+        0.2508083480305702,
+        0.19833896727415246,
+        0.3044945375269449
+      ],
+      "supported_citing_share": 0.2631578947368421,
+      "citing_share": 0.7473524962178517
+    },
+    "gpu:gemma-2-2b-it:full": {
+      "answers": 87,
+      "answers_with_citations": 84,
+      "sentences": 740,
+      "citing": 510,
+      "pairs": 740,
+      "pairs_entailed": 158,
+      "supported_citing": 134,
+      "invalid": 2,
+      "citation_precision": 0.21351351351351353,
+      "citation_precision_answer_ci": [
+        0.22152639416294878,
+        0.1801879390062163,
+        0.2659054819966059
+      ],
+      "supported_citing_share": 0.2627450980392157,
+      "citing_share": 0.6891891891891891
+    },
+    "gpu:gemma-3-4b-it-fp32:full": {
+      "answers": 87,
+      "answers_with_citations": 87,
+      "sentences": 1038,
+      "citing": 806,
+      "pairs": 987,
+      "pairs_entailed": 265,
+      "supported_citing": 255,
+      "invalid": 0,
+      "citation_precision": 0.2684903748733536,
+      "citation_precision_answer_ci": [
+        0.2676520553295401,
+        0.2297589437973565,
+        0.3047269778855732
+      ],
+      "supported_citing_share": 0.3163771712158809,
+      "citing_share": 0.7764932562620424
+    },
+    "gpu:phi-3.5-mini-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 76,
+      "sentences": 887,
+      "citing": 470,
+      "pairs": 522,
+      "pairs_entailed": 131,
+      "supported_citing": 130,
+      "invalid": 0,
+      "citation_precision": 0.2509578544061303,
+      "citation_precision_answer_ci": [
+        0.2668004123499479,
+        0.21456606296824948,
+        0.32369068700047804
+      ],
+      "supported_citing_share": 0.2765957446808511,
+      "citing_share": 0.5298759864712514
+    },
+    "gpu:phi-4-mini-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 55,
+      "sentences": 769,
+      "citing": 219,
+      "pairs": 281,
+      "pairs_entailed": 58,
+      "supported_citing": 58,
+      "invalid": 0,
+      "citation_precision": 0.20640569395017794,
+      "citation_precision_answer_ci": [
+        0.21063557654466747,
+        0.14289016791289516,
+        0.28566630591630593
+      ],
+      "supported_citing_share": 0.2648401826484018,
+      "citing_share": 0.2847854356306892
+    },
+    "gpu:smollm2-1.7b-instruct:full": {
+      "answers": 87,
+      "answers_with_citations": 86,
+      "sentences": 1528,
+      "citing": 339,
+      "pairs": 316,
+      "pairs_entailed": 24,
+      "supported_citing": 24,
+      "invalid": 30,
+      "citation_precision": 0.0759493670886076,
+      "citation_precision_answer_ci": [
+        0.08042635658914729,
+        0.04765988372093023,
+        0.11725775193798445
+      ],
+      "supported_citing_share": 0.07079646017699115,
+      "citing_share": 0.2218586387434555
+    }
+  }
+}

@@ -1,0 +1,25 @@
+
+===== session started 2026-10-10 17:37
+$ CUDA_VISIBLE_DEVICES=0 /usr/bin/python3 -m scripts.eval_safety_baselines
+
+Loading weights:   0%|          | 0/147 [00:00<?, ?it/s]
+Loading weights:   1%|          | 1/147 [00:00<02:23,  1.02it/s]
+Loading weights:   1%|▏         | 2/147 [00:01<01:09,  2.08it/s]
+Loading weights:  39%|███▉      | 58/147 [00:01<00:01, 83.34it/s]
+Loading weights:  55%|█████▌    | 81/147 [00:01<00:00, 96.11it/s]
+Loading weights:  68%|██████▊   | 100/147 [00:01<00:00, 100.04it/s]
+Loading weights:  80%|███████▉  | 117/147 [00:01<00:00, 107.57it/s]
+Loading weights:  90%|█████████ | 133/147 [00:01<00:00, 112.07it/s]
+Loading weights: 100%|██████████| 147/147 [00:01<00:00, 77.81it/s] 
+llama_guard: stopped (); cached verdicts are kept, run again later
+
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]
+Fetching 2 files:  50%|█████     | 1/2 [00:04<00:04,  4.10s/it]
+Fetching 2 files: 100%|██████████| 2/2 [00:12<00:00,  6.86s/it]
+Fetching 2 files: 100%|██████████| 2/2 [00:12<00:00,  6.45s/it]
+
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/288 [00:20<1:38:56, 20.68s/it]
+Loading weights: 100%|██████████| 288/288 [00:20<00:00, 13.91it/s]
+shieldgemma {"dev": {"crisis_k": 40, "crisis_n": 60, "fp": 0, "neg_n": 60, "harmful_escalated": 24, "harmful_n": 25}, "heldout": {"crisis_k": 23, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 1, "n": 98}, "negation": {"separated": 16, "no_risk_escalated": 1, "pairs": 20}}
+zeroshot {"dev": {"crisis_k": 55, "crisis_n": 60, "fp": 2, "neg_n": 60, "harmful_escalated": 25, "harmful_n": 25}, "heldout": {"crisis_k": 33, "crisis_n": 36, "fp": 1, "neg_n": 30, "harmful_escalated": 14, "harmful_n": 15}, "faq_gen": {"escalated": 4, "n": 98}, "negation": {"separated": 17, "no_risk_escalated": 3, "pairs": 20}}
