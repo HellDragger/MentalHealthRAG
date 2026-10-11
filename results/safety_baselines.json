@@ -1,0 +1,255 @@
+{
+  "methods": {
+    "gate": {
+      "dev": {
+        "crisis_k": 59,
+        "crisis_n": 60,
+        "fp": 4,
+        "neg_n": 60,
+        "harmful_escalated": 25,
+        "harmful_n": 25
+      },
+      "heldout": {
+        "crisis_k": 30,
+        "crisis_n": 36,
+        "fp": 3,
+        "neg_n": 30,
+        "harmful_escalated": 9,
+        "harmful_n": 15
+      },
+      "faq_gen": {
+        "escalated": 11,
+        "n": 98
+      },
+      "negation": {
+        "separated": 6,
+        "no_risk_escalated": 13,
+        "pairs": 20
+      }
+    },
+    "shieldgemma": {
+      "dev": {
+        "crisis_k": 40,
+        "crisis_n": 60,
+        "fp": 0,
+        "neg_n": 60,
+        "harmful_escalated": 24,
+        "harmful_n": 25
+      },
+      "heldout": {
+        "crisis_k": 23,
+        "crisis_n": 36,
+        "fp": 1,
+        "neg_n": 30,
+        "harmful_escalated": 14,
+        "harmful_n": 15
+      },
+      "faq_gen": {
+        "escalated": 1,
+        "n": 98
+      },
+      "negation": {
+        "separated": 16,
+        "no_risk_escalated": 1,
+        "pairs": 20
+      }
+    },
+    "zeroshot": {
+      "dev": {
+        "crisis_k": 55,
+        "crisis_n": 60,
+        "fp": 2,
+        "neg_n": 60,
+        "harmful_escalated": 25,
+        "harmful_n": 25
+      },
+      "heldout": {
+        "crisis_k": 33,
+        "crisis_n": 36,
+        "fp": 1,
+        "neg_n": 30,
+        "harmful_escalated": 14,
+        "harmful_n": 15
+      },
+      "faq_gen": {
+        "escalated": 4,
+        "n": 98
+      },
+      "negation": {
+        "separated": 17,
+        "no_risk_escalated": 3,
+        "pairs": 20
+      }
+    },
+    "llama_guard": {
+      "dev": {
+        "crisis_k": 34,
+        "crisis_n": 60,
+        "fp": 0,
+        "neg_n": 60,
+        "harmful_escalated": 17,
+        "harmful_n": 25
+      },
+      "heldout": {
+        "crisis_k": 19,
+        "crisis_n": 36,
+        "fp": 1,
+        "neg_n": 30,
+        "harmful_escalated": 10,
+        "harmful_n": 15
+      },
+      "faq_gen": {
+        "escalated": 1,
+        "n": 98
+      },
+      "negation": {
+        "separated": 13,
+        "no_risk_escalated": 0,
+        "pairs": 20
+      }
+    }
+  },
+  "paired_vs_gate": {
+    "shieldgemma": {
+      "heldout_crisis": {
+        "n": 36,
+        "gate": 30,
+        "method": 23,
+        "only_gate": 9,
+        "only_method": 2,
+        "p_mcnemar": 0.0654296875,
+        "p_mcnemar_holm": 0.5625
+      },
+      "heldout_harmful": {
+        "n": 15,
+        "gate": 9,
+        "method": 14,
+        "only_gate": 0,
+        "only_method": 5,
+        "p_mcnemar": 0.0625,
+        "p_mcnemar_holm": 0.5625
+      },
+      "heldout_fp": {
+        "n": 30,
+        "gate": 3,
+        "method": 1,
+        "only_gate": 3,
+        "only_method": 1,
+        "p_mcnemar": 0.625,
+        "p_mcnemar_holm": 1.0
+      },
+      "faq_gen": {
+        "n": 98,
+        "gate": 11,
+        "method": 1,
+        "only_gate": 10,
+        "only_method": 0,
+        "p_mcnemar": 0.001953125,
+        "p_mcnemar_holm": 0.02734375
+      },
+      "negation_separated": {
+        "n": 20,
+        "gate": 6,
+        "method": 16,
+        "only_gate": 0,
+        "only_method": 10,
+        "p_mcnemar": 0.001953125,
+        "p_mcnemar_holm": 0.02734375
+      }
+    },
+    "zeroshot": {
+      "heldout_crisis": {
+        "n": 36,
+        "gate": 30,
+        "method": 33,
+        "only_gate": 1,
+        "only_method": 4,
+        "p_mcnemar": 0.375,
+        "p_mcnemar_holm": 1.0
+      },
+      "heldout_harmful": {
+        "n": 15,
+        "gate": 9,
+        "method": 14,
+        "only_gate": 0,
+        "only_method": 5,
+        "p_mcnemar": 0.0625,
+        "p_mcnemar_holm": 0.5625
+      },
+      "heldout_fp": {
+        "n": 30,
+        "gate": 3,
+        "method": 1,
+        "only_gate": 2,
+        "only_method": 0,
+        "p_mcnemar": 0.5,
+        "p_mcnemar_holm": 1.0
+      },
+      "faq_gen": {
+        "n": 98,
+        "gate": 11,
+        "method": 4,
+        "only_gate": 9,
+        "only_method": 2,
+        "p_mcnemar": 0.0654296875,
+        "p_mcnemar_holm": 0.5625
+      },
+      "negation_separated": {
+        "n": 20,
+        "gate": 6,
+        "method": 17,
+        "only_gate": 0,
+        "only_method": 11,
+        "p_mcnemar": 0.0009765625,
+        "p_mcnemar_holm": 0.0146484375
+      }
+    },
+    "llama_guard": {
+      "heldout_crisis": {
+        "n": 36,
+        "gate": 30,
+        "method": 19,
+        "only_gate": 12,
+        "only_method": 1,
+        "p_mcnemar": 0.00341796875,
+        "p_mcnemar_holm": 0.03759765625
+      },
+      "heldout_harmful": {
+        "n": 15,
+        "gate": 9,
+        "method": 10,
+        "only_gate": 5,
+        "only_method": 6,
+        "p_mcnemar": 1.0,
+        "p_mcnemar_holm": 1.0
+      },
+      "heldout_fp": {
+        "n": 30,
+        "gate": 3,
+        "method": 1,
+        "only_gate": 2,
+        "only_method": 0,
+        "p_mcnemar": 0.5,
+        "p_mcnemar_holm": 1.0
+      },
+      "faq_gen": {
+        "n": 98,
+        "gate": 11,
+        "method": 1,
+        "only_gate": 10,
+        "only_method": 0,
+        "p_mcnemar": 0.001953125,
+        "p_mcnemar_holm": 0.02734375
+      },
+      "negation_separated": {
+        "n": 20,
+        "gate": 6,
+        "method": 13,
+        "only_gate": 0,
+        "only_method": 7,
+        "p_mcnemar": 0.015625,
+        "p_mcnemar_holm": 0.15625
+      }
+    }
+  }
+}

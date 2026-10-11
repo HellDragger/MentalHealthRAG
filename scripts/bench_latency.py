@@ -128,7 +128,15 @@ def env_info() -> dict:
         else:
             import psutil
 
-            info["cpu"] = platform.processor()
+            info["cpu"] = platform.processor()  # often just "x86_64" on Linux: the model name is in /proc/cpuinfo
+            try:
+                names = [ln.split(":", 1)[1].strip() for ln in Path("/proc/cpuinfo").read_text().splitlines()
+                         if ln.startswith("model name")]
+                if names:
+                    info["cpu"] = names[0]
+            except OSError:
+                pass
+            info["cpu_count"] = os.cpu_count()
             info["ram_gb"] = psutil.virtual_memory().total / 2**30
     except Exception:
         pass
