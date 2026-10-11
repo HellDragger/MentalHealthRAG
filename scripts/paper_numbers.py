@@ -326,7 +326,7 @@ def main():
                 if oos and oos.get("abstained") and oosn and oosn.get("abstained"):
                     s += (f". It declined {oos['abstained']['mean']:.2f} of out-of-scope questions, against "
                           f"{oosn['abstained']['mean']:.2f} with naive RAG")
-                parts.append(s + ". GPT-2 and BART-large-CNN, kept as weak baselines, are in Supplementary Section~\\supref{app:generation}{S2}.")
+                parts.append(s + ". Per-setting results for GPT-2 and BART-large-CNN, kept as weak baselines, are in the code repository (\\texttt{results/generation\\_local.json}).")
         if gl.get("judge_status") == "complete":
             tail = ""
         else:
@@ -1015,7 +1015,7 @@ def main():
                         "faithfulness on FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Cit. prec. = share of "
                         "(sentence, cited passage) pairs where the passage entails the sentence; Decl. = share of "
                         "out-of-scope questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
-                        "Supplementary Section~\\supref{app:generation}{S2}.",
+                        "the code repository (\\texttt{results/generation\\_gpu.json}).",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
 

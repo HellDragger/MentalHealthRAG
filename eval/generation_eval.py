@@ -676,7 +676,7 @@ def _write_summary(name: str, res: dict, groups: dict, catalog: dict) -> None:
                         "= share of the 50 out-of-scope questions declined. $^{*}$ faithfulness differs significantly "
                         "between the two settings (paired bootstrap, Holm-corrected $p<0.05$). Per-setting results, "
                         "including no retrieval, Counsel-Gen and the non-chat baselines (base language models, a "
-                        "summariser, seq2seq), are in Supplementary Section~\\supref{app:generation}{S2}." + _run_notes(res, groups),
+                        "summariser, seq2seq), are in the code repository (\\texttt{results/generation\\_gpu.json})." + _run_notes(res, groups),
                 label=f"tab:gen-{name}-summary", align="lrrrrrrr", source=f"results/generation_{name}.json")
 
 
