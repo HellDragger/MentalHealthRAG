@@ -1108,7 +1108,7 @@ def main():
             if cor_:
                 ck0 = next(iter(ck_["raters"].values()))
                 lo_c, hi_c = ck0["corrected_ci"]
-                txt += (f" NLI judged few citations supported ({100 * loc_p:.0f}\\% for the deployed model); a blinded "
+                txt += (f" NLI judged {100 * loc_p:.0f}\\% of the deployed model's citations supported; a blinded "
                         f"hand check of {ck_['pairs']} citation pairs by the author suggested NLI was too strict "
                         f"(estimated {100 * cor_[0]:.0f}\\% of citations across models supported, 95\\% CI "
                         f"{100 * lo_c:.0f}--{100 * hi_c:.0f}\\%).")
