@@ -91,7 +91,9 @@ def diagnostics(by: dict, model: str) -> dict:
     for prof in ("no_rag", "naive", "full"):
         faq = [r for r in by.get((model, prof, "faq_gen"), {}).values() if r.get("generated")]
         oos = [r for r in by.get((model, prof, "oos_questions"), {}).values() if r.get("generated")]
-        mean = lambda rs, k: float(np.mean([r["metrics"][k] for r in rs if r["metrics"].get(k) is not None])) if rs else None  # noqa: E731
+        def mean(rs, k):  # None when no answer has the metric (e.g. faithfulness without retrieval)
+            v = [r["metrics"][k] for r in rs if r["metrics"].get(k) is not None]
+            return float(np.mean(v)) if v else None
         out[prof] = {"faq_citation_rate": mean(faq, "has_citation"), "faq_words": mean(faq, "words"),
                      "faq_faithfulness": mean(faq, "faithfulness"), "oos_abstained": mean(oos, "abstained"),
                      "oos_citation_rate": mean(oos, "has_citation")}

@@ -102,6 +102,8 @@ def main(argv=None) -> int:
 
         if args.aggregate_only:
             res = aggregate_saved(cfg, s)
+            if out.exists():  # keep notes earlier scripts added (e.g. abstention_rescored)
+                res = {**json.loads(out.read_text()), **res}
             out.write_text(json.dumps(res, indent=1))
         elif not args.tables_only:
             try:

@@ -1,0 +1,101 @@
+
+===== session started 2026-10-10 17:58
+$ CUDA_VISIBLE_DEVICES=0 MHRAG_LOAD_IN_4BIT=1 MHRAG_LLAMACPP_GPU_LAYERS=-1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_runtime.yaml
+2026-10-10 17:58:36,152 INFO NumExpr defaulting to 4 threads.
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+2026-10-10 17:58:41,681 INFO Loaded GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf in 1.3s (n_ctx=4096, gpu_layers=-1)
+2026-10-10 17:58:42,404 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 17:58:49,404 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-10 17:58:49,404 INFO Disabling JAX because USE_JAX is set to False
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2552.04it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2434.17it/s]
+2026-10-10 18:00:17,520 INFO qwen2.5-1.5b-gguf full oos_questions: 50 answers
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2451.45it/s]
+2026-10-10 18:00:39,310 DEBUG Building index from IDs objects
+2026-10-10 18:00:39,502 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq: 2216 chunks in 21.3s (embed 11.6s)
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2326.51it/s]
+
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2373.11it/s]
+2026-10-10 18:04:31,520 INFO qwen2.5-1.5b-gguf full faq_gen: 98 answers
+2026-10-10 18:04:32,262 INFO freed 4.7G from the model cache (Qwen/Qwen2.5-1.5B-Instruct-GGUF)
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_validators.py:205: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+  warnings.warn(
+2026-10-10 18:04:40,853 INFO Loaded GGUF qwen2.5-1.5b-instruct-fp16.gguf in 8.6s (n_ctx=4096, gpu_layers=-1)
+2026-10-10 18:04:41,542 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 18:06:42,914 INFO qwen2.5-1.5b-gguf-f16 full oos_questions: 50 answers
+2026-10-10 18:06:43,641 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+2026-10-10 18:13:33,736 INFO qwen2.5-1.5b-gguf-f16 full faq_gen: 98 answers
+2026-10-10 18:13:34,444 INFO freed 3.6G from the model cache (Qwen/Qwen2.5-1.5B-Instruct-GGUF)
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:01<06:31,  1.16s/it]
+Loading weights:  76%|███████▌  | 256/338 [00:01<00:00, 277.43it/s]
+Loading weights: 100%|██████████| 338/338 [00:01<00:00, 224.40it/s]
+2026-10-10 18:13:36,825 INFO Loaded Qwen/Qwen2.5-1.5B-Instruct on cuda (torch.float16, 4bit=False) in 2.4s
+2026-10-10 18:13:37,478 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 18:17:14,634 INFO qwen2.5-1.5b-instruct-f16 full oos_questions: 50 answers
+2026-10-10 18:17:15,289 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+2026-10-10 18:28:31,335 INFO qwen2.5-1.5b-instruct-f16 full faq_gen: 98 answers
+2026-10-10 18:28:32,472 INFO freed 3.1G from the model cache (Qwen/Qwen2.5-1.5B-Instruct)
+
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/338 [00:00<03:02,  1.85it/s]
+Loading weights:   1%|          | 3/338 [00:12<25:30,  4.57s/it]
+Loading weights:   7%|▋         | 25/338 [00:12<01:54,  2.73it/s]
+Loading weights:  12%|█▏        | 41/338 [00:12<00:56,  5.26it/s]
+Loading weights:  19%|█▉        | 64/338 [00:12<00:26, 10.30it/s]
+Loading weights:  26%|██▌       | 87/338 [00:12<00:14, 17.11it/s]
+Loading weights:  33%|███▎      | 111/338 [00:13<00:08, 26.40it/s]
+Loading weights:  39%|███▉      | 133/338 [00:13<00:05, 37.38it/s]
+Loading weights:  46%|████▌     | 154/338 [00:13<00:03, 49.93it/s]
+Loading weights:  51%|█████▏    | 174/338 [00:13<00:02, 63.59it/s]
+Loading weights:  58%|█████▊    | 196/338 [00:13<00:01, 82.15it/s]
+Loading weights:  65%|██████▌   | 220/338 [00:13<00:01, 102.86it/s]
+Loading weights:  72%|███████▏  | 243/338 [00:13<00:00, 121.33it/s]
+Loading weights:  78%|███████▊  | 265/338 [00:13<00:00, 139.82it/s]
+Loading weights:  85%|████████▍ | 286/338 [00:13<00:00, 144.89it/s]
+Loading weights:  91%|█████████ | 306/338 [00:14<00:00, 150.93it/s]
+Loading weights:  97%|█████████▋| 328/338 [00:14<00:00, 166.40it/s]
+Loading weights: 100%|██████████| 338/338 [00:14<00:00, 23.86it/s] 
+2026-10-10 18:28:54,152 INFO Loaded Qwen/Qwen2.5-1.5B-Instruct on cuda (torch.float16, 4bit=True) in 21.7s
+2026-10-10 18:28:54,804 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256 is up to date (corpus hash d7297fca95c346cae06c); skipping.
+2026-10-10 18:35:02,542 INFO qwen2.5-1.5b-instruct full oos_questions: 50 answers
+2026-10-10 18:35:03,201 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+2026-10-10 18:48:00,490 INFO qwen2.5-1.5b-instruct full faq_gen: 98 answers
+2026-10-10 18:48:01,603 INFO freed 3.1G from the model cache (Qwen/Qwen2.5-1.5B-Instruct)
+
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 202/202 [00:00<00:00, 2363.48it/s]
+2026-10-10 18:48:03,885 INFO Using default tokenizer.
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2483.19it/s]
+
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]
+Loading weights:  75%|███████▍  | 291/389 [00:00<00:00, 2908.39it/s]
+Loading weights: 100%|██████████| 389/389 [00:00<00:00, 3667.17it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+wrote /kaggle/working/mhrag_results/generation_runtime.json

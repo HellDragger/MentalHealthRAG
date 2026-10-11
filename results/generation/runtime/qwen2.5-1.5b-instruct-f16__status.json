@@ -1,0 +1,1 @@
+{"model": "qwen2.5-1.5b-instruct-f16", "status": "ok", "load_seconds": 2.3807539570007066, "peak_rss_gb": 2.814556121826172, "cuda_peak_allocated_gb": 3.647724151611328}
