@@ -746,11 +746,16 @@ def main():
         up = sum(d > 0 and pv < 0.05 for d, pv in eq if d is not None)
         down = sum(d < 0 and pv < 0.05 for d, pv in eq if d is not None)
         lup = sum(d > 0 and pv < 0.05 for d, pv in ln if d is not None)
+        bigger = sum(l_[0] > e_[0] for e_, l_ in zip(eq, ln) if None not in (e_[0], l_[0]))
+        import statistics as _st
         m.text("MatchedSummary",
                f"Across the {len(ms)} instruction-tuned models (Table~\\ref{{tab:gen-matched}}; one run, no gate), the "
                f"full pipeline cut to the naive context length was significantly more faithful than naive RAG for {up} "
                f"models and less faithful for {down}, while restoring the full context raised faithfulness "
-               f"significantly for {lup}.", c_mt)
+               f"significantly for {lup}. The length step was the larger of the two for {bigger} of {len(ms)} models "
+               f"(median {_st.median(d for d, _ in ln):+.3f} against {_st.median(d for d, _ in eq):+.3f}). The "
+               "equal-length contrast changes the prompt as well as retrieval, and in the ablation the prompt alone "
+               "raised faithfulness, so it bounds the contribution of better retrieval from above.", c_mt)
     else:
         m.text("MatchedSummary", None, c_mt)
     rt = load("generation_runtime.json")
@@ -946,16 +951,28 @@ def main():
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
         txt = (f"(1) The full pipeline's higher NLI faithfulness came mainly from giving the model more retrieved text: "
-               f"at equal context length, better retrieval added nothing ({f3(fab('abl_full_full_matched'))} vs "
-               f"{f3(fab('abl_naive_full'))})")
+               f"for the deployed model, better retrieval added nothing at equal context length "
+               f"({f3(fab('abl_full_full_matched'))} vs {f3(fab('abl_naive_full'))})")
         if mt:
             sig_m = mt.get("significance", {})
+            eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
+
+            def n_up(k):  # significant gains (Holm-corrected); a p-value of 0.0 is significant
+                out_ = 0
+                for m_ in ms:
+                    d_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", k)
+                    p_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm", k)
+                    out_ += d_ is not None and p_ is not None and d_ > 0 and p_ < 0.05
+                return out_
             ms = [m_ for m_ in mt["config"]["models"]
-                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", "abl_full_full_matched>abl_naive_naive") is not None]
-            up = [m_ for m_ in ms if (get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm",
-                                          "abl_full_full_matched>abl_naive_naive") or 1) < 0.05
-                  and sig_m[f"{m_}|faq_gen|faithfulness"]["delta"]["abl_full_full_matched>abl_naive_naive"] > 0]
-            txt += f", and at naive context length the full pipeline beat naive RAG significantly for {len(up)} of {len(ms)} models"
+                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", eq_k) is not None]
+            import statistics as _st
+
+            def med(k):
+                return _st.median(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][k] for m_ in ms)
+            txt += (f"; across {len(ms)} models, restoring full length raised it significantly for {n_up(ln_k)}, and "
+                    f"better retrieval and prompt at equal length for {n_up(eq_k)}, with smaller gains (median "
+                    f"{med(eq_k):+.2f} vs {med(ln_k):+.2f})")
         parts.append(txt + ".")
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)

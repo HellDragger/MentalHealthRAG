@@ -1318,3 +1318,185 @@ $ [1] CUDA_VISIBLE_DEVICES=1 MHRAG_LOAD_IN_4BIT=1 /usr/bin/python3 -m scripts.ru
 [1] Loading weights: 100%|██████████| 195/195 [00:04<00:00, 39.49it/s]
 [1] 2026-10-11 02:48:06,357 INFO Loaded microsoft/Phi-3.5-mini-instruct on cuda (torch.float16, 4bit=True) in 41.7s
 [1] 2026-10-11 02:48:07,019 INFO Index /kaggle/working/mhrag/artifacts/index/minilm-c48-nofaq is up to date (corpus hash be1f74d00f12ab383aae); skipping.
+
+===== session started 2026-10-11 03:55
+$ [0] CUDA_VISIBLE_DEVICES=0 MHRAG_LOAD_IN_4BIT=1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_matched.yaml --generate-only --models qwen3-8b qwen2.5-7b-instruct mistral-7b-instruct-v0.3 phi-4-mini-instruct llama-3.2-3b-instruct smollm2-1.7b-instruct
+$ [1] CUDA_VISIBLE_DEVICES=1 MHRAG_LOAD_IN_4BIT=1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_matched.yaml --generate-only --models llama-3.1-8b-instruct ministral-8b-instruct-2410 gemma-3-4b-it-fp32 qwen3-4b phi-3.5-mini-instruct gemma-2-2b-it qwen2.5-1.5b-instruct
+[0] 2026-10-11 03:55:11,018 INFO NumExpr defaulting to 4 threads.
+[1] 2026-10-11 03:55:11,021 INFO NumExpr defaulting to 4 threads.
+[0] 2026-10-11 03:55:12,778 INFO mistral-7b-instruct-v0.3: all answers already in the checkpoint; skipping
+[0] 2026-10-11 03:55:12,861 INFO llama-3.2-3b-instruct: all answers already in the checkpoint; skipping
+[1] 2026-10-11 03:55:12,891 INFO ministral-8b-instruct-2410: all answers already in the checkpoint; skipping
+[0] 2026-10-11 03:55:12,901 INFO qwen2.5-7b-instruct: all answers already in the checkpoint; skipping
+[1] 2026-10-11 03:55:12,933 INFO llama-3.1-8b-instruct: all answers already in the checkpoint; skipping
+[0] 2026-10-11 03:55:12,983 INFO qwen3-8b: all answers already in the checkpoint; skipping
+[1] 2026-10-11 03:55:13,015 INFO qwen2.5-1.5b-instruct: all answers already in the checkpoint; skipping
+[1] 2026-10-11 03:55:13,056 INFO qwen3-4b: all answers already in the checkpoint; skipping
+[0] 2026-10-11 03:55:13,077 INFO phi-4-mini-instruct: all answers already in the checkpoint; skipping
+[0] 2026-10-11 03:55:13,119 INFO smollm2-1.7b-instruct: all answers already in the checkpoint; skipping
+[1] 2026-10-11 03:55:13,123 INFO gemma-2-2b-it: all answers already in the checkpoint; skipping
+[0] answers saved in /kaggle/working/mhrag_results/generation/matched (not scored: run without --generate-only to score)
+[1] 2026-10-11 03:55:13,165 INFO gemma-3-4b-it-fp32: all answers already in the checkpoint; skipping
+[1] [transformers] This model config has set a `rope_parameters['original_max_position_embeddings']` field, to be used together with `max_position_embeddings` to determine a scaling factor. Please set the `factor` field of `rope_parameters`with this ratio instead -- we recommend the use of this field over `original_max_position_embeddings`, as it is compatible with most model architectures.
+[1] 
+[1] Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]
+[1] Fetching 2 files:  50%|█████     | 1/2 [00:21<00:21, 21.94s/it]
+[1] Fetching 2 files: 100%|██████████| 2/2 [00:37<00:00, 18.41s/it]
+[1] Fetching 2 files: 100%|██████████| 2/2 [00:37<00:00, 18.94s/it]
+[1] 
+[1] Loading weights:   0%|          | 0/195 [00:00<?, ?it/s]
+[1] Loading weights:   1%|          | 1/195 [00:01<03:19,  1.03s/it]
+[1] Loading weights:   1%|          | 2/195 [00:01<02:47,  1.15it/s]
+[1] Loading weights:   2%|▏         | 4/195 [00:02<01:22,  2.31it/s]
+[1] Loading weights:   3%|▎         | 5/195 [00:02<01:17,  2.45it/s]
+[1] Loading weights:   4%|▍         | 8/195 [00:02<00:41,  4.55it/s]
+[1] Loading weights:   5%|▌         | 10/195 [00:02<00:31,  5.79it/s]
+[1] Loading weights:   6%|▌         | 11/195 [00:03<00:33,  5.48it/s]
+[1] Loading weights:   7%|▋         | 14/195 [00:03<00:26,  6.81it/s]
+[1] Loading weights:   9%|▊         | 17/195 [00:03<00:20,  8.73it/s]
+[1] Loading weights:  11%|█▏        | 22/195 [00:03<00:12, 13.63it/s]
+[1] Loading weights:  12%|█▏        | 24/195 [00:03<00:12, 13.95it/s]
+[1] Loading weights:  14%|█▍        | 28/195 [00:04<00:09, 18.09it/s]
+[1] Loading weights:  16%|█▌        | 31/195 [00:04<00:08, 20.16it/s]
+[1] Loading weights:  17%|█▋        | 34/195 [00:04<00:07, 22.11it/s]
+[1] Loading weights:  19%|█▉        | 37/195 [00:04<00:06, 23.44it/s]
+[1] Loading weights:  21%|██        | 40/195 [00:04<00:06, 24.85it/s]
+[1] Loading weights:  22%|██▏       | 43/195 [00:04<00:05, 25.55it/s]
+[1] Loading weights:  24%|██▎       | 46/195 [00:04<00:05, 26.04it/s]
+[1] Loading weights:  25%|██▌       | 49/195 [00:04<00:05, 26.26it/s]
+[1] Loading weights:  27%|██▋       | 52/195 [00:04<00:05, 26.73it/s]
+[1] Loading weights:  28%|██▊       | 55/195 [00:04<00:05, 26.86it/s]
+[1] Loading weights:  30%|██▉       | 58/195 [00:05<00:04, 27.42it/s]
+[1] Loading weights:  31%|███▏      | 61/195 [00:05<00:04, 27.44it/s]
+[1] Loading weights:  33%|███▎      | 64/195 [00:05<00:06, 19.36it/s]
+[1] Loading weights:  34%|███▍      | 67/195 [00:05<00:10, 12.39it/s]
+[1] Loading weights:  35%|███▌      | 69/195 [00:06<00:11, 11.40it/s]
+[1] Loading weights:  36%|███▋      | 71/195 [00:06<00:16,  7.48it/s]
+[1] Loading weights:  38%|███▊      | 74/195 [00:06<00:13,  9.08it/s]
+[1] Loading weights:  39%|███▉      | 77/195 [00:07<00:11, 10.69it/s]
+[1] Loading weights:  42%|████▏     | 82/195 [00:07<00:07, 15.09it/s]
+[1] Loading weights:  43%|████▎     | 84/195 [00:07<00:07, 15.29it/s]
+[1] Loading weights:  45%|████▌     | 88/195 [00:07<00:05, 18.69it/s]
+[1] Loading weights:  47%|████▋     | 91/195 [00:07<00:05, 19.24it/s]
+[1] Loading weights:  48%|████▊     | 94/195 [00:07<00:05, 19.99it/s]
+[1] Loading weights:  50%|████▉     | 97/195 [00:07<00:04, 20.50it/s]
+[1] Loading weights:  51%|█████▏    | 100/195 [00:08<00:04, 20.99it/s]
+[1] Loading weights:  53%|█████▎    | 103/195 [00:08<00:04, 21.01it/s]
+[1] Loading weights:  54%|█████▍    | 106/195 [00:08<00:04, 21.52it/s]
+[1] Loading weights:  56%|█████▌    | 109/195 [00:08<00:03, 21.76it/s]
+[1] Loading weights:  57%|█████▋    | 112/195 [00:08<00:03, 22.25it/s]
+[1] Loading weights:  59%|█████▉    | 115/195 [00:08<00:03, 21.13it/s]
+[1] Loading weights:  61%|██████    | 118/195 [00:08<00:03, 21.38it/s]
+[1] Loading weights:  62%|██████▏   | 121/195 [00:09<00:03, 21.20it/s]
+[1] Loading weights:  64%|██████▎   | 124/195 [00:09<00:03, 21.52it/s]
+[1] Loading weights:  65%|██████▌   | 127/195 [00:09<00:03, 20.59it/s]
+[1] Loading weights:  67%|██████▋   | 130/195 [00:09<00:03, 16.42it/s]
+[1] Loading weights:  68%|██████▊   | 132/195 [00:09<00:05, 11.49it/s]
+[1] Loading weights:  69%|██████▊   | 134/195 [00:10<00:05, 11.06it/s]
+[1] Loading weights:  70%|██████▉   | 136/195 [00:10<00:05, 10.71it/s]
+[1] Loading weights:  71%|███████   | 138/195 [00:10<00:07,  8.12it/s]
+[1] Loading weights:  72%|███████▏  | 140/195 [00:11<00:07,  7.54it/s]
+[1] Loading weights:  73%|███████▎  | 142/195 [00:11<00:06,  8.09it/s]
+[1] Loading weights:  73%|███████▎  | 143/195 [00:11<00:08,  6.09it/s]
+[1] Loading weights:  75%|███████▍  | 146/195 [00:11<00:06,  7.44it/s]
+[1] Loading weights:  76%|███████▌  | 148/195 [00:12<00:05,  8.04it/s]
+[1] Loading weights:  76%|███████▋  | 149/195 [00:12<00:08,  5.60it/s]
+[1] Loading weights:  78%|███████▊  | 152/195 [00:12<00:06,  6.84it/s]
+[1] Loading weights:  79%|███████▉  | 154/195 [00:13<00:05,  7.58it/s]
+[1] Loading weights:  79%|███████▉  | 155/195 [00:13<00:07,  5.57it/s]
+[1] Loading weights:  81%|████████  | 158/195 [00:13<00:05,  6.75it/s]
+[1] Loading weights:  82%|████████▏ | 160/195 [00:13<00:04,  7.84it/s]
+[1] Loading weights:  83%|████████▎ | 161/195 [00:14<00:06,  5.62it/s]
+[1] Loading weights:  84%|████████▍ | 164/195 [00:14<00:04,  6.67it/s]
+[1] Loading weights:  85%|████████▌ | 166/195 [00:14<00:03,  7.42it/s]
+[1] Loading weights:  86%|████████▌ | 167/195 [00:15<00:05,  5.53it/s]
+[1] Loading weights:  87%|████████▋ | 170/195 [00:15<00:03,  6.95it/s]
+[1] Loading weights:  88%|████████▊ | 172/195 [00:15<00:02,  7.82it/s]
+[1] Loading weights:  89%|████████▊ | 173/195 [00:16<00:03,  5.86it/s]
+[1] Loading weights:  90%|█████████ | 176/195 [00:16<00:02,  7.09it/s]
+[1] Loading weights:  91%|█████████▏| 178/195 [00:16<00:02,  7.67it/s]
+[1] Loading weights:  92%|█████████▏| 179/195 [00:17<00:02,  5.57it/s]
+[1] Loading weights:  93%|█████████▎| 182/195 [00:17<00:01,  7.19it/s]
+[1] Loading weights:  94%|█████████▍| 184/195 [00:17<00:01,  7.85it/s]
+[1] Loading weights:  95%|█████████▍| 185/195 [00:17<00:01,  5.78it/s]
+[1] Loading weights:  96%|█████████▋| 188/195 [00:18<00:00,  7.24it/s]
+[1] Loading weights:  97%|█████████▋| 190/195 [00:18<00:00,  7.78it/s]
+[1] Loading weights:  98%|█████████▊| 191/195 [00:18<00:00,  5.71it/s]
+[1] Loading weights:  99%|█████████▉| 194/195 [00:19<00:00,  7.27it/s]
+[1] Loading weights: 100%|██████████| 195/195 [00:19<00:00, 10.25it/s]
+[1] 2026-10-11 03:56:30,604 INFO Loaded microsoft/Phi-3.5-mini-instruct on cuda (torch.float16, 4bit=True) in 70.8s
+[1] 2026-10-11 03:56:44,132 INFO Disabling Tensorflow because USE_TORCH is set
+[1] 2026-10-11 03:56:44,133 INFO Disabling JAX because USE_JAX is set to False
+[1] 
+[1] Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+[1] Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2482.28it/s]
+[1] 2026-10-11 03:57:08,544 DEBUG Building index from IDs objects
+[1] 2026-10-11 03:57:08,937 INFO Built /kaggle/working/mhrag/artifacts/index/minilm-c48-nofaq: 10160 chunks in 36.9s (embed 6.1s)
+[1] 
+[1] Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+[1] Loading weights: 100%|██████████| 103/103 [00:00<00:00, 2470.89it/s]
+[1] 
+[1] Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+[1] Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2356.56it/s]
+[1] 2026-10-11 04:07:58,621 INFO phi-3.5-mini-instruct abl_naive_naive faq_gen: 98 answers
+[1] 
+[1] Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+[1] Loading weights:  35%|███▍      | 69/199 [00:00<00:00, 689.31it/s]
+[1] Loading weights:  73%|███████▎  | 145/199 [00:00<00:00, 727.10it/s]
+[1] Loading weights: 100%|██████████| 199/199 [00:00<00:00, 766.90it/s]
+[1] 2026-10-11 04:08:25,781 DEBUG Building index from IDs objects
+[1] 2026-10-11 04:08:25,952 INFO Built /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq: 2216 chunks in 26.3s (embed 11.2s)
+[1] 
+[1] Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+[1] Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2483.71it/s]
+[1] 
+[1] Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]
+[1] Loading weights: 100%|██████████| 105/105 [00:00<00:00, 2545.59it/s]
+[1] 2026-10-11 04:25:37,264 INFO phi-3.5-mini-instruct abl_full_full_matched faq_gen: 98 answers
+[1] 2026-10-11 04:25:37,901 INFO Index /kaggle/working/mhrag/artifacts/index/bge-small-c256-nofaq is up to date (corpus hash 287ac98e46116a334497); skipping.
+[1] 2026-10-11 04:47:40,749 INFO phi-3.5-mini-instruct abl_full_full faq_gen: 98 answers
+[1] 2026-10-11 04:47:41,779 INFO freed 7.6G from the model cache (microsoft/Phi-3.5-mini-instruct)
+[1] answers saved in /kaggle/working/mhrag_results/generation/matched (not scored: run without --generate-only to score)
+$ CUDA_VISIBLE_DEVICES=0 MHRAG_LOAD_IN_4BIT=1 /usr/bin/python3 -m scripts.run_eval --config configs/experiments/generation_matched.yaml
+2026-10-11 04:47:46,837 INFO NumExpr defaulting to 4 threads.
+2026-10-11 04:47:48,685 INFO mistral-7b-instruct-v0.3: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,724 INFO ministral-8b-instruct-2410: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,761 INFO llama-3.1-8b-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,799 INFO llama-3.2-3b-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,837 INFO qwen2.5-7b-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,879 INFO qwen2.5-1.5b-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,918 INFO qwen3-4b: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,956 INFO qwen3-8b: all answers already in the checkpoint; skipping
+2026-10-11 04:47:48,994 INFO gemma-2-2b-it: all answers already in the checkpoint; skipping
+2026-10-11 04:47:49,033 INFO gemma-3-4b-it-fp32: all answers already in the checkpoint; skipping
+2026-10-11 04:47:49,074 INFO phi-3.5-mini-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:49,113 INFO phi-4-mini-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:47:49,153 INFO smollm2-1.7b-instruct: all answers already in the checkpoint; skipping
+2026-10-11 04:48:00,169 INFO Disabling Tensorflow because USE_TORCH is set
+2026-10-11 04:48:00,169 INFO Disabling JAX because USE_JAX is set to False
+
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 202/202 [00:00<00:00, 2151.05it/s]
+2026-10-11 04:48:16,518 INFO Using default tokenizer.
+
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2602.02it/s]
+
+Loading weights:   0%|          | 0/389 [00:00<?, ?it/s]
+Loading weights:  57%|█████▋    | 220/389 [00:00<00:00, 2191.92it/s]
+Loading weights: 100%|██████████| 389/389 [00:00<00:00, 3018.75it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: roberta-large
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+wrote /kaggle/working/mhrag_results/generation_matched.json
