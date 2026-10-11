@@ -246,7 +246,7 @@ def main():
             caveat = "" if len(sessions) <= 1 or cpu_known else (
                 f"; the CPU model was not recorded, so the {nw} sessions may have run on different processors")
             txt += (f". To separate the effects, all four configurations were also run on Kaggle CPUs {where} "
-                    f"(Table~\\ref{{tab:latency-cpu}}){caveat}. Median end-to-end times were "
+                    f"(Supplementary Table~\\ref{{tab:latency-cpu}}){caveat}. Median end-to-end times were "
                     f"{b_['e2e_ms']['p50'] / 1000:.1f}~s (transformers fp32, no streaming), "
                     f"{h_['e2e_ms']['p50'] / 1000:.1f}~s (the same with streaming and the full pipeline), "
                     f"{f_['e2e_ms']['p50'] / 1000:.1f}~s (llama.cpp, 16-bit) and {q_['e2e_ms']['p50'] / 1000:.1f}~s "
@@ -299,7 +299,7 @@ def main():
                 s += f", BM25 {f3(bm['summary']['nDCG@10']['mean'])})" if bm else ")"
             parts.append(s)
         m.text("RetrievalSummary", "Table~\\ref{tab:retrieval-summary} summarises retrieval; the full tables for every "
-               "configuration are in \\ref{app:retrieval}. The best configuration and its nDCG@10 on each set "
+               "configuration are in Supplementary Section~\\ref{app:retrieval}. The best configuration and its nDCG@10 on each set "
                "were " + "; ".join(parts) + ".", c_rm)
     else:
         m.text("RetrievalSummary", None, c_rm)
@@ -326,7 +326,7 @@ def main():
                 if oos and oos.get("abstained") and oosn and oosn.get("abstained"):
                     s += (f". It declined {oos['abstained']['mean']:.2f} of out-of-scope questions, against "
                           f"{oosn['abstained']['mean']:.2f} with naive RAG")
-                parts.append(s + ". GPT-2 and BART-large-CNN, kept as weak baselines, are in \\ref{app:generation}.")
+                parts.append(s + ". GPT-2 and BART-large-CNN, kept as weak baselines, are in Supplementary Section~\\ref{app:generation}.")
         if gl.get("judge_status") == "complete":
             tail = ""
         else:
@@ -1015,7 +1015,7 @@ def main():
                         "faithfulness on FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Cit. prec. = share of "
                         "(sentence, cited passage) pairs where the passage entails the sentence; Decl. = share of "
                         "out-of-scope questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
-                        "\\ref{app:generation}.",
+                        "Supplementary Section~\\ref{app:generation}.",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
 
@@ -1106,9 +1106,12 @@ def main():
             cor_ = [r_["corrected_citation_precision"] for r_ in (ck_ or {}).get("raters", {}).values()
                     if r_.get("corrected_citation_precision") is not None]
             if cor_:
-                txt += (f" NLI judged few citations supported ({100 * loc_p:.0f}\\% for the deployed model), but a "
-                        f"blinded hand check found it too strict: an estimated {100 * cor_[0]:.0f}\\% of all citations "
-                        "were supported.")
+                ck0 = next(iter(ck_["raters"].values()))
+                lo_c, hi_c = ck0["corrected_ci"]
+                txt += (f" NLI judged {100 * loc_p:.0f}\\% of the deployed model's citations supported; a blinded "
+                        f"hand check of {ck_['pairs']} citation pairs by the author suggested NLI was too strict "
+                        f"(estimated {100 * cor_[0]:.0f}\\% of citations across models supported, 95\\% CI "
+                        f"{100 * lo_c:.0f}--{100 * hi_c:.0f}\\%).")
             else:
                 txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
                         f"{100 * loc_p:.0f}\\% of the deployed model's citations (median "
