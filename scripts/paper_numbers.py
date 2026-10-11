@@ -950,9 +950,9 @@ def main():
 
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
-        txt = (f"(1) The full pipeline's higher NLI faithfulness came mainly from giving the model more retrieved text: "
-               f"for the deployed model, better retrieval added nothing at equal context length "
-               f"({f3(fab('abl_full_full_matched'))} vs {f3(fab('abl_naive_full'))})")
+        txt = (f"(1) Higher NLI faithfulness came mainly from more retrieved text: at equal length, better retrieval "
+               f"added nothing for the deployed model ({f3(fab('abl_full_full_matched'))} vs "
+               f"{f3(fab('abl_naive_full'))})")
         if mt:
             sig_m = mt.get("significance", {})
             eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
@@ -970,9 +970,9 @@ def main():
 
             def med(k):
                 return _st.median(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][k] for m_ in ms)
-            txt += (f"; across {len(ms)} models, restoring full length raised it significantly for {n_up(ln_k)}, and "
-                    f"better retrieval and prompt at equal length for {n_up(eq_k)}, with smaller gains (median "
-                    f"{med(eq_k):+.2f} vs {med(ln_k):+.2f})")
+            txt += (f"; across {len(ms)} models, full length raised it significantly for {n_up(ln_k)}, better "
+                    f"retrieval and prompt at equal length for {n_up(eq_k)} (median gains {med(ln_k):+.2f} vs "
+                    f"{med(eq_k):+.2f})")
         parts.append(txt + ".")
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
@@ -987,8 +987,8 @@ def main():
             pc = v["per_category"]
             n = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
             return f"{round(v['crisis_recall_any_escalation'] * n)} of {n}"
-        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the author-written development set but "
-               f"{kn(gh)} on the frozen held-out set")
+        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but "
+               f"{kn(gh)} on the held-out set")
         if neg:
             txt += f", escalated {neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements (``I don't want to die'')"
         if ge and "faq_gen" in ge["datasets"]:
@@ -998,8 +998,8 @@ def main():
     if tf:
         hf, hn = (get(tf, "metrics", "judge_helpfulness", "settings", p_, "mean") for p_ in ("full", "no_rag"))
         if None not in (hf, hn):
-            parts.append(f"(4) An LLM judge rated grounded answers less helpful than answers without retrieval "
-                         f"({hf:.2f} vs {hn:.2f} on 1--5).")
+            parts.append(f"(4) An LLM judge rated grounded answers less helpful than ungrounded ones "
+                         f"({hf:.2f} vs {hn:.2f}, 1--5).")
     m.text("AbstractResults", " ".join(p for p in parts if p), "run all experiments (scripts/run_all_local.sh)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)  # paper/ is not in the repository (kept private)
