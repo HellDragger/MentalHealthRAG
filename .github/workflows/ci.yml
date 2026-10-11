@@ -49,11 +49,16 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+      # The raw data (Mind content and other third-party sources) is not in the repository, so the index cannot be
+      # built here; a public Space also needs Mind's permission (README, Data sources and licences).
+      - name: Skip without raw data
+        if: env.HF_TOKEN != '' && hashFiles('data/raw_data.zip') == ''
+        run: echo "data/raw_data.zip is not in the repository; the Space is not deployed from CI."
       - name: Build the fastembed index
-        if: env.HF_TOKEN != ''
+        if: env.HF_TOKEN != '' && hashFiles('data/raw_data.zip') != ''
         run: |
           pip install -e . fastembed
           python -m scripts.build_index --backend fastembed
       - name: Upload to the Space
-        if: env.HF_TOKEN != ''
+        if: env.HF_TOKEN != '' && hashFiles('data/raw_data.zip') != ''
         run: python -m scripts.deploy_space --space "$HF_SPACE_ID"

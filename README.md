@@ -297,14 +297,35 @@ The code is MIT-licensed ([LICENSE](LICENSE)). **The MIT licence does not cover 
 
 | Data | Owner and licence | Use here |
 |---|---|---|
-| Mind information pages and booklets (PDFs in `data/raw_data.zip`) | © Mind. Used for non-commercial research with attribution. Originals: <https://www.mind.org.uk/information-support/> | Knowledge base (answers link to the original pages) |
+| Mind information pages and booklets (PDFs) | © Mind. Used for non-commercial research with attribution. Originals: <https://www.mind.org.uk/information-support/> | Knowledge base (answers link to the original pages) |
 | 7 web articles (Times of India reader blogs, varthana.com, Lawctopus, Voices of Youth, medindia.net, VIMS) | © their publishers | Knowledge base, tagged `web_article` |
 | Mental Health FAQ for chatbots (Kaggle) | See the dataset page (source: NAMI and HereToHelp BC content) | Knowledge base; FAQ-Gen evaluation |
 | KB.json / mentalhealth.json intents (Kaggle chatbot datasets) | See the dataset pages | Factual intents only; ParaphraseQA |
 | CounselChat (`context_response_train.csv`; HF `Amod/mental_health_counseling_conversations`) | See the dataset card | Held-out Counsel-Gen references (not indexed by default) |
 | Suicide-risk posts (`mental_health.csv`), Reddit depression, Dreaddit, Mental-Health-Twitter | See each dataset's terms (Dreaddit: Turcan & McKeown, 2019) | Risk-classifier training and cross-dataset tests only; never indexed |
 
-The raw archive is kept in the repository for reproducibility. It is **not** uploaded to the public Space
+**The raw data is not in this repository**, because it is third-party material whose licences do not allow
+redistribution here. Everything derived from it that the paper reports is: the evaluation sets (`eval/data/`), the
+results (`results/`) and the trained risk classifier (`artifacts/risk_classifier/`), so every table and number can be
+regenerated (`python -m scripts.import_results` / `scripts.paper_numbers`) without it. To rebuild the index, re-run
+ingestion or retrain the classifier, obtain each source from its owner and place the files at `data/raw_data.zip`
+(or an extracted `data/raw_data/` folder) with this layout:
+
+```
+raw_data/PDF_Files/*.pdf                   Mind information pages and booklets (printed to PDF), the 7 web articles
+raw_data/CSV Files/Mental_Health_FAQ.csv   Mental Health FAQ for chatbots (Kaggle)
+raw_data/CSV Files/mentalhealth.csv        chatbot intents (Kaggle)
+raw_data/CSV Files/context_response_train.csv   CounselChat (Amod/mental_health_counseling_conversations)
+raw_data/CSV Files/mental_health.csv       suicide-risk posts
+raw_data/CSV Files/train.csv              optional: identical rows to context_response_train.csv (dropped)
+raw_data/CSV Files/depression_dataset_reddit_cleaned.csv
+raw_data/CSV Files/dreaddit-train.csv, dreaddit-test.csv
+raw_data/CSV Files/Mental-Health-Twitter.csv
+raw_data/JSON Files/KB.json, mentalhealth.json   chatbot intents (Kaggle)
+```
+
+On Kaggle, upload the archive as a **private** dataset and attach it to the notebook (Add Input); the notebook finds
+`raw_data.zip` under `/kaggle/input/` automatically. The raw data is never uploaded to the public Space
 (see `scripts/deploy_space.py`).
 
 ## Repository layout

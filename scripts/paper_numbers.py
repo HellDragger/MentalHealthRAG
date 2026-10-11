@@ -114,11 +114,7 @@ def main():
                       ("counsel_gen", "NCounselGen"), ("oos", "NOOS")):
         m.set(name, get(es, key, "n"), c_es)
     m.set("NSynthQA", get(es, "synth_qa", "kept_after_roundtrip"), c_es + " --synth")
-    from mhrag.ingest.qa import counselling_duplicate_stats
-    from mhrag.ingest.sources import RawData
-
-    st = get_settings()
-    m.set("NCounselRows", counselling_duplicate_stats(RawData(st.resolve(st.paths.raw_data))).get("rows"), c_es)
+    m.set("NCounselRows", get(es, "counsel_source", "rows"), "python -m scripts.make\\_eval\\_sets --skip-static")
 
     # ---------------------------------------------------------------- classifier
     rc = load("risk_classifier.json")
