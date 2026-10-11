@@ -1,6 +1,7 @@
 """Citation precision: is each cited passage the one that supports the sentence citing it?
 
     python -m scripts.citation_precision        # -> results/citation_precision.json, paper/tables/citation_precision.tex
+    python -m scripts.citation_precision --tables-only   # only the table, from the saved results
 
 NLI faithfulness asks whether *any* retrieved passage entails a sentence, so it rises with the amount of retrieved
 text. Citation precision does not: for every answer sentence that carries a citation ([2], [1][3] or [1, 3]), the
@@ -16,6 +17,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import defaultdict
 
 from eval.judges import NLIJudge
@@ -66,7 +68,10 @@ def score_answer(nli: NLIJudge, answer: str, passages: list[str]) -> dict:
             "supported_citing": supported, "invalid": invalid}
 
 
-def main() -> int:
+def main(argv=None) -> int:
+    if "--tables-only" in (sys.argv[1:] if argv is None else argv):
+        write_tables(json.loads((R / "citation_precision.json").read_text()))
+        return 0
     nli = NLIJudge("cross-encoder/nli-deberta-v3-base")
     sets = list(SETS)
     gpu = json.loads((R / "generation_gpu.json").read_text())

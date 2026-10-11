@@ -171,6 +171,8 @@ def render(py: str = sys.executable) -> None:
     subprocess.run([py, "-m", "scripts.generation_reanalysis"], cwd=PROJECT_ROOT, check=True)
     if (RESULTS / "safety_baselines.json").exists():
         subprocess.run([py, "-m", "scripts.eval_safety_baselines", "--tables-only"], cwd=PROJECT_ROOT, check=True)
+    if (RESULTS / "citation_precision.json").exists():
+        subprocess.run([py, "-m", "scripts.citation_precision", "--tables-only"], cwd=PROJECT_ROOT, check=True)
     if (RESULTS / "abstention_check.json").exists():
         subprocess.run([py, "-m", "scripts.judge_abstention", "--tables-only"], cwd=PROJECT_ROOT, check=True)
     subprocess.run([py, "-m", "scripts.paper_numbers"], cwd=PROJECT_ROOT, check=True)
