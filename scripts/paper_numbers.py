@@ -215,14 +215,38 @@ def main():
         if metal:
             txt += (f"; with Metal offload the first token appeared after {metal['ttft_ms']['p50'] / 1000:.2f}~s at "
                     f"{metal['tokens_per_s']['p50']:.1f} tokens/s")
+        txt += (" (Table~\\ref{tab:latency}). These laptop figures are not comparable with the TTFT column of the "
+                "generation tables, which was measured on the Kaggle GPU (llama.cpp offloaded to the GPU for the GGUF "
+                "model)")
         lc = load("latency_cpu.json") or {}
-        k_ = {k: get(lc, k, "summary") for k in ("v1_hf_fp32_cpu", "v2_hf_fp32_cpu", "v2_llamacpp_f16_cpu", "v2_llamacpp_cpu")}
+        keys_c = ("v1_hf_fp32_cpu", "v2_hf_fp32_cpu", "v2_llamacpp_f16_cpu", "v2_llamacpp_cpu")
+        k_ = {k: get(lc, k, "summary") for k in keys_c}
         if all(k_.values()):
-            b_, h_, f_, q_ = (k_[k] for k in ("v1_hf_fp32_cpu", "v2_hf_fp32_cpu", "v2_llamacpp_f16_cpu", "v2_llamacpp_cpu"))
-            txt += (". To separate the effects, all four configurations were also run on one Kaggle CPU "
-                    "(Table~\\ref{tab:latency-cpu}): median end-to-end times were "
+            import datetime as _dt
+
+            b_, h_, f_, q_ = (k_[k] for k in keys_c)
+            # configurations measured more than an hour apart ran in different Kaggle sessions (possibly other CPUs)
+            when = sorted((_dt.datetime.fromisoformat(lc[k]["ran_at"]), k) for k in keys_c if lc[k].get("ran_at"))
+            sessions, last = [], None
+            for t_, k in when:
+                if last is None or (t_ - last).total_seconds() > 3600:
+                    sessions.append([])
+                sessions[-1].append(k)
+                last = t_
+            envs = {json.dumps({x: (lc[k].get("environment") or {}).get(x) for x in ("platform", "ram_gb", "torch",
+                                                                                   "transformers", "llama_cpp")})
+                    for k in keys_c}
+            cpus = {(lc[k].get("environment") or {}).get("cpu") for k in keys_c}
+            cpu_known = len(cpus) == 1 and next(iter(cpus)) not in (None, "", "x86_64")
+            nw = {2: "two", 3: "three", 4: "four"}.get(len(sessions), str(len(sessions)))
+            where = "in one session" if len(sessions) <= 1 else (
+                f"in {nw} sessions" + (" with the same software versions and memory" if len(envs) == 1 else ""))
+            caveat = "" if len(sessions) <= 1 or cpu_known else (
+                f"; the CPU model was not recorded, so the {nw} sessions may have run on different processors")
+            txt += (f". To separate the effects, all four configurations were also run on Kaggle CPUs {where} "
+                    f"(Table~\\ref{{tab:latency-cpu}}){caveat}. Median end-to-end times were "
                     f"{b_['e2e_ms']['p50'] / 1000:.1f}~s (transformers fp32, no streaming), "
-                    f"{h_['e2e_ms']['p50'] / 1000:.1f}~s (the same with streaming), "
+                    f"{h_['e2e_ms']['p50'] / 1000:.1f}~s (the same with streaming and the full pipeline), "
                     f"{f_['e2e_ms']['p50'] / 1000:.1f}~s (llama.cpp, 16-bit) and {q_['e2e_ms']['p50'] / 1000:.1f}~s "
                     f"(llama.cpp, 4-bit), and the first words appeared after {b_['ttft_ms']['p50'] / 1000:.1f}, "
                     f"{h_['ttft_ms']['p50'] / 1000:.1f}, {f_['ttft_ms']['p50'] / 1000:.1f} and "
@@ -230,17 +254,24 @@ def main():
             names_c = {"v1_hf_fp32_cpu": "transformers fp32, no streaming (baseline)",
                        "v2_hf_fp32_cpu": "transformers fp32, streaming", "v2_llamacpp_f16_cpu": "llama.cpp F16, streaming",
                        "v2_llamacpp_cpu": "llama.cpp Q4\\_K\\_M, streaming"}
-            env_c = next((v.get("environment") for v in lc.values() if isinstance(v, dict) and v.get("environment")), {})
-            write_table("latency_cpu", ["Configuration", "n", "TTFT p50 (s)", "E2E p50 (s)", "tok/s"],
+            sess_of = {k: i + 1 for i, ks in enumerate(sessions) for k in ks}
+            from eval.tables import esc as _esc
+            cap = ("Qwen2.5-1.5B-Instruct on Kaggle CPUs" + (f" ({_esc(next(iter(cpus)))})" if cpu_known else "")
+                   + ": precision, runtime and streaming varied one at a time. The baseline uses naive retrieval and "
+                   "its own question set (n); the other rows run the full pipeline.")
+            if len(sessions) > 1:
+                cap += (" Session: the Kaggle session each row was measured in; sessions had the same software versions "
+                        "and memory" if len(envs) == 1 else " Session: the Kaggle session each row was measured in")
+                cap += ("." if cpu_known else ", but the CPU model was not recorded, so rows from different sessions "
+                        "may come from different processors.")
+            write_table("latency_cpu", ["Configuration", "n", "TTFT p50 (s)", "E2E p50 (s)", "tok/s"]
+                        + (["Session"] if len(sessions) > 1 else []),
                         [[names_c[k], str(v["n"]), f"{v['ttft_ms']['p50'] / 1000:.2f}", f"{v['e2e_ms']['p50'] / 1000:.1f}",
-                          f"{v['tokens_per_s']['p50']:.1f}"] for k, v in k_.items()],
-                        "Qwen2.5-1.5B-Instruct on one Kaggle CPU" + (f" ({env_c.get('cpu', '')})" if env_c else "")
-                        + ": precision, runtime and streaming varied one at a time. The baseline uses naive retrieval "
-                        "and its own question set (n); the other rows run the full pipeline.",
-                        "tab:latency-cpu", align="lrrrr", source="results/latency_cpu.json")
-        txt += (" (Table~\\ref{tab:latency}). These laptop figures are not comparable with the TTFT column of the "
-                "generation tables, which was measured on the Kaggle GPU (llama.cpp offloaded to the GPU for the GGUF "
-                "model).")
+                          f"{v['tokens_per_s']['p50']:.1f}"] + ([str(sess_of.get(k, "--"))] if len(sessions) > 1 else [])
+                         for k, v in k_.items()],
+                        cap, "tab:latency-cpu", align="lrrrr" + ("r" if len(sessions) > 1 else ""),
+                        source="results/latency_cpu.json")
+        txt += "."
         m.text("LatencySummary", txt, c_lat)
     else:
         m.text("LatencySummary", None, c_lat)
@@ -685,6 +716,34 @@ def main():
         m.text("NegationSummary", None, c_ng)
     sb = load("safety_baselines.json")
     c_sb = "notebooks/kaggle\\_experiments.ipynb step safety\\_baselines"
+
+    def paired_sb(sb, names) -> str:
+        """Significant per-prompt differences from the gate (exact McNemar, Holm-corrected; eval_safety_baselines)."""
+        pv = sb.get("paired_vs_gate") or {}
+        if not pv:
+            return ""
+        what = {"heldout_crisis": "held-out crisis prompts", "heldout_harmful": "held-out harmful requests",
+                "heldout_fp": "held-out venting or informational prompts", "faq_gen": "FAQ-Gen questions"}
+
+        def fp_(x):
+            return "$p<0.001$" if x < 0.001 else f"$p={x:.3f}$"
+        sig, n_tests = [], sum(len(r) for r in pv.values())
+        for m_, res in pv.items():
+            for k_, c in res.items():
+                if c["p_mcnemar_holm"] >= 0.05:
+                    continue
+                more = "more" if c["method"] > c["gate"] else "fewer"
+                verb = f"separated {more} negation pairs" if k_ == "negation_separated" else f"escalated {more} {what[k_]}"
+                sig.append(f"{names.get(m_, m_)} {verb} ({c['method']} vs {c['gate']} of {c['n']}, {fp_(c['p_mcnemar_holm'])})")
+        txt = (f" Compared with the gate prompt by prompt (exact McNemar, Holm-corrected over {n_tests} contrasts), "
+               + ("; ".join(sig) if sig else "no difference was significant") + ".")
+        z = pv.get("zeroshot", {})
+        ns = [f"{what[k_]} ({z[k_]['method']} vs {z[k_]['gate']})" for k_ in ("heldout_crisis", "faq_gen")
+              if k_ in z and z[k_]["p_mcnemar_holm"] >= 0.05]
+        if ns:
+            txt += (" The zero-shot classifier's differences on " + " and ".join(ns) + " were not significant; it "
+                    "sends every message to an external API, which the deployed system avoids.")
+        return txt
     sbm = {k: v for k, v in (sb or {}).get("methods", {}).items() if "error" not in v and k != "gate"}
     if sb and sbm:
         g_ = sb["methods"]["gate"]
@@ -699,7 +758,7 @@ def main():
                f"{g_['heldout']['crisis_k']} of {g_['heldout']['crisis_n']}, {g_['heldout']['fp']} of "
                f"{g_['heldout']['neg_n']} and {g_['faq_gen']['escalated']} of {g_['faq_gen']['n']}; "
                + "; ".join(parts_sb) + "."
-               + (f" {', '.join(miss)} could not be run (no access)." if miss else ""), c_sb)
+               + (f" {', '.join(miss)} could not be run (no access)." if miss else "") + paired_sb(sb, names_sb), c_sb)
     else:
         m.text("SafetyBaselinesSummary", None, c_sb)
 

@@ -3,6 +3,7 @@
     python -m scripts.eval_safety_baselines                      # all available methods (GPU for the guard models)
     python -m scripts.eval_safety_baselines --methods zeroshot   # only the LLM classifier (needs GROQ_API_KEY)
     python -m scripts.eval_safety_baselines --tables-only
+    python -m scripts.eval_safety_baselines --paired         # gate vs each classifier per prompt, from the cache
 
 Methods (each skipped, and reported as unavailable, if it cannot run):
 - llama_guard: meta-llama/Llama-Guard-3-1B (gated; needs HF_TOKEN and accepted licence). A prompt is escalated when the
@@ -173,6 +174,57 @@ def gate_reference(sets) -> dict:
                      sets)
 
 
+def paired_vs_gate(sets: dict, cache: Cache, methods) -> dict:
+    """The gate against each classifier on the same prompts: exact McNemar test (two-sided binomial test on the
+    prompts where exactly one of the two escalated, or for negation the pairs exactly one of them separated),
+    Holm-corrected over every contrast. Needs only the cached verdicts and the gate (no GPU, no API)."""
+    from scipy.stats import binomtest
+
+    from eval.metrics import holm
+    from mhrag.runtime import build_gate
+
+    gate = build_gate(get_settings())
+    g = {k: [gate.assess(r["text"]).label in ESCALATE for r in rows] for k, rows in sets.items()}
+    measures = {  # name -> (set, row filter); for each, escalating more is better except where noted
+        "heldout_crisis": ("heldout", lambda r: r["expected"] == "crisis"),
+        "heldout_harmful": ("heldout", lambda r: r["expected"] == "harmful_request"),
+        "heldout_fp": ("heldout", lambda r: r["expected"] in ("support", "answer")),
+        "faq_gen": ("faq_gen", lambda r: True),
+    }
+    out, raw = {}, {}
+    for m in methods:
+        verdicts = {k: [cache.get(m, r["text"]) for r in rows] for k, rows in sets.items()}
+        if any(v is None for vs in verdicts.values() for v in vs):
+            continue  # not run on every prompt
+        res = {}
+        for name, (set_, keep) in measures.items():
+            idx = [i for i, r in enumerate(sets[set_]) if keep(r) and verdicts[set_][i]["escalate"] is not None]
+            only_gate = sum(g[set_][i] and not verdicts[set_][i]["escalate"] for i in idx)
+            only_m = sum(verdicts[set_][i]["escalate"] and not g[set_][i] for i in idx)
+            res[name] = {"n": len(idx), "gate": sum(g[set_][i] for i in idx),
+                         "method": sum(bool(verdicts[set_][i]["escalate"]) for i in idx),
+                         "only_gate": only_gate, "only_method": only_m}
+        sep: dict = {}
+        for i, r in enumerate(sets["negation"]):
+            sep.setdefault(r["pair"], {})[r["polarity"]] = (g["negation"][i], verdicts["negation"][i]["escalate"])
+        def separated(p, j):
+            return bool(p.get("risk", (0, 0))[j]) and p.get("no_risk", (1, 1))[j] is False
+        sg = [separated(p, 0) for p in sep.values()]
+        sm = [separated(p, 1) for p in sep.values()]
+        res["negation_separated"] = {"n": len(sep), "gate": sum(sg), "method": sum(sm),
+                                     "only_gate": sum(a and not b for a, b in zip(sg, sm, strict=True)),
+                                     "only_method": sum(b and not a for a, b in zip(sg, sm, strict=True))}
+        for name, c in res.items():
+            k = c["only_gate"] + c["only_method"]
+            c["p_mcnemar"] = binomtest(c["only_method"], k, 0.5).pvalue if k else 1.0
+            raw[f"{m}|{name}"] = c["p_mcnemar"]
+        out[m] = res
+    for key, ph in holm(raw).items():
+        m, name = key.split("|")
+        out[m][name]["p_mcnemar_holm"] = ph
+    return out
+
+
 def write_tables(out: dict) -> None:
     names = {"gate": "Deployed gate (lexicon + TF-IDF+LR)", "llama_guard": "Llama Guard 3 (1B)",
              "shieldgemma": "ShieldGemma (2B), self-harm policy", "zeroshot": "Zero-shot LLM (gpt-oss-120b)"}
@@ -200,10 +252,17 @@ def main(argv=None) -> int:
     ap.add_argument("--methods", nargs="+", default=["llama_guard", "shieldgemma", "zeroshot"])
     ap.add_argument("--judge", default="gpt-oss-120b-groq")
     ap.add_argument("--tables-only", action="store_true")
+    ap.add_argument("--paired", action="store_true", help="only the paired comparison with the gate (cached verdicts)")
     args = ap.parse_args(argv)
     path = R / "safety_baselines.json"
     if args.tables_only:
         write_tables(json.loads(path.read_text()))
+        return 0
+    if args.paired:
+        out = json.loads(path.read_text())
+        out["paired_vs_gate"] = paired_vs_gate(load_sets(), Cache(), [m for m in out["methods"] if m != "gate"])
+        path.write_text(json.dumps(out, indent=2))
+        print(json.dumps(out["paired_vs_gate"], indent=1))
         return 0
     sets = load_sets()
     out = json.loads(path.read_text()) if path.exists() else {"methods": {}}
@@ -233,6 +292,7 @@ def main(argv=None) -> int:
             continue
         out["methods"][m] = summarise(verdicts, sets)
         print(m, json.dumps(out["methods"][m]))
+    out["paired_vs_gate"] = paired_vs_gate(sets, cache, [m for m in out["methods"] if m != "gate"])
     path.write_text(json.dumps(out, indent=2))
     write_tables(out)
     return rc
