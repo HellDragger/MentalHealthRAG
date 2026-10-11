@@ -1072,7 +1072,7 @@ def main():
     else:
         m.text("AbstentionCheckSummary", None, c_ac)
 
-    # ---------------------------------------------------------------- abstract: four findings, one sentence each
+    # ---------------------------------------------------------------- abstract: four findings, few figures
     parts = []
     mt = load("generation_matched.json")
     if ab:
@@ -1080,36 +1080,35 @@ def main():
 
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
-        txt = (f"(1) Higher NLI faithfulness came mainly from more retrieved text: at equal length, better retrieval "
-               f"added nothing for the deployed model ({f3(fab('abl_full_full_matched'))} vs "
-               f"{f3(fab('abl_naive_full'))})")
+        txt = "(1) Higher NLI faithfulness came mainly from more retrieved text: better retrieval added nothing at equal length for the deployed model"
         if mt:
             sig_m = mt.get("significance", {})
             eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
-
-            def n_up(k):  # significant gains (Holm-corrected); a p-value of 0.0 is significant
-                out_ = 0
-                for m_ in ms:
-                    d_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", k)
-                    p_ = get(sig_m, f"{m_}|faq_gen|faithfulness", "p_bootstrap_holm", k)
-                    out_ += d_ is not None and p_ is not None and d_ > 0 and p_ < 0.05
-                return out_
             ms = [m_ for m_ in mt["config"]["models"]
                   if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", eq_k) is not None]
+            larger = sum(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][ln_k]
+                         > sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][eq_k] for m_ in ms)
+            txt += f", and across {len(ms)} models the length gain was the larger for {larger}"
+        txt += "."
+        cp_all = (load("citation_precision.json") or {}).get("sets", {})
+        loc_p = next((v["citation_precision"] for k, v in cp_all.items() if k.startswith("local:")), None)
+        gpu_p = sorted(v["citation_precision"] for k, v in cp_all.items()
+                       if k.startswith("gpu:") and v["citation_precision"] is not None)
+        if loc_p is not None and gpu_p:
             import statistics as _st
-
-            def med(k):
-                return _st.median(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][k] for m_ in ms)
-            txt += (f"; across {len(ms)} models, full length raised it significantly for {n_up(ln_k)}, better "
-                    f"retrieval and prompt at equal length for {n_up(eq_k)} (median gains {med(ln_k):+.2f} vs "
-                    f"{med(eq_k):+.2f})")
-        parts.append(txt + ".")
+            ck_ = load("citation_check.json")
+            cor_ = [r_["corrected_citation_precision"] for r_ in (ck_ or {}).get("raters", {}).values()
+                    if r_.get("corrected_citation_precision") is not None]
+            txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
+                    f"{100 * loc_p:.0f}\\% of the deployed model's citations (median {100 * _st.median(gpu_p):.0f}\\% "
+                    "across models" + (f"; {100 * min(cor_):.0f}--{100 * max(cor_):.0f}\\% after a hand check"
+                                       if len(cor_) > 1 else f"; {100 * cor_[0]:.0f}\\% after a hand check"
+                                       if cor_ else "") + ").")
+        parts.append(txt)
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
     if ac_loc and ac_abl and "naive" in ac_loc and "abl_naive_full" in ac_abl:
-        parts.append(f"(2) Declining out-of-scope questions came from the system prompt, not retrieval (judge-rated "
-                     f"{ac_loc['naive']['judge_rate']:.2f} $\\rightarrow$ {ac_abl['abl_naive_full']['judge_rate']:.2f} "
-                     f"with the grounded prompt; {ac_abl['abl_full_naive']['judge_rate']:.2f} with better retrieval alone).")
+        parts.append("(2) Declining out-of-scope questions came from the system prompt, not retrieval.")
     gd, gh = (get(load(f"safety_gate_v2_{t}.json"), "variants", dep) for t in ("devset", "heldout"))
     neg = get(load("negation_test.json"), "variants", dep)
     if gd and gh:
@@ -1117,19 +1116,23 @@ def main():
             pc = v["per_category"]
             n = pc["explicit_crisis"]["n"] + pc["implicit_crisis"]["n"]
             return f"{round(v['crisis_recall_any_escalation'] * n)} of {n}"
-        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but "
-               f"{kn(gh)} on the held-out set")
+        hr = gh["per_category"].get("harmful_request")
+        txt = (f"(3) The risk gate escalated {kn(gd)} crisis prompts on the development set but {kn(gh)} on a frozen "
+               "held-out set" + (f", caught {round(hr['escalated'] * hr['n'])} of {hr['n']} held-out requests for "
+                                 "suicide methods" if hr else ""))
+        extra = []
         if neg:
-            txt += f", escalated {neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements (``I don't want to die'')"
+            extra.append(f"{neg['no_risk_to_crisis']} of {neg['no_risk_n']} negated statements")
         if ge and "faq_gen" in ge["datasets"]:
             fq = ge["datasets"]["faq_gen"]
-            txt += f" and sent {fq['labels'].get('crisis', 0)} of {fq['n']} ordinary FAQ questions to the crisis protocol"
+            extra.append(f"{fq['labels'].get('crisis', 0)} of {fq['n']} ordinary questions")
+        if extra:
+            txt += ", and escalated " + " and ".join(extra)
         parts.append(txt + ".")
     if tf:
         hf, hn = (get(tf, "metrics", "judge_helpfulness", "settings", p_, "mean") for p_ in ("full", "no_rag"))
-        if None not in (hf, hn):
-            parts.append(f"(4) An LLM judge rated grounded answers less helpful than ungrounded ones "
-                         f"({hf:.2f} vs {hn:.2f}, 1--5).")
+        if None not in (hf, hn) and hf < hn:
+            parts.append("(4) An LLM judge rated grounded answers less helpful than ungrounded ones.")
     m.text("AbstractResults", " ".join(p for p in parts if p), "run all experiments (scripts/run_all_local.sh)")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)  # paper/ is not in the repository (kept private)
