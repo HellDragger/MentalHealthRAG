@@ -624,15 +624,20 @@ def main():
         qga = get(ra, "experiments", "local", gl_first, "abstention_wording")
         ge4 = get(ra, "experiments", "gpu", "gemma-3-4b-it-fp32", "abstention_wording")
         if q and qg and qa and qga:
+            faiths = sorted((get(gpu_aw, k, "diagnostics", "full", "faq_faithfulness") or 0 for k in chat), reverse=True)
+            rank = faiths.index(q["full"]["faq_faithfulness"]) + 1 if q["full"]["faq_faithfulness"] in faiths else None
+            where = ("the highest faithfulness" if rank == 1 else
+                     f"the {rank}{'nd' if rank == 2 else 'rd' if rank == 3 else 'th'}-highest faithfulness of {len(chat)}"
+                     if rank else "a faithfulness")
             txt = (f"Two results stand out. Qwen2.5-1.5B served through transformers with 4-bit NF4 weights, as in the whole "
-                   f"benchmark, had the highest faithfulness ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
+                   f"benchmark, had {where} ({f3(q['full']['faq_faithfulness'])}) but cited a source in only "
                    f"{q['full']['faq_citation_rate']:.2f} of its FAQ-Gen answers and declined {qa['full']['abstained']} of "
                    f"{qa['full']['generated']} out-of-scope questions with the full pipeline, no more than without "
                    f"retrieval ({qa['no_rag']['abstained']} of {qa['no_rag']['generated']}); it often answered off-topic "
                    "questions from its own knowledge, sometimes attaching a citation to an unrelated passage. The same "
                    f"weights in llama.cpp with a different 4-bit scheme (Q4\\_K\\_M) declined {qga['full']['abstained']} of "
                    f"{qga['full']['generated']} under the same prompt and decoding parameters; the runtime comparison "
-                   "below separates the quantisation scheme from the runtime.")
+                   "below shows where the difference comes from.")
             if ge4:
                 txt += (f" Gemma-3-4B declined {ge4['full']['abstained']} of {ge4['full']['generated']} out-of-scope "
                         f"questions with the full pipeline against {ge4['naive']['abstained']} with naive RAG; an apparent "
@@ -716,8 +721,12 @@ def main():
                 txt += f"; it was {loc_cp['citation_precision']:.2f} for the deployed model"
             if "abl_full_full" in abl_cp and "abl_full_full_matched" in abl_cp and \
                     None not in (abl_cp["abl_full_full"]["citation_precision"], abl_cp["abl_full_full_matched"]["citation_precision"]):
-                txt += (f", and {abl_cp['abl_full_full']['citation_precision']:.2f} at full context length against "
-                        f"{abl_cp['abl_full_full_matched']['citation_precision']:.2f} at naive length in the ablation")
+                af, am = abl_cp["abl_full_full"], abl_cp["abl_full_full_matched"]
+                txt += (f", and {af['citation_precision']:.2f} at full context length against "
+                        f"{am['citation_precision']:.2f} at naive length in the ablation")
+                if am["invalid"] > af["invalid"]:  # the precision denominator leaves these out
+                    txt += (f", although at naive length {am['invalid']} citations (against {af['invalid']}) named a "
+                            "source that was not in the prompt and are not counted")
             m.text("CitationPrecisionSummary", txt + ".", c_cp)
         else:
             m.text("CitationPrecisionSummary", None, c_cp)
@@ -746,6 +755,33 @@ def main():
         m.text("MatchedSummary", None, c_mt)
     rt = load("generation_runtime.json")
     c_rt = "notebooks/kaggle\\_experiments.ipynb step generation\\_runtime"
+
+    def runtime_tests() -> str:
+        """Paired runtime contrasts from generation_reanalysis.json (exact McNemar, Holm-corrected)."""
+        t = get(load("generation_reanalysis.json"), "runtime_oos_abstention") or {}
+        q4, rtm, nf4 = (t.get(k) for k in ("qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-gguf",
+                                            "qwen2.5-1.5b-gguf-f16>qwen2.5-1.5b-instruct-f16",
+                                            "qwen2.5-1.5b-instruct-f16>qwen2.5-1.5b-instruct"))
+        if not (q4 and rtm and nf4):
+            return ""
+
+        def pv(c):
+            p_ = c["p_mcnemar_holm"]
+            return "$p<0.001$" if p_ < 0.001 else f"$p={p_:.3f}$"
+
+        def sig(c):
+            return c["p_mcnemar_holm"] < 0.05
+        if sig(q4) or not (sig(rtm) and sig(nf4)) or rtm["only_a"] <= rtm["only_b"] or nf4["only_a"] <= nf4["only_b"]:
+            return (" Paired by question (exact McNemar, Holm-corrected): Q4\\_K\\_M vs 16 bits in llama.cpp "
+                    f"{pv(q4)}, llama.cpp vs transformers at 16 bits {pv(rtm)}, 16 bits vs NF4 in transformers {pv(nf4)}.")
+        return (" Paired by question (exact McNemar, Holm-corrected), 4-bit Q4\\_K\\_M quantisation did not "
+                f"significantly change abstention in llama.cpp ({q4['only_b']} questions declined only at 4 bits, "
+                f"{q4['only_a']} only at 16 bits; {pv(q4)}), whereas both the runtime and NF4 quantisation lowered it: at "
+                f"16 bits, {rtm['only_a']} questions were declined only in llama.cpp and {rtm['only_b']} only in "
+                f"transformers ({pv(rtm)}), and within transformers {nf4['only_a']} only at 16 bits and "
+                f"{nf4['only_b']} only with NF4 ({pv(nf4)}). The benchmark's abstention rates, all measured with "
+                "transformers and NF4, may therefore understate what the same models do in other runtimes; this was "
+                "measured for one model only.")
     if rt:
         rr = {r["model"]: r for r in rt["summary"] if r["dataset"] == "oos_questions"}
 
@@ -757,7 +793,7 @@ def main():
                f"declined {kdec('qwen2.5-1.5b-gguf')} out-of-scope questions with llama.cpp at 4 bits (Q4\\_K\\_M), "
                f"{kdec('qwen2.5-1.5b-gguf-f16')} with llama.cpp at 16 bits, {kdec('qwen2.5-1.5b-instruct-f16')} with "
                f"transformers at 16 bits and {kdec('qwen2.5-1.5b-instruct')} with transformers at 4 bits (NF4), the "
-               "setting used for every model in the multi-model benchmark.", c_rt)
+               "setting used for every model in the multi-model benchmark." + runtime_tests(), c_rt)
     else:
         m.text("RuntimeSummary", None, c_rt)
 
