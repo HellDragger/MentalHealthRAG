@@ -74,13 +74,25 @@ def merge_latency(src: Path, dst: Path, dry: bool) -> list[str]:
     return [f"latency.json: {k}" for k in changed]
 
 
+def _json_subset(new: Path, cur: Path) -> bool:
+    """The incoming JSON object equals ours without some keys (e.g. a note such as abstention_rescored that a script
+    added locally): ours is kept, so importing never drops information."""
+    if new.suffix != ".json":
+        return False
+    try:
+        a, b = json.loads(new.read_text()), json.loads(cur.read_text())
+    except (OSError, ValueError):
+        return False
+    return isinstance(a, dict) and isinstance(b, dict) and set(a) < set(b) and all(a[k] == b[k] for k in a)
+
+
 def copy_path(src: Path, dst: Path, dry: bool) -> list[str]:
     """Copy a file or folder; returns the files that are new or different."""
     files = [src] if src.is_file() else [p for p in src.rglob("*") if p.is_file() and p.name != ".DS_Store"]
     changed = []
     for f in files:
         target = dst if src.is_file() else dst / f.relative_to(src)
-        if target.exists() and filecmp.cmp(f, target, shallow=False):
+        if target.exists() and (filecmp.cmp(f, target, shallow=False) or _json_subset(f, target)):
             continue
         changed.append(str(target.relative_to(RESULTS)))
         if not dry:
