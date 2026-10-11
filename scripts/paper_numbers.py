@@ -246,7 +246,7 @@ def main():
             caveat = "" if len(sessions) <= 1 or cpu_known else (
                 f"; the CPU model was not recorded, so the {nw} sessions may have run on different processors")
             txt += (f". To separate the effects, all four configurations were also run on Kaggle CPUs {where} "
-                    f"(Supplementary Table~\\ref{{tab:latency-cpu}}){caveat}. Median end-to-end times were "
+                    f"(Table~\\ref{{tab:latency-cpu}}){caveat}. Median end-to-end times were "
                     f"{b_['e2e_ms']['p50'] / 1000:.1f}~s (transformers fp32, no streaming), "
                     f"{h_['e2e_ms']['p50'] / 1000:.1f}~s (the same with streaming and the full pipeline), "
                     f"{f_['e2e_ms']['p50'] / 1000:.1f}~s (llama.cpp, 16-bit) and {q_['e2e_ms']['p50'] / 1000:.1f}~s "
@@ -299,7 +299,7 @@ def main():
                 s += f", BM25 {f3(bm['summary']['nDCG@10']['mean'])})" if bm else ")"
             parts.append(s)
         m.text("RetrievalSummary", "Table~\\ref{tab:retrieval-summary} summarises retrieval; the full tables for every "
-               "configuration are in Supplementary Section~\\ref{app:retrieval}. The best configuration and its nDCG@10 on each set "
+               "configuration are in \\ref{app:retrieval}. The best configuration and its nDCG@10 on each set "
                "were " + "; ".join(parts) + ".", c_rm)
     else:
         m.text("RetrievalSummary", None, c_rm)
@@ -1087,15 +1087,7 @@ def main():
         def fab(arm):
             return get(rows_ab.get((arm, "faq_gen")), "faithfulness", "mean")
         txt = "(1) Higher NLI faithfulness came mainly from more retrieved text: better retrieval added nothing at equal length for the deployed model"
-        if mt:
-            sig_m = mt.get("significance", {})
-            eq_k, ln_k = "abl_full_full_matched>abl_naive_naive", "abl_full_full>abl_full_full_matched"
-            ms = [m_ for m_ in mt["config"]["models"]
-                  if get(sig_m, f"{m_}|faq_gen|faithfulness", "delta", eq_k) is not None]
-            larger = sum(sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][ln_k]
-                         > sig_m[f"{m_}|faq_gen|faithfulness"]["delta"][eq_k] for m_ in ms)
-            txt += f", and across {len(ms)} models the length gain was the larger for {larger}"
-        txt += "."
+        txt += "."  # the 13-model length-matched result is in the main text (MatchedSummary)
         cp_all = (load("citation_precision.json") or {}).get("sets", {})
         loc_p = next((v["citation_precision"] for k, v in cp_all.items() if k.startswith("local:")), None)
         gpu_p = sorted(v["citation_precision"] for k, v in cp_all.items()
