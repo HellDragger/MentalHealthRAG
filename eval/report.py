@@ -119,7 +119,7 @@ def retrieval_summary(res: dict, datasets: list[str], c: int) -> None:
                 "embedder is in brackets (BGE-s/-b = BGE-small/base). Rows: the baseline, BM25, the MiniLM pipelines, "
                 "the deployed configuration and the best configuration on each set (bold). $^{\\dagger}$ baseline; "
                 "$^{*}$ significantly different from it (paired bootstrap, Holm-corrected $p<0.05$). All "
-                "configurations: \\ref{app:retrieval}.",
+                "configurations: Supplementary Section~\\ref{app:retrieval}.",
                 label="tab:retrieval-summary", align="l" + "r" * len(datasets), source=f"results/retrieval_{res['name']}.json")
 
 
