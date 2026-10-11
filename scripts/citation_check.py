@@ -86,6 +86,16 @@ def make() -> None:
           "before rating)")
 
 
+def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    if not n:
+        return (0.0, 1.0)
+    ph = k / n
+    d = 1 + z * z / n
+    c = (ph + z * z / (2 * n)) / d
+    h = z * (ph * (1 - ph) / n + z * z / (4 * n * n)) ** 0.5 / d
+    return (max(0.0, c - h), min(1.0, c + h))
+
+
 def cohen(a: list[int], b: list[int]) -> float | None:
     n = len(a)
     if not n:
@@ -117,8 +127,9 @@ def score() -> int:
         return 1
     cp = json.loads((R / "citation_precision.json").read_text())["sets"]
     keys = {k["set"] for k in key.values()}
-    tot = sum(v["pairs"] for k, v in cp.items() if k in keys)
-    ent = sum(v["pairs_entailed"] for k, v in cp.items() if k in keys)
+    sel = [v for k, v in cp.items() if k.endswith(":full") and k.rsplit(":", 1)[0] in keys]  # exp:model:profile
+    tot = sum(v["pairs"] for v in sel)
+    ent = sum(v["pairs_entailed"] for v in sel)
     res = {"definition": __doc__.split("\n\n", 2)[1].strip(), "pairs": len(key),
            "population": {"pairs": tot, "nli_supported": ent}, "raters": {}}
     for rater, lab in ratings.items():
@@ -128,13 +139,24 @@ def score() -> int:
             c = Counter(lab[i] for i in ids)
             strata[name] = {"n": len(ids), **{x: c.get(x, 0) for x in LABELS},
                             "human_supported_share": c.get("supported", 0) / len(ids) if ids else None}
+        def corrected_for(share1, share0):
+            return (ent * share1 + (tot - ent) * share0) / tot if tot else None
+        w1, w0 = (wilson(strata[n_]["supported"], strata[n_]["n"]) for n_ in ("nli_supported", "nli_unsupported"))
+        for n_, w_ in (("nli_supported", w1), ("nli_unsupported", w0)):
+            strata[n_]["human_supported_ci"] = list(w_)
+        # "partly" counted as supported: an upper reading of the same labels
+        p1, p0 = ((strata[n_]["supported"] + strata[n_]["partly"]) / strata[n_]["n"]
+                  for n_ in ("nli_supported", "nli_unsupported"))
         nli = [int(key[i]["nli_supported"]) for i in key]
         hum = [int(lab[i] == "supported") for i in key]
         s1, s0 = strata["nli_supported"]["human_supported_share"], strata["nli_unsupported"]["human_supported_share"]
         corrected = (ent * s1 + (tot - ent) * s0) / tot if tot and None not in (s1, s0) else None
         res["raters"][rater] = {"strata": strata, "agreement": sum(a == b for a, b in zip(nli, hum, strict=True)) / len(nli),
                                 "cohen_kappa": cohen(nli, hum), "nli_citation_precision": ent / tot if tot else None,
-                                "corrected_citation_precision": corrected}
+                                "corrected_citation_precision": corrected,
+                                # bounds from the two strata's Wilson intervals (conservative: both at their limits)
+                                "corrected_ci": [corrected_for(w1[0], w0[0]), corrected_for(w1[1], w0[1])],
+                                "corrected_partly_as_supported": corrected_for(p1, p0)}
     if len(ratings) > 1:
         names = sorted(ratings)
         a, b = ([int(ratings[n][i] == "supported") for i in key] for n in names[:2])

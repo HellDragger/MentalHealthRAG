@@ -835,18 +835,24 @@ def main():
             ck = load("citation_check.json")
             if ck and ck.get("raters"):
                 rs_ = list(ck["raters"].values())
-                ns_ = rs_[0]["strata"]["nli_unsupported"]
-                ss_ = rs_[0]["strata"]["nli_supported"]
-                cor = [r_["corrected_citation_precision"] for r_ in rs_]
-                txt_ck = (f"To check that the NLI model is not simply too strict, {len(rs_)} "
-                          f"rater{'s' if len(rs_) > 1 else ''} labelled {ck['pairs']} (sentence, cited passage) pairs, "
-                          f"blind to the NLI verdict: of {ns_['n']} pairs NLI judged unsupported, {ns_['supported']} "
-                          f"were judged supported ({ns_['partly']} partly), and of {ss_['n']} it judged supported, "
-                          f"{ss_['supported']} were. Re-weighted to the full set of pairs, citation precision would be "
-                          + " and ".join(f"{c_:.2f}" for c_ in cor if c_ is not None)
-                          + f" instead of {rs_[0]['nli_citation_precision']:.2f}"
-                          + (f" (agreement between raters $\\kappa={ck['inter_rater_kappa']:.2f}$)"
-                             if ck.get("inter_rater_kappa") is not None else "") + ".")
+                r0 = rs_[0]
+                ns_, ss_ = r0["strata"]["nli_unsupported"], r0["strata"]["nli_supported"]
+                lo_, hi_ = r0["corrected_ci"]
+                txt_ck = (f"To check whether the NLI model is too strict, I labelled {ck['pairs']} (sentence, cited "
+                          "passage) pairs by hand, sampled from the deployed and benchmark models and blind to the NLI "
+                          f"verdict ({ss_['n']} that NLI counted as entailed, {ns_['n']} that it did not). Of the "
+                          f"{ns_['n']} that NLI rejected, I judged {ns_['supported']} supported and {ns_['partly']} partly "
+                          f"supported; of the {ss_['n']} it accepted, {ss_['supported']} supported (agreement with NLI "
+                          f"{r0['agreement']:.2f}, $\\kappa={r0['cohen_kappa']:.2f}$). Weighting each group by its share of "
+                          f"all {ck['population']['pairs']} citation pairs, the estimated citation precision is "
+                          f"{r0['corrected_citation_precision']:.2f} (95\\% CI {lo_:.2f}--{hi_:.2f}) rather than "
+                          f"{r0['nli_citation_precision']:.2f}, and {r0['corrected_partly_as_supported']:.2f} if partial "
+                          "support counts. The NLI model therefore understates how often citations are supported, so its "
+                          "absolute values should not be read as citation rates. The same model scores NLI faithfulness, "
+                          "whose absolute values are probably understated in the same way; the comparisons between "
+                          "settings assume that its errors are similar across them, which this check does not test."
+                          + (f" Agreement between raters: $\\kappa={ck['inter_rater_kappa']:.2f}$."
+                             if ck.get("inter_rater_kappa") is not None else ""))
                 m.text("CitationCheckSummary", txt_ck, "python -m scripts.citation\\_check")
             else:
                 m.lines.append("\\newcommand{\\CitationCheckSummary}{\\todohuman{label the 30 pairs in "
@@ -1099,11 +1105,17 @@ def main():
             ck_ = load("citation_check.json")
             cor_ = [r_["corrected_citation_precision"] for r_ in (ck_ or {}).get("raters", {}).values()
                     if r_.get("corrected_citation_precision") is not None]
-            txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
-                    f"{100 * loc_p:.0f}\\% of the deployed model's citations (median {100 * _st.median(gpu_p):.0f}\\% "
-                    "across models" + (f"; {100 * min(cor_):.0f}--{100 * max(cor_):.0f}\\% after a hand check"
-                                       if len(cor_) > 1 else f"; {100 * cor_[0]:.0f}\\% after a hand check"
-                                       if cor_ else "") + ").")
+            if cor_:
+                ck0 = next(iter(ck_["raters"].values()))
+                txt += (f" An NLI check found the cited passage supported the citing sentence in {100 * loc_p:.0f}\\% "
+                        f"of the deployed model's citations (median {100 * _st.median(gpu_p):.0f}\\% across models), "
+                        f"but a blinded hand check showed the NLI model was too strict (estimated "
+                        f"{100 * cor_[0]:.0f}\\%, 95\\% CI {100 * ck0['corrected_ci'][0]:.0f}--"
+                        f"{100 * ck0['corrected_ci'][1]:.0f}\\%).")
+            else:
+                txt += (f" Citations were weak evidence: the cited passage entailed the citing sentence in "
+                        f"{100 * loc_p:.0f}\\% of the deployed model's citations (median "
+                        f"{100 * _st.median(gpu_p):.0f}\\% across models).")
         parts.append(txt)
     ac_loc = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("local:")), None)
     ac_abl = next((v for k, v in (load("abstention_check.json") or {}).get("sets", {}).items() if k.startswith("ablation:")), None)
