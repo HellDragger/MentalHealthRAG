@@ -914,44 +914,39 @@ def main():
 
         cat2 = _lc2()
         g_rows = {(r["model"], r["profile"], r["dataset"]): r for r in gg["summary"]}
-        m_rows = {(r["model"], r["profile"]): r for r in (mt or {}).get("summary", []) if r["dataset"] == "faq_gen"}
-        m_sig = (mt or {}).get("significance", {})
         cp_sets = {k.split(":")[1]: v for k, v in (cp or {}).get("sets", {}).items() if k.startswith("gpu:")}
         gcfg2 = gg.get("config", {}).get("models", [])
         brows = []
-        for x in gcfg2:
+        for x in gcfg2:  # every column from the multi-model benchmark run (the length-matched run is its own table)
             if _mg2(x, cat2) == "base" or (x, "full", "faq_gen") not in g_rows:
                 continue
 
             def mean_(r, k, nd=3):
                 v = get(r, k, "mean")
                 return "--" if v is None else f"{v:.{nd}f}"
-            mn, mm_, mf = (m_rows.get((x, a_)) for a_ in ("abl_naive_naive", "abl_full_full_matched", "abl_full_full"))
-            pv = get(m_sig, f"{x}|faq_gen|faithfulness", "p_bootstrap_holm", "abl_full_full_matched>abl_naive_naive")
-            star = "$^{*}$" if pv is not None and pv < 0.05 else ""
             cpv = get(cp_sets.get(x), "citation_precision")
             size = cat2[x].raw.get("params_b") if x in cat2 else None
             brows.append([x.replace("_", "\\_"), f"{size:g}" if size else "--",
-                          mean_(mn, "faithfulness") if mn else mean_(g_rows.get((x, "naive", "faq_gen")), "faithfulness"),
-                          (mean_(mm_, "faithfulness") + star) if mm_ else "--",
-                          mean_(mf, "faithfulness") if mf else mean_(g_rows.get((x, "full", "faq_gen")), "faithfulness"),
+                          mean_(g_rows.get((x, "naive", "faq_gen")), "faithfulness"),
+                          mean_(g_rows.get((x, "full", "faq_gen")), "faithfulness"),
                           mean_(g_rows.get((x, "full", "faq_gen")), "has_citation", 2),
                           "--" if cpv is None else f"{cpv:.2f}",
                           mean_(g_rows.get((x, "naive", "oos_questions")), "abstained", 2),
                           mean_(g_rows.get((x, "full", "oos_questions")), "abstained", 2)])
         if brows:
-            write_table("benchmark_summary", ["Model", "Size (B)", "Faithful. naive", "Faithful. full, naive length",
-                                              "Faithful. full", "Cites", "Citation prec.", "OOS declined naive",
-                                              "OOS declined full"], brows,
-                        "Instruction-tuned models, naive RAG versus the full pipeline. Faithfulness (FAQ-Gen) is given at "
-                        "naive RAG's context length as well as at full length, because it grows with the amount of "
-                        "retrieved text" + (" (one run per model, no gate; $^{*}$ the full pipeline at naive length "
-                        "differs significantly from naive RAG, paired bootstrap, Holm-corrected)" if mt else
-                        "; the length-matched column is pending") + ". Cites = share of FAQ-Gen answers with a citation; "
-                        "Citation prec. = share of cited passages that entail the citing sentence; OOS declined = share "
-                        "of the model's answers to the 50 out-of-scope questions that decline (phrase list). Per-setting "
-                        "results for every model, including the non-chat baselines, are in \\ref{app:generation}.",
-                        "tab:benchmark-summary", align="lrrrrrrrr", source="results/generation_*.json")
+            write_table("benchmark_summary", ["Model", "Size (B)", "Faithful. naive", "Faithful. full", "Cites",
+                                              "Citation prec.", "Declined naive", "Declined full"], brows,
+                        "Instruction-tuned models in the multi-model benchmark run: naive RAG versus the full pipeline. "
+                        "Every column comes from this one run (one Kaggle session per model, with the risk gate; model "
+                        "answers only, so 87 FAQ-Gen and 49 out-of-scope answers per model with the full pipeline). "
+                        "Faithfulness here is not length-matched; the length-matched comparison is a separate run "
+                        "(Table~\\ref{tab:gen-matched}), so its values differ slightly. Faithful. = NLI faithfulness on "
+                        "FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Citation prec. = share of (sentence, "
+                        "cited passage) pairs where the passage entails the sentence; Declined = share of out-of-scope "
+                        "questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
+                        "\\ref{app:generation}.",
+                        "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
+                        "results/citation_precision.json")
 
     # ---------------------------------------------------------------- run-to-run divergence (main run vs ablation)
     def _scored(exp):
@@ -974,12 +969,23 @@ def main():
         fa_ = [abl_r[i]["metrics"].get("faithfulness") for i in ids]
         pairs_ = [(x, y) for x, y in zip(fl, fa_, strict=True) if x is not None and y is not None]
         if ids and pairs_:
-            div_txt = (f"only {same_ans} of {len(ids)} answers to questions the gate passed were identical. The "
-                       "answers diverged after a shared opening, which points to numerical differences between the two "
-                       "Kaggle sessions (the GPU build of llama.cpp is not pinned), not to a configuration difference. Their mean faithfulness differed by "
-                       f"{abs(sum(x for x, _ in pairs_) - sum(y for _, y in pairs_)) / len(pairs_):.3f} "
-                       f"({sum(x for x, _ in pairs_) / len(pairs_):.3f} vs {sum(y for _, y in pairs_) / len(pairs_):.3f}), "
-                       "a measure of run-to-run variation; every comparison in a table comes from a single run.")
+            n_pass = len(loc_r)
+            main_f = get(next((r for r in (load("generation_local.json") or {}).get("summary", [])
+                               if r["model"] == gl_first and r["profile"] == "full" and r["dataset"] == "faq_gen"), None),
+                         "faithfulness")
+            abl_f = get(next((r for r in ab["summary"] if r["profile"] == "abl_full_full" and r["dataset"] == "faq_gen"),
+                             None), "faithfulness")
+            div_txt = ("The full pipeline with the deployed model ran twice: in the main experiment, with the gate "
+                       f"(faithfulness {main_f['mean']:.3f} on the {main_f['n']} FAQ-Gen questions the gate passed), and "
+                       f"in the ablation, without it ({abl_f['mean']:.3f} on all {abl_f['n']}, "
+                       "Table~\\ref{tab:gen-ablation}). "
+                       f"On the {len(ids)} of the {n_pass} gate-passed questions for which both runs retrieved the same "
+                       f"passages, only {same_ans} answers were identical. They diverged after a shared opening, which "
+                       "points to numerical differences between the two Kaggle sessions rather than to a configuration "
+                       "difference; the llama.cpp version was not recorded for these runs and is now pinned. Mean "
+                       f"faithfulness on these {len(pairs_)} questions was {sum(x for x, _ in pairs_) / len(pairs_):.3f} "
+                       f"in the main run and {sum(y for _, y in pairs_) / len(pairs_):.3f} in the ablation, a measure of "
+                       "run-to-run variation. Every table comes from a single run, which its caption names.")
     m.text("AblationRunDivergence", div_txt, "python -m scripts.rescore\\_faithfulness")
 
     # ---------------------------------------------------------------- abstention cross-check (LLM judge)
