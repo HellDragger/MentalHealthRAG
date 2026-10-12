@@ -69,5 +69,11 @@
     "generator": "qwen2.5-1.5b-gguf",
     "roundtrip": "hybrid (BM25+dense RRF) top-10 on the default index",
     "human_verified_subset": "TODO(human): fill eval/data/synth_qa_verify.csv"
+  },
+  "counsel_source": {
+    "rows": 3512,
+    "unique_contexts": 995,
+    "train_csv_identical_rows": true,
+    "action": "train.csv dropped (identical rows to context_response_train.csv)"
   }
 }

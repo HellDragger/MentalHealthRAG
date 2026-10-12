@@ -66,10 +66,10 @@ def main() -> int:
                       f(v["mean_score_risk"]), f(v["mean_score_no_risk"])])
     write_table("negation_test", ["Gate", "Risk to crisis", "No-risk to crisis", "Pairs separated",
                                   "Score (risk)", "Score (no risk)"], trows,
-                f"Negation test: {out['n_pairs']} minimal pairs that differ only in polarity (half carry risk through a "
-                "negation, e.g. ``I don't want to be alive anymore''). Risk / no-risk to crisis: statements sent to the "
-                "crisis protocol; Pairs separated: the risk statement is escalated and its no-risk twin is not; Score: "
-                "mean classifier probability. The pairs were written for this test and not used to design the gate.",
+                f"Negation test: {out['n_pairs']} minimal pairs of statements that differ only in polarity, written "
+                "for this test. Risk / No-risk to crisis: statements of each kind sent to the crisis protocol; Pairs "
+                "separated: pairs in which the risk statement is escalated and its no-risk twin is not; Score: mean "
+                "classifier probability for each kind.",
                 "tab:negation-test", align="lrrrrr", source="results/negation_test.json")
     for name, v in out["variants"].items():
         print(f"{name:22s} risk->crisis {v['risk_to_crisis']}/{v['risk_n']}  no_risk->crisis "

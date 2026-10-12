@@ -26,7 +26,9 @@ chatbotenv/
 .DS_Store
 
 # --- Data ---
-# The raw archive data/raw_data.zip is tracked; extracted copies are not.
+# The raw data (data/raw_data.zip or an extracted data/raw_data/) is third-party material (Mind, Kaggle, Reddit,
+# Twitter) and is not redistributed; see README, Data sources and licences.
+data/raw_data.zip
 data/raw_data/
 data/processed_data/
 data/chroma*/

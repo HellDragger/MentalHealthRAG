@@ -16,8 +16,8 @@ class RawData:
         self.path = Path(path)
         if not self.path.exists():
             raise FileNotFoundError(
-                f"Raw data not found at {self.path}. Expected data/raw_data.zip (tracked in git) "
-                "or an extracted data/raw_data/ directory."
+                f"Raw data not found at {self.path}. It is not in the repository (third-party data): obtain the "
+                "sources and place them at data/raw_data.zip or data/raw_data/ (README, Data sources and licences)."
             )
         self._zip = zipfile.ZipFile(self.path) if self.path.is_file() else None
 

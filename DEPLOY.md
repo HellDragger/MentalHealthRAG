@@ -68,7 +68,8 @@ if these are set:
 4. Render sets `PORT`, so set the **Docker Command** to
    `uvicorn server.app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips *`.
 5. The prebuilt index isn't in git (`artifacts/index/` is ignored), so the image builds it during `docker build`
-   from `data/raw_data.zip`. That archive *is* in the repository.
+   from `data/raw_data.zip`. That archive is **not** in the repository (third-party data): add it locally before
+   building, or ship a prebuilt index (README, Data sources and licences).
 
 **Railway**
 1. **New Project → Deploy from GitHub repo**. Railway also uses the `Dockerfile`.

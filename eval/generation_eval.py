@@ -577,17 +577,13 @@ def model_group(key: str, catalog: dict) -> str:
 
 
 def _quality_caption(dataset: str, res: dict) -> str:
-    return (f"Generation quality on {DATASET_NAMES.get(dataset, esc(dataset))}. Faithfulness = share of answer sentences "
-            "entailed by a retrieved passage (NLI, DeBERTa-v3); Relev. = question-answer embedding "
-            "cosine; Cites = share of answers with an inline citation; Judge = LLM-as-judge (1--5), "
-            "`--' where not run; Tmpl. = share of questions the risk gate answered with a fixed safety "
-            "template instead of the model (full pipeline only); every other column describes the model's own answers, "
-            "so template answers are left out of them. TTFT = median time "
-            "to first token on the Kaggle GPU (GGUF models via llama.cpp offloaded to the GPU), including the gate "
-            "and retrieval."
-            + (f" The judge scored a fixed sample of {res['config']['judge_sample']} questions per "
-               "dataset, the same for every model and setting."
-               if (res.get("config") or {}).get("judge_sample") else ""))
+    return (f"Generation quality on {DATASET_NAMES.get(dataset, esc(dataset))}. Faithful.: NLI faithfulness "
+            "(DeBERTa-v3); Relev.: question-answer embedding cosine; Flesch: reading ease; Cites: share of answers with "
+            "a citation; Judge help.: LLM-judge helpfulness (1--5; `--' where not run"
+            + (f"; a fixed sample of {res['config']['judge_sample']} questions per dataset"
+               if (res.get("config") or {}).get("judge_sample") else "")
+            + "); Tmpl.: share of questions the gate answered with a safety template, which are left out of the other "
+            "columns; TTFT: median time to first token on the Kaggle GPU (s).")
 
 
 # which run a table comes from, stated in its caption (several runs of the same model exist)
@@ -627,10 +623,10 @@ def _write_oos(name: str, suffix: str, rs: list, prefix: str = "") -> None:
               _cell(r, "judge_safety", 2), str(r.get("n_generated", r["n"]))] for r in rs]
     write_table(f"generation_{name}_oos{suffix}", ["Model", "Setting", "Abstain/refuse", "Answered (halluc.)",
                                                   "Judge safety", "n"], table,
-                caption=prefix + "Out-of-scope questions (50): share of the model's answers that decline or say they "
-                        "lack the information (higher is better; answering is counted as a potential hallucination). "
-                        "Abstention is detected with a fixed phrase list (eval/judges.py); $n$ = answers the model "
-                        "generated (with the full pipeline the risk gate answered one question with a safety template).",
+                caption=prefix + "Out-of-scope questions (50). Abstain/refuse: share of the model's answers that "
+                        "decline or say they lack the information (phrase list; higher is better); Answered (halluc.): "
+                        "share that answer anyway, a potential hallucination; Judge safety: LLM-judge safety (1--5); $n$: "
+                        "answers the model generated (the rest got the gate's safety template).",
                 label=f"tab:gen-{name}-oos{suffix.replace('_', '-')}", align="llrrrr",
                 source=f"results/generation_{name}.json")
 
@@ -676,7 +672,7 @@ def _write_summary(name: str, res: dict, groups: dict, catalog: dict) -> None:
                         "= share of the 50 out-of-scope questions declined. $^{*}$ faithfulness differs significantly "
                         "between the two settings (paired bootstrap, Holm-corrected $p<0.05$). Per-setting results, "
                         "including no retrieval, Counsel-Gen and the non-chat baselines (base language models, a "
-                        "summariser, seq2seq), are in Supplementary Section~\\ref{app:generation}." + _run_notes(res, groups),
+                        "summariser, seq2seq), are in the code repository (\\texttt{results/generation\\_gpu.json})." + _run_notes(res, groups),
                 label=f"tab:gen-{name}-summary", align="lrrrrrrr", source=f"results/generation_{name}.json")
 
 
@@ -705,13 +701,13 @@ def _write_ablation(res: dict) -> None:
                       _cell(faq, "has_citation", 2), _cell(oos, "abstained", 2)])
     write_table("generation_ablation", ["Retrieval", "Prompt", "Context (chars)", "Faithful.", "Relev.", "ROUGE-L",
                                         "BERTScore", "Cites", "OOS declined"], table,
-                caption=f"Ablation run: component ablation with {esc(model)}, each retrieval set-up crossed with each "
-                        "prompt, on FAQ-Gen (FAQ removed from the index) and the out-of-scope set; one run on the same "
-                        "hardware, no safety gate and no output check, so the model answers all 98 FAQ-Gen questions (the main experiment answers the 87 the gate passes). Naive retrieval: dense MiniLM, top-2 of 48-token chunks; full: "
-                        "hybrid + reranking, 256-token chunks. Naive prompt: minimal template without a system prompt; "
-                        "full: grounded system prompt with numbered sources. ``Cut to naive length'' gives the model as "
-                        "many characters of retrieved text as naive retrieval did for the same question. Context: mean "
-                        "characters of retrieved text.",
+                caption=f"Ablation run with {esc(model)}: each retrieval set-up crossed with each prompt, with no gate "
+                        "or output check, on all 98 FAQ-Gen questions (FAQ removed from the index) and the out-of-scope "
+                        "set. Naive retrieval: dense MiniLM, top 2 of 48-token chunks; full: hybrid with reranking, "
+                        "256-token chunks. Cut to naive length: full retrieval trimmed to the characters naive retrieval "
+                        "returned. Context: mean characters retrieved; Faithful.: NLI faithfulness; Relev.: answer "
+                        "relevance; Cites: share of answers with a citation; OOS declined: share of out-of-scope "
+                        "questions declined.",
                 label="tab:gen-ablation", align="llrrrrrrr", source="results/generation_ablation.json")
     sig = res.get("significance", {})
     ctab = []
@@ -751,13 +747,11 @@ def _write_matched(res: dict) -> None:
                       d("abl_full_full_matched", "abl_naive_naive"), d("abl_full_full", "abl_full_full_matched")])
     write_table("generation_matched", ["Model", "Naive RAG", "Full, naive length", "Full", "$\\Delta$ equal length",
                                        "$\\Delta$ length"], table,
-                caption="Length-matched run: NLI faithfulness on FAQ-Gen at equal context length for every "
-                        "instruction-tuned model, all 98 questions, no safety gate. This is a separate run from the "
-                        "multi-model benchmark (Table~\\ref{tab:benchmark-summary}), so its naive and full values differ "
-                        "slightly from it. Full, naive length: the full pipeline given as many characters of retrieved "
-                        "text as naive RAG got for the same question. $\\Delta$ equal length = full at naive length "
-                        "minus naive RAG (retrieval and prompt at the same amount of text); $\\Delta$ length = full "
-                        "minus full at naive length. $^{*}$ paired bootstrap, Holm-corrected $p<0.05$.",
+                caption="Length-matched run (separate from Table~\\ref{tab:benchmark-summary}; no gate, all 98 FAQ-Gen "
+                        "questions): NLI faithfulness of naive RAG, of the full pipeline cut to naive RAG's context "
+                        "length, and of the full pipeline. $\\Delta$ equal length = Full, naive length $-$ Naive RAG; "
+                        "$\\Delta$ length = Full $-$ Full, naive length. $^{*}$ Holm-corrected $p<0.05$ (paired "
+                        "bootstrap).",
                 label="tab:gen-matched", align="lrrrrr", source=f"results/generation_{res['name']}.json")
 
 
@@ -781,10 +775,11 @@ def _write_runtime(res: dict) -> None:
         table.append([label, f"{k}/{ab['n']}" if ab else "--",
                       _cell(faq, "faithfulness"), _cell(faq, "has_citation", 2)])
     write_table("generation_runtime", ["Runtime and weights", "OOS declined", "Faithful.", "Cites"], table,
-                caption="Qwen2.5-1.5B-Instruct run four ways in one session on one T4 GPU, full pipeline: out-of-scope "
-                        "questions declined (model answers only; phrase list), and NLI faithfulness and citation rate "
-                        "on FAQ-Gen. The deployed system uses llama.cpp with Q4\\_K\\_M weights; the multi-model benchmark "
-                        "loads every model with transformers and 4-bit NF4 weights.", label="tab:gen-runtime", align="lrrr", source=f"results/generation_{res['name']}.json")
+                caption="Qwen2.5-1.5B-Instruct with the full pipeline, run with four combinations of runtime and weight format in "
+                        "one session on one T4 GPU. OOS declined: out-of-scope questions declined; Faithful.: NLI "
+                        "faithfulness and Cites: share of answers with a citation, on FAQ-Gen. The deployed system uses "
+                        "llama.cpp with Q4\\_K\\_M weights; the multi-model benchmark uses transformers with NF4.",
+                        label="tab:gen-runtime", align="lrrr", source=f"results/generation_{res['name']}.json")
 
 
 def render_tables(res: dict) -> None:

@@ -239,11 +239,11 @@ def write_tables(out: dict) -> None:
                      f"{v['negation']['separated']}/{v['negation']['pairs']}"])
     write_table("safety_baselines", ["Method", "Held-out crisis", "Held-out FP", "Held-out harmful", "Dev crisis",
                                      "FAQ-Gen escalated", "Negation pairs"], rows,
-                "The deployed gate against off-the-shelf safety classifiers, scored on escalation (any blocking "
-                "protocol, or ``unsafe'' for the guard models). Crisis / harmful: prompts of that category escalated; "
-                "FP: venting and informational prompts escalated; FAQ-Gen: ordinary questions escalated; Negation "
-                "pairs: the risk statement escalated and its negated twin not. The guard models were not tuned on these "
-                "sets; the gate's lexicon was designed on the development set.",
+                "The deployed gate against off-the-shelf safety classifiers. A prompt counts as escalated when the gate "
+                "sends it to a blocking protocol or a classifier labels it unsafe. Crisis, harmful: prompts of that kind "
+                "escalated; FP: venting and informational prompts escalated; FAQ-Gen: ordinary questions escalated; "
+                "Negation pairs: pairs in which the risk statement is escalated and its negated twin is not. The "
+                "gate's lexicon was designed on the development set.",
                 "tab:safety-baselines", align="lrrrrrr", source="results/safety_baselines.json")
 
 

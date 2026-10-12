@@ -292,12 +292,12 @@ def write_tables(results: dict):
                      fmt_ci(*ci["f1"]), fmt_ci(*ci["auroc"]), fmt(m["test_at_tau"]["auprc"])])
     sz = results["split"]["sizes"]["test"]
     write_table("risk_classifier", ["Model", "$\\tau$", "Precision", "Recall", "F1", "AUROC", "AUPRC"], rows,
-                caption=f"Risk classifier on the held-out test split of \\texttt{{mental\\_health.csv}} "
+                caption=f"Risk classifier on the held-out test split of the suicide-risk post corpus "
                         f"(n={sz['n']}, {sz['positives']} positive). $\\tau$ is the largest threshold with validation "
                         "recall $\\geq 0.95$. 95\\% bootstrap CIs in brackets.",
                 label="tab:risk-classifier", source="results/risk_classifier.json")
     ext_names = {"reddit_depression": "Reddit depression", "dreaddit_stress": "Dreaddit (stress)",
-                 "twitter_depression": "Twitter depression", "kb_suicide_intent_patterns": "KB.json suicide patterns"}
+                 "twitter_depression": "Twitter depression", "kb_suicide_intent_patterns": "Chatbot-intent suicide patterns"}
     rows = []
     for ext, label in ext_names.items():
         row = [label]
@@ -317,10 +317,11 @@ def write_tables(results: dict):
     for k in results["models"]:
         header += [f"{names.get(k, k)} P", "R", "AUROC"]
     write_table("risk_classifier_transfer", header, rows,
-                caption="Zero-shot transfer of the risk classifiers (threshold fixed at $\\tau$). Labels of the external "
-                        "sets are related constructs (depression, stress), not suicide risk.",
+                caption="Zero-shot transfer of the risk classifiers to external datasets, with the threshold fixed at "
+                        "$\\tau$. Their labels are related constructs (depression, stress), not suicide risk. P: "
+                        "precision; R: recall.",
                 label="tab:risk-transfer", source="results/risk_classifier.json",
-                note="Flag rate on KB.json distress/venting patterns (not labelled suicidal): " + "; ".join(fp))
+                note="Flag rate on chatbot-intent distress and venting patterns (not labelled suicidal): " + "; ".join(fp))
 
 
 if __name__ == "__main__":

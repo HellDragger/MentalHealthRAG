@@ -141,6 +141,11 @@ def main(argv=None):
     if args.synth:
         stats["synth_qa"] = build_synth(s, args.synth_model, args.synth_n)
     stats["oos"] = {"n": len((EVAL_DATA / "oos_questions.jsonl").read_text(encoding="utf-8").splitlines())}
+    raw = s.resolve(s.paths.raw_data)
+    if raw.exists():  # saved so the paper numbers do not need the (unredistributed) raw data
+        from mhrag.ingest.qa import counselling_duplicate_stats
+
+        stats["counsel_source"] = counselling_duplicate_stats(RawData(raw))
     s.results_dir.mkdir(parents=True, exist_ok=True)
     stats_path.write_text(json.dumps(stats, indent=2, default=str))
     print(json.dumps(stats, indent=1, default=str))
