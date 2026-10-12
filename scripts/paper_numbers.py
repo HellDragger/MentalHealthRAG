@@ -321,7 +321,7 @@ def main():
                 if oos and oos.get("abstained") and oosn and oosn.get("abstained"):
                     s += (f". It declined {oos['abstained']['mean']:.2f} of out-of-scope questions, against "
                           f"{oosn['abstained']['mean']:.2f} with naive RAG")
-                parts.append(s + ". Per-setting results for GPT-2 and BART-large-CNN, kept as weak baselines, are in the code repository (\\texttt{results/generation\\_local.json}).")
+                parts.append(s + ". Per-setting results for GPT-2 and BART-large-CNN, kept as weak baselines, are reported in the code repository.")
         if gl.get("judge_status") == "complete":
             tail = ""
         else:
@@ -1002,7 +1002,7 @@ def main():
                         "only). Faithfulness is not length-matched (see Table~\\ref{tab:gen-matched}). B: parameters "
                         "(billions); Faith.: NLI faithfulness on FAQ-Gen; Cites: share of FAQ-Gen answers with a citation; "
                         "Cit. prec.: citation precision (Table~\\ref{tab:citation-precision}); Decl.: share of "
-                        "out-of-scope questions declined. Full results: \\texttt{results/generation\\_gpu.json}.",
+                        "out-of-scope questions declined. Per-setting results for every model are in the code repository.",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
 
