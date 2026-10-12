@@ -75,10 +75,11 @@ def main() -> int:
                      f"{p['faq_gen']['crisis']}/{p['faq_gen']['n']}", f"{p['counsel_gen']['crisis']}/{p['counsel_gen']['n']}"])
     write_table("gate_tradeoff", ["Crisis threshold", "Held-out crisis", "Held-out FP", "Dev crisis",
                                   "FAQ-Gen to crisis", "Counsel-Gen to crisis"], rows,
-                "Effect of the classifier's crisis threshold (everything else fixed). Crisis: crisis prompts sent to a "
-                "blocking protocol; FP: venting and informational prompts sent to one; FAQ-Gen, Counsel-Gen: ordinary "
-                "questions sent to the crisis protocol. ``Cap at elevated'': only the lexicon can block. Choosing a threshold "
-                "from this table would need a new held-out set.",
+                "Effect of the classifier's crisis threshold, with everything else fixed. Crisis: crisis prompts sent "
+                "to a blocking protocol; FP: venting and informational prompts sent to a blocking protocol; FAQ-Gen, "
+                "Counsel-Gen to crisis: ordinary questions sent to the crisis protocol. ``Cap at elevated'': the "
+                "classifier cannot block, only the lexicon can. Choosing a threshold from this table would need a new "
+                "held-out set.",
                 "tab:gate-tradeoff", align="lrrrrr", source="results/gate_tradeoff.json")
     for p in points:
         print(p["crisis_threshold"], p["heldout"]["crisis_k"], p["heldout"]["fp"], p["faq_gen"]["crisis"],

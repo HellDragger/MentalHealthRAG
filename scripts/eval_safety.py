@@ -133,11 +133,12 @@ def write_tables(results: dict, tag: str, initial: dict | None = None) -> None:
                       ratio(*c["acc"])])
     write_table(f"safety_gate{suffix}", ["Gate", "Crisis recall", "+ elevated", "Harmful", "3rd-party",
                                          "Escalation FP", "Venting esc.", "Info. esc.", "Correct"], trows,
-                caption=f"{gate_name} on the {results['n_prompts']}-prompt {set_name}red-team set (counts; Wilson 95\\% "
-                        "CIs). Crisis recall: crisis prompts sent to a blocking protocol; + elevated: or to the "
-                        "non-blocking elevated tier; Harmful, 3rd-party: expected protocol; Escalation FP: venting and "
-                        "informational prompts blocked."
-                        + (" Last row: the deployed gate before its revision." if initial else ""),
+                caption=f"{gate_name} on the {results['n_prompts']}-prompt {set_name}red-team set (counts, with Wilson "
+                        "95\\% CIs). Crisis recall: crisis prompts sent to a blocking protocol; + elevated: the same, "
+                        "also counting the non-blocking elevated tier. Harmful, 3rd-party: prompts given their expected "
+                        "protocol. Escalation FP: venting and informational prompts sent to a blocking protocol (Venting "
+                        "esc., Info. esc.: each kind separately). Correct: prompts given exactly the expected label."
+                        + (" The last row is the deployed gate before its revision." if initial else ""),
                 label=f"tab:safety-gate{suffix.replace('_', '-')}", source=f"results/safety_gate{suffix}.json",
                 align="lrrrrrrrr",
                 note="I wrote both the prompts and the lexicon, and froze the prompts before evaluation; lexicon results "

@@ -187,9 +187,10 @@ def main():
                      f"{s['tokens_per_s']['p50']:.1f}", f"{mem:.1f}" if mem else "--"])
     if lat:
         write_table("latency", ["Configuration", "Model", "TTFT p50 (s)", "E2E p50 (s)", "E2E p95 (s)", "tok/s", "Peak RSS (GB)"],
-                    rows, caption="Laptop latency, 12 fixed questions (unoptimised baseline: 5). TTFT = time to first streamed "
-                                  "token (equal to E2E for the non-streaming baseline). Other rows include the gate, hybrid "
-                                  "retrieval and reranking; peak RSS excludes Metal GPU memory.",
+                    rows, caption="Latency on the laptop for 12 fixed questions (the unoptimised baseline answered 5). "
+                                  "TTFT: time to first streamed token; E2E: end-to-end time (the same for the "
+                                  "non-streaming baseline). All rows but the baseline include the gate, hybrid retrieval "
+                                  "and reranking; peak RSS excludes GPU memory held by Metal.",
                     label="tab:latency", align="llrrrrr", source="results/latency.json")
     v1, cpu, metal = get(lat, "v1_hf_fp32_cpu", "summary"), get(lat, "v2_llamacpp_cpu", "summary"), get(lat, "v2_llamacpp_metal", "summary")
     same = None
@@ -254,11 +255,12 @@ def main():
             sess_of = {k: i + 1 for i, ks in enumerate(sessions) for k in ks}
             from eval.tables import esc as _esc
             cap = ("Qwen2.5-1.5B-Instruct on Kaggle CPUs" + (f" ({_esc(next(iter(cpus)))})" if cpu_known else "")
-                   + ", varying precision, runtime and streaming. The baseline uses naive retrieval and its own n "
-                   "questions; the other rows run the full pipeline.")
+                   + ", varying precision, runtime and streaming one at a time. The baseline uses naive retrieval and "
+                   "its own n questions; the other rows run the full pipeline. TTFT: time to first token; E2E: "
+                   "end-to-end time.")
             if len(sessions) > 1:
                 notes = (["same software"] if len(envs) == 1 else []) + ([] if cpu_known else ["CPU model not recorded"])
-                cap += " Session: Kaggle session of each row" + (f" ({'; '.join(notes)})" if notes else "") + "."
+                cap += " Session: the Kaggle session each row was measured in" + (f" ({'; '.join(notes)})" if notes else "") + "."
             write_table("latency_cpu", ["Configuration", "n", "TTFT p50 (s)", "E2E p50 (s)", "tok/s"]
                         + (["Session"] if len(sessions) > 1 else []),
                         [[names_c[k], str(v["n"]), f"{v['ttft_ms']['p50'] / 1000:.2f}", f"{v['e2e_ms']['p50'] / 1000:.1f}",
@@ -420,8 +422,9 @@ def main():
         write_table("synth_qa_verification",
                     ["Criterion", "Pass (95\\% CI)", "Ties", "Raw agr.", "Fleiss $\\kappa$", "Gwet AC1",
                      "AC1 w/o author"], rows,
-                    f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} said yes "
-                    "(Wilson CI); $\\kappa$ and AC1 with 95\\% bootstrap CIs. Last column: without my own ratings.",
+                    f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} raters "
+                    "said yes (Wilson 95\\% CI); " + (f"Ties: questions on which {nr // 2} of {nr} raters said yes; " if nr % 2 == 0 else "") + "Raw agr.: mean agreement over rater pairs; $\\kappa$ "
+                    "and AC1 with 95\\% bootstrap CIs; AC1 w/o author: AC1 without my own ratings.",
                     "tab:synthqa-verification", source="results/synth_qa_verification.json")
         rr = sv.get("retrieval_robustness")
         if rr:
@@ -995,11 +998,11 @@ def main():
         if brows:
             write_table("benchmark_summary", ["Model", "B", "Faith. naive", "Faith. full", "Cites", "Cit. prec.",
                                               "Decl. naive", "Decl. full"], brows,
-                        "Multi-model benchmark run (with the risk gate; model answers only): naive RAG versus the full "
-                        "pipeline, not length-matched (see Table~\\ref{tab:gen-matched}). B = parameters (billions); Faith. = "
-                        "NLI faithfulness and Cites = share of answers with a citation, on FAQ-Gen; Cit. prec. = citation "
-                        "precision; Decl. = out-of-scope questions declined. Full results: "
-                        "\\texttt{results/generation\\_gpu.json}.",
+                        "Multi-model benchmark run: naive RAG versus the full pipeline (with the risk gate; model answers "
+                        "only). Faithfulness is not length-matched (see Table~\\ref{tab:gen-matched}). B: parameters "
+                        "(billions); Faith.: NLI faithfulness on FAQ-Gen; Cites: share of FAQ-Gen answers with a citation; "
+                        "Cit. prec.: citation precision (Table~\\ref{tab:citation-precision}); Decl.: share of "
+                        "out-of-scope questions declined. Full results: \\texttt{results/generation\\_gpu.json}.",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
 

@@ -317,8 +317,9 @@ def write_tables(results: dict):
     for k in results["models"]:
         header += [f"{names.get(k, k)} P", "R", "AUROC"]
     write_table("risk_classifier_transfer", header, rows,
-                caption="Zero-shot transfer of the risk classifiers (threshold fixed at $\\tau$). Labels of the external "
-                        "sets are related constructs (depression, stress), not suicide risk.",
+                caption="Zero-shot transfer of the risk classifiers to external datasets, with the threshold fixed at "
+                        "$\\tau$. Their labels are related constructs (depression, stress), not suicide risk. P: "
+                        "precision; R: recall.",
                 label="tab:risk-transfer", source="results/risk_classifier.json",
                 note="Flag rate on KB.json distress/venting patterns (not labelled suicidal): " + "; ".join(fp))
 

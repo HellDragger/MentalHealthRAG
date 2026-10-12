@@ -171,9 +171,9 @@ def main():
                          cell("no_rag"), pv("naive"), pv("no_rag"), str(n)])
         write_table("gen_template_free", ["Metric", "Full (all)", "Full", "Naive RAG", "No RAG", "$p$ vs naive",
                                           "$p$ vs no RAG", "$n$"], rows,
-                    f"FAQ-Gen with Qwen2.5-1.5B (GGUF) without the {loc['templated']} questions the gate answered with a "
-                    "safety template (``Full (all)'' keeps them). $p$: paired bootstrap of the full pipeline against "
-                    "each setting, Holm-corrected per metric.",
+                    f"FAQ-Gen with Qwen2.5-1.5B (GGUF), without the {loc['templated']} questions the gate answered "
+                    "with a safety template; Full (all) keeps them. $p$: paired bootstrap of the full pipeline against "
+                    "each setting, Holm-corrected per metric; $n$: questions compared.",
                     "tab:gen-template-free", align="lrrrrrrr", source="results/generation_reanalysis.json")
     print(f"wrote {R / 'generation_reanalysis.json'}")
 

@@ -49,9 +49,10 @@ def retrieval_tables(res: dict) -> None:
             n = next(r["n_queries"] for r in runs if r["dataset"] == d)
             write_table(f"retrieval_{name}_{d}", ["System", "Embedder", "R@1", "R@5", "R@10", "MRR@10", "nDCG@10",
                                                   "ms"], rows,
-                        caption=f"Retrieval on {DS_NAMES.get(d, d)} (n={n}, {c}-token chunks; 95\\% bootstrap CIs). R@k: "
-                                "a relevant chunk in the top $k$; ms: median latency. $^{\\dagger}$ baseline (dense "
-                                "MiniLM); $^{*}$ differs from it on nDCG@10 (Holm-corrected $p<0.05$).",
+                        caption=f"Retrieval on {DS_NAMES.get(d, d)} (n={n}, {c}-token chunks; 95\\% bootstrap CIs). "
+                                "R@k: share of queries with a relevant chunk in the top $k$; ms: median retrieval "
+                                "latency. $^{\\dagger}$ baseline (dense MiniLM); $^{*}$ significantly different from the "
+                                "baseline on nDCG@10 (Holm-corrected $p<0.05$).",
                         label=f"tab:retrieval-{name}-{d.replace('_', '-')}", align="llrrrrrr",
                         source=f"results/retrieval_{name}.json")
     else:
@@ -67,8 +68,8 @@ def retrieval_tables(res: dict) -> None:
                 rows.append(row)
             n = next(r["n_queries"] for r in runs if r["dataset"] == d)
             write_table(f"retrieval_{name}_{d}", ["System", "Embedder"] + [f"nDCG@10 c{c}" for c in chunks], rows,
-                        caption=f"Chunk-size ablation on {DS_NAMES.get(d, d)} (n={n}): nDCG@10 for 128/256/512-token "
-                                "chunks (MiniLM is capped at its 256-token input limit).",
+                        caption=f"Chunk-size ablation on {DS_NAMES.get(d, d)} (n={n}): nDCG@10 with 128-, 256- and "
+                                "512-token chunks (c128, c256, c512). MiniLM is capped at its 256-token input limit.",
                         label=f"tab:retrieval-{name}-{d.replace('_', '-')}", source=f"results/retrieval_{name}.json")
 
 
@@ -113,10 +114,11 @@ def retrieval_summary(res: dict, datasets: list[str], c: int) -> None:
         rows.append(row)
     n = {d: next(r["n_queries"] for r in runs if r["dataset"] == d) for d in datasets}
     write_table(f"retrieval_{res['name']}_summary", ["Configuration"] + [f"{DS_NAMES.get(d, d)} ({n[d]})" for d in datasets],
-                rows, caption=f"Retrieval summary: nDCG@10 with 95\\% bootstrap CIs ({c}-token chunks); best per set in "
-                "bold. H = hybrid (BM25 + dense, RRF); CE = MiniLM cross-encoder; BGE = BGE reranker; embedder in brackets "
-                "(BGE-s/-b = small/base). $^{\\dagger}$ baseline; $^{*}$ differs from it (Holm-corrected $p<0.05$). All "
-                "configurations: \\ref{app:retrieval}.",
+                rows, caption=f"Retrieval summary: nDCG@10 with 95\\% bootstrap CIs ({c}-token chunks); the best "
+                "configuration per set is in bold. H = hybrid (BM25 + dense, reciprocal-rank fusion); CE = MiniLM "
+                "cross-encoder reranker; BGE = BGE reranker; the embedder is in brackets (BGE-s/-b = BGE-small/base). "
+                "$^{\\dagger}$ baseline; $^{*}$ significantly different from the baseline (Holm-corrected $p<0.05$). "
+                "All configurations: \\ref{app:retrieval}.",
                 label="tab:retrieval-summary", align="l" + "r" * len(datasets), source=f"results/retrieval_{res['name']}.json")
 
 
