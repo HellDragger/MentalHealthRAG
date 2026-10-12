@@ -123,12 +123,10 @@ def write_tables(out: dict) -> None:
                      f(v["supported_citing_share"]), str(v["invalid"])])
     write_table("citation_precision", ["Model / setting", "Answers", "Citing sent.", "Citation prec.",
                                        "Supported citing sent.", "Invalid"], rows,
-                "Citation precision on FAQ-Gen: whether the passage a sentence cites entails that sentence (NLI), "
-                "which, unlike NLI faithfulness, does not rise with the amount of retrieved text. Citing sent. = share "
-                "of answer sentences with a citation; Citation prec. = share of (sentence, cited passage) pairs that "
-                "are entailed; Supported citing sent. = share of citing sentences entailed by at least one cited "
-                "passage; Invalid = citations to a source number that was not given. Model answers only (the gate's "
-                "template answers are excluded).", "tab:citation-precision", align="lrrrrr",
+                "Citation precision on FAQ-Gen (model answers only): does the cited passage entail the sentence (NLI)? "
+                "Citing sent.: answer sentences with a citation; Citation prec.: entailed (sentence, cited passage) "
+                "pairs; Supported citing sent.: citing sentences entailed by a cited passage; Invalid: citations to a "
+                "source that was not given.", "tab:citation-precision", align="lrrrrr",
                 source="results/citation_precision.json")
 
 

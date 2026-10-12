@@ -133,14 +133,11 @@ def write_tables(results: dict, tag: str, initial: dict | None = None) -> None:
                       ratio(*c["acc"])])
     write_table(f"safety_gate{suffix}", ["Gate", "Crisis recall", "+ elevated", "Harmful", "3rd-party",
                                          "Escalation FP", "Venting esc.", "Info. esc.", "Correct"], trows,
-                caption=f"{gate_name} on the {results['n_prompts']}-prompt {set_name}red-team set, as counts "
-                        "(Wilson 95\\% intervals for crisis recall and false positives). Crisis recall: crisis prompts "
-                        "(explicit and implicit) sent to any blocking protocol (crisis, harmful-request or third-party); "
-                        "``+ elevated'' also counts the non-blocking elevated tier (answer with check-in and helplines). "
-                        "Harmful and 3rd-party: prompts given the expected protocol. Escalation FP: venting and "
-                        "informational prompts sent to a blocking protocol."
-                        + (" The last row is the deployed combination before its revision, on the same prompts."
-                           if initial else ""),
+                caption=f"{gate_name} on the {results['n_prompts']}-prompt {set_name}red-team set (counts; Wilson 95\\% "
+                        "CIs). Crisis recall: crisis prompts sent to a blocking protocol; + elevated: or to the "
+                        "non-blocking elevated tier; Harmful, 3rd-party: expected protocol; Escalation FP: venting and "
+                        "informational prompts blocked."
+                        + (" Last row: the deployed gate before its revision." if initial else ""),
                 label=f"tab:safety-gate{suffix.replace('_', '-')}", source=f"results/safety_gate{suffix}.json",
                 align="lrrrrrrrr",
                 note="I wrote both the prompts and the lexicon, and froze the prompts before evaluation; lexicon results "

@@ -187,10 +187,9 @@ def main():
                      f"{s['tokens_per_s']['p50']:.1f}", f"{mem:.1f}" if mem else "--"])
     if lat:
         write_table("latency", ["Configuration", "Model", "TTFT p50 (s)", "E2E p50 (s)", "E2E p95 (s)", "tok/s", "Peak RSS (GB)"],
-                    rows, caption="End-to-end latency for 12 fixed questions (unoptimised baseline: 5). TTFT = time to first "
-                                  "streamed token (the baseline does not stream, so its TTFT equals the end-to-end time). All "
-                                  "other rows include the safety gate, hybrid retrieval and reranking. Peak RSS excludes "
-                                  "GPU/unified memory held by Metal.",
+                    rows, caption="Laptop latency, 12 fixed questions (unoptimised baseline: 5). TTFT = time to first streamed "
+                                  "token (equal to E2E for the non-streaming baseline). Other rows include the gate, hybrid "
+                                  "retrieval and reranking; peak RSS excludes Metal GPU memory.",
                     label="tab:latency", align="llrrrrr", source="results/latency.json")
     v1, cpu, metal = get(lat, "v1_hf_fp32_cpu", "summary"), get(lat, "v2_llamacpp_cpu", "summary"), get(lat, "v2_llamacpp_metal", "summary")
     same = None
@@ -255,13 +254,11 @@ def main():
             sess_of = {k: i + 1 for i, ks in enumerate(sessions) for k in ks}
             from eval.tables import esc as _esc
             cap = ("Qwen2.5-1.5B-Instruct on Kaggle CPUs" + (f" ({_esc(next(iter(cpus)))})" if cpu_known else "")
-                   + ": precision, runtime and streaming varied one at a time. The baseline uses naive retrieval and "
-                   "its own question set (n); the other rows run the full pipeline.")
+                   + ", varying precision, runtime and streaming. The baseline uses naive retrieval and its own n "
+                   "questions; the other rows run the full pipeline.")
             if len(sessions) > 1:
-                cap += (" Session: the Kaggle session each row was measured in; sessions had the same software versions "
-                        "and memory" if len(envs) == 1 else " Session: the Kaggle session each row was measured in")
-                cap += ("." if cpu_known else ", but the CPU model was not recorded, so rows from different sessions "
-                        "may come from different processors.")
+                notes = (["same software"] if len(envs) == 1 else []) + ([] if cpu_known else ["CPU model not recorded"])
+                cap += " Session: Kaggle session of each row" + (f" ({'; '.join(notes)})" if notes else "") + "."
             write_table("latency_cpu", ["Configuration", "n", "TTFT p50 (s)", "E2E p50 (s)", "tok/s"]
                         + (["Session"] if len(sessions) > 1 else []),
                         [[names_c[k], str(v["n"]), f"{v['ttft_ms']['p50'] / 1000:.2f}", f"{v['e2e_ms']['p50'] / 1000:.1f}",
@@ -423,9 +420,8 @@ def main():
         write_table("synth_qa_verification",
                     ["Criterion", "Pass (95\\% CI)", "Ties", "Raw agr.", "Fleiss $\\kappa$", "Gwet AC1",
                      "AC1 w/o author"], rows,
-                    f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} raters "
-                    "said yes (Wilson CI). Raw agreement is the mean over rater pairs; $\\kappa$ and AC1 have 95\\% "
-                    "bootstrap CIs over items. The last column drops my own ratings, as I also built the system.",
+                    f"Human verification of {k} SynthQA questions by {nr} raters. Pass: at least {need} of {nr} said yes "
+                    "(Wilson CI); $\\kappa$ and AC1 with 95\\% bootstrap CIs. Last column: without my own ratings.",
                     "tab:synthqa-verification", source="results/synth_qa_verification.json")
         rr = sv.get("retrieval_robustness")
         if rr:
@@ -453,10 +449,9 @@ def main():
             write_table("synth_qa_robustness",
                         ["System", f"All ({rr['n']['all']})", f"Verified ({rr['n']['verified']})",
                          "$\\Delta$ vs $^{\\dagger}$", "$p_{\\mathrm{Holm}}$"], rows,
-                        "SynthQA nDCG@10 on all questions and on the human-verified subset (95\\% bootstrap CI). "
-                        "$\\Delta$ and $p$: paired bootstrap against the dense MiniLM baseline ($^{\\dagger}$) on the "
-                        f"verified subset, Holm-corrected over all {len(vb['delta'])} configurations. Rows: the baseline, "
-                        "BM25, the MiniLM pipelines and the best configuration on each question set.",
+                        "SynthQA nDCG@10 (95\\% CI) on all and on the human-verified questions. $\\Delta$, $p$: paired "
+                        "bootstrap against the dense MiniLM baseline ($^{\\dagger}$) on the verified subset, Holm-corrected "
+                        f"over {len(vb['delta'])} configurations.",
                         "tab:synthqa-robustness", align="lrrrr", source="results/synth_qa_verification.json")
         else:
             m.text("SynthVerifiedRobustness", None, c_sv)
@@ -541,15 +536,12 @@ def main():
     if ov:
         model = gl_first.replace("_", "\\_") if gl_first else "--"
         write_table("baseline_vs_system", ["Aspect", "Measure", "Naive baseline", "This system"], ov,
-                    caption="The system against a naive baseline, both run on the same knowledge base and questions. "
-                            "Retrieval: dense MiniLM (baseline) versus the deployed "
+                    caption="The system against a naive baseline on the same knowledge base and questions. Retrieval: "
+                            "dense MiniLM versus the deployed "
                             f"{SYS.get('hybrid+ce' if st.retrieval.reranker == 'minilm-ce' else 'hybrid+bge-rr')} "
-                            f"({EMB.get(st.index.embedder, st.index.embedder)} embeddings), "
-                            f"{st.chunking.chunk_tokens}-token chunks; $^{{*}}$ significant (paired bootstrap, "
-                            "Holm-corrected $p<0.05$). Latency: Qwen2.5-1.5B-Instruct on the laptop CPU (\\Hardware{}); "
-                            "the baseline runs full-precision weights without streaming, so the first text appears with "
-                            "the full answer, and the system runs quantised weights with streaming. Generation: "
-                            f"{model}, naive RAG versus the full pipeline. The baseline has no safety gate.",
+                            f"({EMB.get(st.index.embedder, st.index.embedder)}), {st.chunking.chunk_tokens}-token chunks "
+                            "($^{*}$ Holm-corrected $p<0.05$). Latency: laptop CPU, full precision without streaming "
+                            f"versus quantised with streaming. Generation: {model}. The baseline has no safety gate.",
                     label="tab:baseline-vs-system", align="llrr", source="results/*.json")
 
     # ---------------------------------------------------------------- multi-model benchmark (GPU)
@@ -1003,15 +995,11 @@ def main():
         if brows:
             write_table("benchmark_summary", ["Model", "B", "Faith. naive", "Faith. full", "Cites", "Cit. prec.",
                                               "Decl. naive", "Decl. full"], brows,
-                        "Instruction-tuned models in the multi-model benchmark run: naive RAG versus the full pipeline. "
-                        "Every column comes from this one run (one Kaggle session per model, with the risk gate; model "
-                        "answers only, so 87 FAQ-Gen and 49 out-of-scope answers per model with the full pipeline). "
-                        "Faithfulness here is not length-matched; the length-matched comparison is a separate run "
-                        "(Table~\\ref{tab:gen-matched}), so its values differ slightly. B = parameters (billions); Faith. = NLI "
-                        "faithfulness on FAQ-Gen; Cites = share of FAQ-Gen answers with a citation; Cit. prec. = share of "
-                        "(sentence, cited passage) pairs where the passage entails the sentence; Decl. = share of "
-                        "out-of-scope questions declined (phrase list). Per-setting results, including the non-chat baselines, are in "
-                        "the code repository (\\texttt{results/generation\\_gpu.json}).",
+                        "Multi-model benchmark run (with the risk gate; model answers only): naive RAG versus the full "
+                        "pipeline, not length-matched (see Table~\\ref{tab:gen-matched}). B = parameters (billions); Faith. = "
+                        "NLI faithfulness and Cites = share of answers with a citation, on FAQ-Gen; Cit. prec. = citation "
+                        "precision; Decl. = out-of-scope questions declined. Full results: "
+                        "\\texttt{results/generation\\_gpu.json}.",
                         "tab:benchmark-summary", align="lrrrrrrr", source="results/generation_gpu.json, "
                         "results/citation_precision.json")
 

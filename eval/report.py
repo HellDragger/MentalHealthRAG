@@ -49,10 +49,9 @@ def retrieval_tables(res: dict) -> None:
             n = next(r["n_queries"] for r in runs if r["dataset"] == d)
             write_table(f"retrieval_{name}_{d}", ["System", "Embedder", "R@1", "R@5", "R@10", "MRR@10", "nDCG@10",
                                                   "ms"], rows,
-                        caption=f"Retrieval on {DS_NAMES.get(d, d)} (n={n}, {c}-token chunks). R@k = at least one "
-                                "relevant chunk in the top $k$. 95\\% bootstrap CIs in brackets. $^{\\dagger}$ baseline "
-                                "(dense MiniLM); $^{*}$ significantly different from the baseline on nDCG@10 "
-                                "(paired bootstrap, Holm-corrected $p<0.05$). ms = median retrieval latency.",
+                        caption=f"Retrieval on {DS_NAMES.get(d, d)} (n={n}, {c}-token chunks; 95\\% bootstrap CIs). R@k: "
+                                "a relevant chunk in the top $k$; ms: median latency. $^{\\dagger}$ baseline (dense "
+                                "MiniLM); $^{*}$ differs from it on nDCG@10 (Holm-corrected $p<0.05$).",
                         label=f"tab:retrieval-{name}-{d.replace('_', '-')}", align="llrrrrrr",
                         source=f"results/retrieval_{name}.json")
     else:
@@ -114,11 +113,9 @@ def retrieval_summary(res: dict, datasets: list[str], c: int) -> None:
         rows.append(row)
     n = {d: next(r["n_queries"] for r in runs if r["dataset"] == d) for d in datasets}
     write_table(f"retrieval_{res['name']}_summary", ["Configuration"] + [f"{DS_NAMES.get(d, d)} ({n[d]})" for d in datasets],
-                rows, caption=f"Retrieval summary: nDCG@10 with 95\\% bootstrap CIs ({c}-token chunks). H = hybrid "
-                "(BM25 + dense, reciprocal-rank fusion); CE = MiniLM cross-encoder reranker; BGE = BGE reranker; the "
-                "embedder is in brackets (BGE-s/-b = BGE-small/base). Rows: the baseline, BM25, the MiniLM pipelines, "
-                "the deployed configuration and the best configuration on each set (bold). $^{\\dagger}$ baseline; "
-                "$^{*}$ significantly different from it (paired bootstrap, Holm-corrected $p<0.05$). All "
+                rows, caption=f"Retrieval summary: nDCG@10 with 95\\% bootstrap CIs ({c}-token chunks); best per set in "
+                "bold. H = hybrid (BM25 + dense, RRF); CE = MiniLM cross-encoder; BGE = BGE reranker; embedder in brackets "
+                "(BGE-s/-b = small/base). $^{\\dagger}$ baseline; $^{*}$ differs from it (Holm-corrected $p<0.05$). All "
                 "configurations: \\ref{app:retrieval}.",
                 label="tab:retrieval-summary", align="l" + "r" * len(datasets), source=f"results/retrieval_{res['name']}.json")
 
