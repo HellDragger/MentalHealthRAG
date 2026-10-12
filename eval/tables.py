@@ -45,7 +45,7 @@ def write_table(name: str, header: Sequence[str], rows: Sequence[Sequence[str]],
     align = align or ("l" + "r" * (len(header) - 1))
     lines = [
         f"% Auto-generated from {source or 'results/'} -- do not edit by hand.",
-        "\\begin{table}[t]",
+        "\\begin{table}[htbp]",
         "\\centering",
         "\\small",
         f"\\caption{{{caption}}}",
